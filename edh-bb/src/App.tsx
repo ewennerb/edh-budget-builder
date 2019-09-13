@@ -26,6 +26,8 @@ const Header: React.FC = () => {
   // TODO
   return (
     <h1>[Header]</h1>
+
+    //TODO add logout button here. Test 44: User is logged out and returns to login page
   );
 }
 

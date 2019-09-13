@@ -1,7 +1,7 @@
 import React from "react"
 
 const DeckDetail: React.FC = () => {
-  // TODO
+  // TODO: list of cards given a deck
   return (
     <h1>[DeckDetail]</h1>
   )
