@@ -3,9 +3,17 @@ import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
 import firebase from "firebase/app";
 
 const Login: React.FC = () => {
-  const uiConfig = {
+  const uiConfig: firebaseui.auth.Config = {
     signInFlow: 'popup',
-    signInSuccessUrl: '/change-username',
+    callbacks: {
+      signInSuccessWithAuthResult: (authResult, redirectUrl = '/') => {
+        if (authResult.additionalUserInfo.isNewUser) {
+          redirectUrl = '/change-username';
+        }
+        window.location.assign(redirectUrl);
+        return false;
+      }
+    },
     signInOptions: [
       firebase.auth.GoogleAuthProvider.PROVIDER_ID,
     ]
