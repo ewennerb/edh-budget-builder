@@ -23,13 +23,15 @@ class ChangeUsername extends React.Component<{ user: firebase.User }> {
     };
   }
 
-  static validateUsername = (newUsername: string) => (
-    newUsername.length === 0
-      ? "Username must not be empty"
-      : !/^[a-zA-Z0-9]+$/.test(newUsername)
-        ? "Username must only contain letters, numbers, hyphens, and underscores"
-        : null
-  )
+  static validateUsername = (newUsername: string) => {
+    if (newUsername.length === 0)
+      return "Username must not be empty";
+    if (newUsername.length > 100)
+      return "Username must be 100 characters or fewer";
+    if (!/^[a-zA-Z0-9-_]+$/.test(newUsername))
+      return "Username must only contain letters, numbers, hyphens, and underscores";
+    return null;
+  }
 
   handleSubmit = (newUsername: string) => () => {
     if (ChangeUsername.validateUsername(newUsername) === null) {
