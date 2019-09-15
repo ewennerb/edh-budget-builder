@@ -4,6 +4,7 @@ import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 import { BrowserRouter } from 'react-router-dom';
+import { SnackbarProvider } from 'notistack';
 import firebase from "firebase/app";
 import "firebase/auth";
 
@@ -19,9 +20,11 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 firebase.auth().onAuthStateChanged((user) =>
   ReactDOM.render(
-    <BrowserRouter>
-      <App user={user} />
-    </BrowserRouter>,
+    <SnackbarProvider>
+      <BrowserRouter>
+        <App user={user} />
+      </BrowserRouter>
+    </SnackbarProvider>,
     document.getElementById('root')
   )
 );

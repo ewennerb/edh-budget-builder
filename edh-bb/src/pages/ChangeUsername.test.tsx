@@ -3,12 +3,18 @@ import firebase from 'firebase/app';
 import firebasemock from 'firebase-mock';
 import { render, waitForElement, getByLabelText, getByText, fireEvent } from '@testing-library/react'
 import ChangeUsername from './ChangeUsername';
+import { SnackbarProvider } from 'notistack';
 
 jest.mock('firebase/app');
 const mockfirestore = new firebasemock.MockFirestore();
 firebase.firestore = (() => mockfirestore) as any;
 
 const testUser: firebase.User = { uid: "testUidAbc123" } as any;
+const doRender = (user: firebase.User) => {
+  const renderResult = render(<SnackbarProvider><ChangeUsername user={user} /></SnackbarProvider>);
+  mockfirestore.flush();
+  return renderResult;
+}
 
 const getFirestoreDocData = async (docRef: firebase.firestore.DocumentReference) => {
   const pNewDoc = docRef.get();
@@ -17,8 +23,7 @@ const getFirestoreDocData = async (docRef: firebase.firestore.DocumentReference)
 }
 
 it('renders without crashing', async () => {
-  const { container } = render(<ChangeUsername user={testUser} />);
-  mockfirestore.flush();
+  const { container } = doRender(testUser);
   const username_textinput = await waitForElement(() => getByLabelText(container, "Username"), { container });
   const submit_button = getByText(container, "Submit");
 
@@ -27,8 +32,7 @@ it('renders without crashing', async () => {
 })
 
 it('sets the username when empty', async () => {
-  const { container } = render(<ChangeUsername user={testUser} />);
-  mockfirestore.flush();
+  const { container } = doRender(testUser);
   const username_textinput = await waitForElement(() => getByLabelText(container, "Username"), { container });
   const submit_button = getByText(container, "Submit");
 
@@ -43,8 +47,7 @@ it('sets the username when empty', async () => {
 it('is pre-filled with the current username', async () => {
   const testUsername = "test_username123";
   firebase.firestore().collection("users").doc(testUser.uid).set({ username: testUsername });
-  const { container } = render(<ChangeUsername user={testUser} />);
-  mockfirestore.flush();
+  const { container } = doRender(testUser);
   const username_textinput = await waitForElement(() => getByLabelText(container, "Username"), { container });
 
   expect(username_textinput).toHaveProperty("value", testUsername);
@@ -53,8 +56,7 @@ it('is pre-filled with the current username', async () => {
 it('rejects an empty username', async () => {
   const testUsername = "test_username123";
   firebase.firestore().collection("users").doc(testUser.uid).set({ username: testUsername });
-  const { container } = render(<ChangeUsername user={testUser} />);
-  mockfirestore.flush();
+  const { container } = doRender(testUser);
   const username_textinput = await waitForElement(() => getByLabelText(container, "Username"), { container });
   const submit_button = getByText(container, "Submit");
 
@@ -68,8 +70,7 @@ it('rejects an empty username', async () => {
 it('rejects a username with invalid characters', async () => {
   const testUsername = "test_username123";
   firebase.firestore().collection("users").doc(testUser.uid).set({ username: testUsername });
-  const { container } = render(<ChangeUsername user={testUser} />);
-  mockfirestore.flush();
+  const { container } = doRender(testUser);
   const username_textinput = await waitForElement(() => getByLabelText(container, "Username"), { container });
   const submit_button = getByText(container, "Submit");
 
@@ -83,8 +84,7 @@ it('rejects a username with invalid characters', async () => {
 it('rejects a username that is too long', async () => {
   const testUsername = "test_username123";
   firebase.firestore().collection("users").doc(testUser.uid).set({ username: testUsername });
-  const { container } = render(<ChangeUsername user={testUser} />);
-  mockfirestore.flush();
+  const { container } = doRender(testUser);
   const username_textinput = await waitForElement(() => getByLabelText(container, "Username"), { container });
   const submit_button = getByText(container, "Submit");
 
