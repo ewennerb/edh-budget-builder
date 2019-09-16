@@ -4,6 +4,8 @@ import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
 
 import TextField from '@material-ui/core/TextField';
 
+import firebase from "../../../index"
+
 
 export default class PostDeck extends Component{
   constructor(props: any) {
@@ -16,9 +18,15 @@ export default class PostDeck extends Component{
 
 
   handleSubmit(event:any) {
-    alert('A name was submitted: ' + event.target.deckName.value);
-    alert('A description was submitted: ' + event.target.deckDescription.value);
     event.preventDefault();
+    
+    firebase.firestore().collection('deck').add({
+        deckName:event.target.deckName.value,
+        deckDescription:event.target.deckDescription.value,
+        deck:[1,2,4,5]
+        
+    })
+    alert('values input into database: name=' + event.target.deckName.value +', description='+ event.target.deckDescription.value);
   }
 
   render() {
@@ -42,7 +50,7 @@ export default class PostDeck extends Component{
         required
         id="deckName"
         label="Required"
-        defaultValue="Deck"
+        defaultValue="Deck Name"
         className={classes.textField}
         margin="normal"
         onChange={handleChange('deckName')}
