@@ -31,8 +31,8 @@ const App: React.FC<{ user: firebase.User | null }> = (({ user }) => {
       <div>
           <AuthContext.Provider value={user}>
           <Header />
+          <NavBar />
           <Switch>
-            <NavBar />
             <Route exact path="/" component={DeckList} />
             <Route exact path="/create-deck" component={CreateDeck} />
             <Route path="/deck/" component={DeckDetail} />
