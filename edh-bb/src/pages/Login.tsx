@@ -2,7 +2,7 @@ import React from "react"
 import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
 import firebase from "firebase/app";
 
-const Login: React.FC = () => {
+const Login: React.FC<{ testAuthUiCallback_?: () => void }> = ({ testAuthUiCallback_ }) => {
   const uiConfig: firebaseui.auth.Config = {
     signInFlow: 'popup',
     callbacks: {
@@ -21,7 +21,7 @@ const Login: React.FC = () => {
   return (
     <div>
       <h1>[Login]</h1>
-      <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={firebase.auth()} />
+      <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={firebase.auth()} uiCallback={testAuthUiCallback_} />
     </div>
   )
 }
