@@ -82,8 +82,8 @@ export default function NavTabs() {
           <LinkTab label="Home" href="/" {...a11yProps(0)} />
           <LinkTab label="My Decks" href="/create-deck" {...a11yProps(1)} />
           <LinkTab label="Card Search" href="/spam" {...a11yProps(2)} />
-          <LinkTab label="Change Username" href="/spam" {...a11yProps(2)} />
-          <LinkTab label="Logout" href="/spam" {...a11yProps(2)} />
+          <LinkTab label="Change Username" href="/spam" {...a11yProps(3)} />
+          
 
         </Tabs>
       </AppBar>
@@ -103,6 +103,12 @@ export default function NavTabs() {
       <TabPanel value={value} index={2}>
         Page Three
       </TabPanel>
+
+      <TabPanel value={value} index={3}>
+        Page Three
+      </TabPanel>
+
+
     </div>
   );
 }
