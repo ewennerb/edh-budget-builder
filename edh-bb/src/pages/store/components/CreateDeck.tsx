@@ -23,10 +23,13 @@ export default class PostDeck extends Component{
     firebase.firestore().collection('deck').add({
         deckName:event.target.deckName.value,
         deckDescription:event.target.deckDescription.value,
-        deck:[1,2,4,5]
-        
+        deck:[1,2,4,5]    
     })
+    .then(function(deckRef) {
+      alert("Deck written with ID: "+ deckRef.id);
+  })
     alert('values input into database: name=' + event.target.deckName.value +', description='+ event.target.deckDescription.value);
+    
   }
 
   render() {
