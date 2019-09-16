@@ -65,7 +65,6 @@ class Header extends React.Component {
       </div>
     );
   }
-    //TODO add logout button here. Test 44: User is logged out and returns to login page
 }
 
 export default App;
