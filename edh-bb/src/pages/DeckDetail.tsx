@@ -1,9 +1,18 @@
 import React from "react"
 
+import NavTabs from "./store/components/navigationBar"
+
 const DeckDetail: React.FC = () => {
   // TODO
   return (
-    <h1>[DeckDetail]</h1>
+    <div>
+      <h1>[DeckDetail]</h1>
+      <switch>
+        <NavTabs />
+      </switch>
+      
+    </div>
+    
   )
 }
 
