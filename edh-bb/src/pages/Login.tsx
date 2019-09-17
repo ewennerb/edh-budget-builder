@@ -2,7 +2,13 @@ import React from "react"
 import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
 import firebase from "firebase/app";
 
-const Login: React.FC<{ testAuthUiCallback_?: () => void }> = ({ testAuthUiCallback_ }) => {
+/// used by tests only
+type LoginProps = {
+  authUiCallback?: () => void,
+  doRedirect?: (url: string) => void,
+};
+
+const Login: React.FC<LoginProps> = ({ authUiCallback: testAuthUiCallback_, doRedirect = window.location.assign }) => {
   const uiConfig: firebaseui.auth.Config = {
     signInFlow: 'popup',
     callbacks: {
@@ -10,7 +16,7 @@ const Login: React.FC<{ testAuthUiCallback_?: () => void }> = ({ testAuthUiCallb
         if (authResult.additionalUserInfo.isNewUser) {
           redirectUrl = '/change-username';
         }
-        window.location.assign(redirectUrl);
+        doRedirect(redirectUrl);
         return false;
       }
     },
