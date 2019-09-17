@@ -14,7 +14,7 @@ class DeleteDeck extends React.Component {
   deleteDeck(deckID:string){
     firebase.firestore().collection('deck').doc(deckID).delete()
     .then(function() {
-      window.location.reload(false);
+      window.location.reload(true);
     }).catch(function(error) {
         console.error("Error removing document: ", error);
     });
