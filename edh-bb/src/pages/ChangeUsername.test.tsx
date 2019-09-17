@@ -27,8 +27,8 @@ it('renders without crashing', async () => {
   const username_textinput = await waitForElement(() => getByLabelText(container, "Username"), { container });
   const submit_button = getByText(container, "Submit");
 
-  expect(username_textinput).toBeDefined
-  expect(submit_button).toBeDefined
+  expect(username_textinput).toBeDefined();
+  expect(submit_button).toBeDefined();
 })
 
 it('sets the username when empty', async () => {
