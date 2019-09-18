@@ -6,6 +6,8 @@ before_install:
 script:
   - npm run build
   - npm test
+before_deploy:
+  - cd edh-bb
 deploy:
   provider: firebase
   token:
