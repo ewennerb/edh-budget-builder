@@ -23,6 +23,10 @@ export default class PostDeck extends Component {
     //Add check that deck contains non space chars
     let title: string = event.target.deckName.value;
     let hasNonSpaceChar: boolean = false;
+    if (title.length > 100) {
+      alert("Error: Your deck name must be shorter than 100 characters");
+      return;
+    }
     for (var char of title) {
       if (char != ' ') {
         hasNonSpaceChar = true;
