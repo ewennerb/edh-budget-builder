@@ -31,7 +31,7 @@ class DeleteDeck extends React.Component {
   
 const DeckList: React.FC = () => {
   // TODO
-  const deleteDeckInstance = new DeleteDeck(""); 
+  //const deleteDeckInstance = new DeleteDeck(""); 
   //deleteDeckInstance.deleteDeck("BFX0TlBsEKj4LcAQiqkD")
   return (
     <div>
