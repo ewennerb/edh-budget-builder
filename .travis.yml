@@ -3,3 +3,11 @@ node_js:
   - 12
 before_install:
   - cd edh-bb
+before_deploy:
+  - npm run build
+deploy:
+  provider: firebase
+  token:
+    secure: C2kTr8Wj1M7mqLRhaeTVBYQ1sN9EXGDL7+8dmHspxZWwJmcPu2lwQT0/XupUX3J4wyQwvpnh4lCEOFCWgVDQGIemby70GLhg2weLHJNZeeWNDSnnZuQTy3BjhTb23ln/bZfyEPI52U6+wAdt0deittgjB9Le+pi1Wa1wGsVZty3Zv+P0tM6x2+BFpKbNzPdfX5a9mCOf9PdXqldjCQABSr1cYZX17HQ39rKiVFVf+x9e1+GYuLMgnSMUlMdeiUfiRW7Nytb0uvDhI9rIxjhUO4V3AhbSq36YijbhJphNqMx6c1DyksuIe2yveZeZMmLt0YwelsORV/5heE8BdVwat9mlrM7Z+ACM1igmINLFKbL2OUW5zXZuZN5thglcYIsV9gCR7sX4fRwF95hJFHi/8rtiwZq6Qhc1/ErTbwhWAJOmE2aPemwGC5C+VTHePJ4bfF0q2yahmoDva4JVaIR4IoiSPiwmj3vX7X1NOFYz3+QNefjn3fUOoWsDwcjr+97jHM10OXMR6Y4X5ip0Q/i8kDb2pLitxgJzUGuVFsRHaT0ZgsZ4fehTAI572SkSwOua/4BDqaVTDPvFvad147hJdwOxUQ5Yur3XvZ/I14Y4Ad3QLZZ9696aXPAp1zAMzQhZ46Ls9wyTXRVZ7CpoxvyBhqrrcYwKn5Bjj8hCCZSqh38=
+  on:
+    branch: master
