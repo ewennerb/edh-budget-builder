@@ -1,13 +1,25 @@
-import React from "react"
+import React,{ Component } from 'react';
+
+import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
+
+import TextField from '@material-ui/core/TextField';
+
 import firebase from "./../index"
 
 
+class DisplayDeckDetails extends Component{
+  ID: string;
+  constructor(props: any) {
+    super(props);
+    this.state = {value: ''};
+    this.ID = ""
 
-class DisplayDeckDetails extends React.Component{ 
-  
-
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
 
   async getDeckName(deckID:string){
+    
+    
     const snapshot = await firebase.firestore().collection('deck').doc(deckID).get()
     const docSnap = snapshot.data()
     console.log(docSnap!.deckName)
@@ -17,34 +29,78 @@ class DisplayDeckDetails extends React.Component{
 
 
 
-
-  
-
-
-
   async displayDeckDescription(deckID:string){
+    this.ID = deckID
     const snapshot = await firebase.firestore().collection('deck').doc(deckID).get()
     const docSnap = snapshot.data()
     console.log(docSnap!.deckDescription)
     renderDescription(docSnap!.deckDescription)
   }
-    
 
-  render(){
-
-    return(
-      <div>
-
-      <h1>[DeckDetail]</h1>
-        <input id="name"></input>
-        <br></br>
-        <input id="desc"></input>
-      </div>
-
-    )
   
+
+  handleSubmit(event:any) {
+    event.preventDefault();
+    var ID = this.ID
+    firebase.firestore().collection('deck').doc(ID).update({
+        deckName:event.target.name.value,
+        deckDescription:event.target.desc.value,
+        deck:[1,2,4,5]    
+    })
+    .then(function(deckRef) {
+      alert("Deck updated: "+ID);
+  })
+    alert('values updated in database: name=' + event.target.name.value +', description='+ event.target.desc.value);
+    
   }
- 
+
+  render() {
+    const classes = useStyles();
+    const [values, setValues] = React.useState<State>({
+        deckName: "test123",
+        deckDescription: "test",
+        cards: "test"
+    });
+
+    const handleChange = (name: keyof State) => (event: React.ChangeEvent<HTMLInputElement>) => {
+        setValues({ ...values, [name]: event.target.value });
+    };
+
+  return (
+    <form
+    onSubmit={this.handleSubmit}
+    className="innerForm">
+        <h1>[CreateDeck]</h1>
+      <TextField
+        required
+        id="name"
+        label="Required"
+        defaultValue="Deck Name"
+        className={classes.textField}
+        margin="normal"
+       
+      />
+        <br></br>
+      <TextField
+        id="desc"
+        placeholder="Deck Description"
+        multiline
+        rowsMax="4"
+  
+        className={classes.textField}
+        margin="normal"
+      />
+      <br></br>
+      <br></br>
+      <input type="submit"/>
+  </form>
+
+      
+    
+    
+    
+  );
+  }
 }
 
 function renderName(name:string){
@@ -56,13 +112,38 @@ function renderDescription(desc:string){
 
 }
 
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    container: {
+      display: 'flex',
+      flexWrap: 'wrap',
+    },
+    textField: {
+      marginLeft: theme.spacing(1),
+      marginRight: theme.spacing(1),
+      width: 1000,
+    },
+    dense: {
+      marginTop: 19,
+    },
+    menu: {
+      width: 200,
+    },
+  }),
+);
 
+
+interface State {
+    deckName: string;
+    deckDescription: string;
+    cards: string;
+}
 
 const DeckDetail: React.FC = () => {
 
   const getDeckInstance = new DisplayDeckDetails(""); 
 
-  
+ 
   const docRef = getDeckInstance.getDeckName("FxoenBqC6m9DlwsKvROe");
   getDeckInstance.displayDeckDescription("FxoenBqC6m9DlwsKvROe");
 
