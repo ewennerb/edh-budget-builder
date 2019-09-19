@@ -15,11 +15,11 @@ class DisplayDeckDetails extends React.Component<{},{name:string, description:st
   
 
 
-  async getDeck(deckID:string){
+  async getDeckName(deckID:string){
     const snapshot = await firebase.firestore().collection('deck').doc(deckID).get()
     const docSnap = snapshot.data()
     console.log(docSnap!.deckName)
-    return Promise.resolve(docSnap!.deckName).toString()
+    renderName(docSnap!.deckName)
     
   }
 
@@ -27,37 +27,7 @@ class DisplayDeckDetails extends React.Component<{},{name:string, description:st
 
 
   
-  getDeckName(deckID:string){
-   
 
-    var docRef = firebase.firestore().collection("deck").doc(deckID);
-   
-    var deckName = docRef.get().then(function(doc) {
-        if (doc.exists) {
-            console.log("Document data:", doc.data());
-            console.log(doc.data()!.deckName)
-            renderName(doc.data()!.deckName)
-            
-        } else {
-            // doc.data() will be undefined in this case
-            console.log("No such document!");
-        }
-    }).catch(function(error) {
-        console.log("Error getting document:", error);
-    });
-
-    console.log(deckName)
- 
- 
-    
-      
-      
-  
- 
-  
-   
-   
-  }
 
 
   displayDeckDescription(deckID:string){
