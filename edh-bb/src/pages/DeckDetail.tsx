@@ -56,11 +56,7 @@ class DisplayDeckDetails extends Component{
 
   render() {
     const classes = useStyles();
-    const [values, setValues] = React.useState<State>({
-        deckName: "test123",
-        deckDescription: "test",
-        cards: "test"
-    });
+
 
 
 
@@ -142,7 +138,7 @@ const DeckDetail: React.FC = () => {
   const getDeckInstance = new DisplayDeckDetails(""); 
 
  
-  const docRef = getDeckInstance.getDeckName("FxoenBqC6m9DlwsKvROe");
+  getDeckInstance.getDeckName("FxoenBqC6m9DlwsKvROe");
   getDeckInstance.displayDeckDescription("FxoenBqC6m9DlwsKvROe");
 
   
