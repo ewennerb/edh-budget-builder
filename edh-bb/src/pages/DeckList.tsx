@@ -36,11 +36,6 @@ const DeckList: React.FC = () => {
   return (
     <div>
       <h1>[DeckList]</h1>
-  
-      <Button color="primary" component={AdapterLink} to="/create-deck">
-        Create New Deck
-      </Button>
-
     </div>
     
   );

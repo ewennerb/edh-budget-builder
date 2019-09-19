@@ -29,15 +29,14 @@ const App: React.FC<{ user: firebase.User | null }> = (({ user }) => {
     )
   } else {
     return (
-
       <div>
           <AuthContext.Provider value={user}>
           <Header />
           <NavBar />
           <Switch>
-            <Route exact path="/" component={DeckList} />
+            <Route exact path="/deck-list" component={DeckList} />
             <Route exact path="/create-deck" component={CreateDeck} />
-            <Route path="/deck/" component={DeckDetail} />
+            <Route path="/deck-detail/" component={DeckDetail} />
             <Route exact path="/search" component={CardSearch} />
             <Route exact path="/logout" component={Logout} />
             <Route exact path="/change-username" render={() => <ChangeUsername user={user} />} />
@@ -45,8 +44,6 @@ const App: React.FC<{ user: firebase.User | null }> = (({ user }) => {
           </Switch>
         </AuthContext.Provider>
       </div>
-      
-
     );
   }
 })
@@ -60,9 +57,15 @@ class Header extends React.Component {
     const currentUser = this.context;
     return (
       <div>
-        <h1>[Header]</h1>
+        <h1>EDH Budget Builder [Header]</h1>
         userd: {currentUser.uid}
         <h4>Hello, {currentUser.displayName}</h4>
+
+        <div id="change-username">
+          <Button variant="contained" color="primary" href="/change-username">
+            Change username
+          </Button>
+        </div>
 
         <div id="logout">
           <Button variant="contained" color="secondary" href="/logout">

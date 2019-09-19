@@ -1,16 +1,11 @@
 import React from 'react';
 import PostDeck from "./store/components/CreateDeck"
 
-
-
-
-
 interface deckInfo {
   deckName: string;
   deckDescription: string;
   cards: string;
 }
-
 
 const CreateDeck: React.FC = () => {
   // TODO
