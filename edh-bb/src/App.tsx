@@ -9,6 +9,7 @@ import ChangeUsername from './pages/ChangeUsername';
 import Logout from './pages/Logout';
 import firebase from "firebase/app";
 import { AuthContext } from "./common";
+import NavBar from "./pages/store/components/navigationBar"
 import Button from '@material-ui/core/Button';
 
 const App: React.FC<{ user: firebase.User | null }> = (({ user }) => {
@@ -28,18 +29,24 @@ const App: React.FC<{ user: firebase.User | null }> = (({ user }) => {
     )
   } else {
     return (
-      <AuthContext.Provider value={user}>
-        <Header />
-        <Switch>
-          <Route exact path="/" component={DeckList} />
-          <Route exact path="/create-deck" component={CreateDeck} />
-          <Route path="/deck/" component={DeckDetail} />
-          <Route exact path="/search" component={CardSearch} />
-          <Route exact path="/logout" component={Logout} />
-          <Route exact path="/change-username" render={() => <ChangeUsername user={user} />} />
-          <Redirect from="/login" to="/" />
-        </Switch>
-      </AuthContext.Provider>
+
+      <div>
+          <AuthContext.Provider value={user}>
+          <Header />
+          <NavBar />
+          <Switch>
+            <Route exact path="/" component={DeckList} />
+            <Route exact path="/create-deck" component={CreateDeck} />
+            <Route path="/deck/" component={DeckDetail} />
+            <Route exact path="/search" component={CardSearch} />
+            <Route exact path="/logout" component={Logout} />
+            <Route exact path="/change-username" render={() => <ChangeUsername user={user} />} />
+            <Redirect from="/login" to="/" />
+          </Switch>
+        </AuthContext.Provider>
+      </div>
+      
+
     );
   }
 })

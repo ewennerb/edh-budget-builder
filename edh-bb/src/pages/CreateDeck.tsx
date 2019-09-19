@@ -1,10 +1,29 @@
-import React from "react"
+import React from 'react';
+import PostDeck from "./store/components/CreateDeck"
+
+
+
+
+
+interface deckInfo {
+  deckName: string;
+  deckDescription: string;
+  cards: string;
+}
+
 
 const CreateDeck: React.FC = () => {
   // TODO
-  return (
-    <h1>[CreateDeck]</h1>
-  )
+
+  const deck : deckInfo = {
+    deckName: "test123",
+    deckDescription: "test",
+    cards: "test"
+  };
+
+  const deckPostInstance = new PostDeck(deck); 
+  const result = deckPostInstance.render(); 
+return(result);
 }
 
 export default CreateDeck;
