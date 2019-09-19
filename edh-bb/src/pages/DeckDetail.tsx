@@ -47,7 +47,7 @@ class DisplayDeckDetails extends Component{
         deckDescription:event.target.desc.value,
         deck:[1,2,4,5]    
     })
-    .then(function(deckRef) {
+    .then(function() {
       alert("Deck updated: "+ID);
   })
     alert('values updated in database: name=' + event.target.name.value +', description='+ event.target.desc.value);
@@ -62,9 +62,7 @@ class DisplayDeckDetails extends Component{
         cards: "test"
     });
 
-    const handleChange = (name: keyof State) => (event: React.ChangeEvent<HTMLInputElement>) => {
-        setValues({ ...values, [name]: event.target.value });
-    };
+
 
   return (
     <form
