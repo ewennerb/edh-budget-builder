@@ -1,17 +1,8 @@
 import React from "react"
 import firebase from "./../index"
-import { string } from "prop-types"
-import { wait } from "@testing-library/dom"
-import { async, promised } from "q"
 
-class DisplayDeckDetails extends React.Component<{},{name:string, description:string}> { 
 
-  constructor () {
-    super("")
-    this.state = {name:"",
-  description:""};
-
-  }
+class DisplayDeckDetails extends React.Component{ 
   
 
 
@@ -30,13 +21,11 @@ class DisplayDeckDetails extends React.Component<{},{name:string, description:st
 
 
 
-  displayDeckDescription(deckID:string){
-    firebase.firestore().collection('deck').doc(deckID).delete()
-    .then(function() {
-      window.location.reload(false);
-    }).catch(function(error) {
-        console.error("Error removing document: ", error);
-    });
+  async displayDeckDescription(deckID:string){
+    const snapshot = await firebase.firestore().collection('deck').doc(deckID).get()
+    const docSnap = snapshot.data()
+    console.log(docSnap!.deckDescription)
+    renderDescription(docSnap!.deckDescription)
   }
     
  
@@ -51,12 +40,22 @@ function renderName(name:string){
 
 }
 
+function renderDescription(name:string){
+  const nameRender = document.querySelector('#desc');
+  let input = document.createElement('span');
+  input.textContent = name;
+
+  nameRender!.appendChild(input)
+
+}
+
 const DeckDetail: React.FC = () => {
 
-  const getDeckInstance = new DisplayDeckDetails(); 
+  const getDeckInstance = new DisplayDeckDetails(""); 
 
   
   const docRef = getDeckInstance.getDeckName("FxoenBqC6m9DlwsKvROe");
+  getDeckInstance.displayDeckDescription("FxoenBqC6m9DlwsKvROe");
 
   
 
