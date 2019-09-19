@@ -2,6 +2,7 @@ import React from "react"
 import firebase from "./../index"
 
 
+
 class DisplayDeckDetails extends React.Component{ 
   
 
@@ -28,26 +29,34 @@ class DisplayDeckDetails extends React.Component{
     renderDescription(docSnap!.deckDescription)
   }
     
+
+  render(){
+
+    return(
+      <div>
+
+      <h1>[DeckDetail]</h1>
+        <input id="name"></input>
+        <br></br>
+        <input id="desc"></input>
+      </div>
+
+    )
+  
+  }
  
 }
 
 function renderName(name:string){
-  const nameRender = document.querySelector('#name');
-  let input = document.createElement('input');
-  input.value = name;
+  (document.getElementById("name")as HTMLInputElement).value = name;
+}
 
-  nameRender!.appendChild(input)
+function renderDescription(desc:string){
+  (document.getElementById("desc")as HTMLInputElement).value = desc;
 
 }
 
-function renderDescription(name:string){
-  const nameRender = document.querySelector('#desc');
-  let input = document.createElement('input');
-  input.value = name;
 
-  nameRender!.appendChild(input)
-
-}
 
 const DeckDetail: React.FC = () => {
 
@@ -68,11 +77,7 @@ const DeckDetail: React.FC = () => {
 
   return (
     
-    <div>
-      <h1>[DeckDetail]</h1>
-        <ul id="name"></ul>
-        <ul id="desc"></ul>
-    </div>
+    getDeckInstance.render()
       
   )
   
