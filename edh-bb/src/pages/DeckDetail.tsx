@@ -33,8 +33,8 @@ class DisplayDeckDetails extends React.Component{
 
 function renderName(name:string){
   const nameRender = document.querySelector('#name');
-  let input = document.createElement('span');
-  input.textContent = name;
+  let input = document.createElement('input');
+  input.value = name;
 
   nameRender!.appendChild(input)
 
@@ -42,8 +42,8 @@ function renderName(name:string){
 
 function renderDescription(name:string){
   const nameRender = document.querySelector('#desc');
-  let input = document.createElement('span');
-  input.textContent = name;
+  let input = document.createElement('input');
+  input.value = name;
 
   nameRender!.appendChild(input)
 
