@@ -6,7 +6,6 @@ import TextField from '@material-ui/core/TextField';
 
 import firebase from "../../../index"
 
-
 export default class PostDeck extends Component {
   constructor(props: any) {
     super(props);
@@ -15,28 +14,32 @@ export default class PostDeck extends Component {
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
-
+  isValidTitle(title: string) {
+    if (title.length > 100) {
+      alert("Error: Your deck name must be shorter than 100 characters");
+      return false;
+    }
+    let hasNonSpaceChar: boolean = false;
+    for (var char of title) {
+      if (char !== ' ') {
+        hasNonSpaceChar = true;
+      }
+    }
+    if (!hasNonSpaceChar) {
+      alert("Error: Your deck must have at least one non-space character");
+      return false;
+    }
+    return true;
+  }
 
   handleSubmit(event: any) {
     event.preventDefault();
 
     //Add check that deck contains non space chars
     let title: string = event.target.deckName.value;
-    let hasNonSpaceChar: boolean = false;
-    if (title.length > 100) {
-      alert("Error: Your deck name must be shorter than 100 characters");
+    if (!this.isValidTitle(title)) {
       return;
     }
-    for (var char of title) {
-      if (char != ' ') {
-        hasNonSpaceChar = true;
-      }
-    }
-    if (!hasNonSpaceChar) {
-      alert("Error: Your deck must have at least one non-space character");
-      return;
-    }
-
 
     firebase.firestore().collection('deck').add({
       deckName: event.target.deckName.value,
