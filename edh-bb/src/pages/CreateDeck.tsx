@@ -67,26 +67,6 @@ class CreateDeck extends React.Component<{ user: firebase.User }> {
   }
 }
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    container: {
-      display: 'flex',
-      flexWrap: 'wrap',
-    },
-    textField: {
-      marginLeft: theme.spacing(1),
-      marginRight: theme.spacing(1),
-      width: 1000,
-    },
-    dense: {
-      marginTop: 19,
-    },
-    menu: {
-      width: 200,
-    },
-  }),
-);
-
 interface State {
     deckName: string;
     deckDescription: string;
