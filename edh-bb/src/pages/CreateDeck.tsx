@@ -8,6 +8,25 @@ interface deckInfo {
   cards: string;
 }
 
+export function isValidTitle(title: string) {
+  if (title.length > 100) {
+    alert("Error: Deck name is too long (must be 100 characters or shorter)");
+    return false;
+  }
+  let hasNonSpaceChar: boolean = false;
+  for (var char of title) {
+    if (char !== ' ') {
+      hasNonSpaceChar = true;
+      break;
+    }
+  }
+  if (!hasNonSpaceChar) {
+    alert("Error: Your deck title must have at least one alphanumeric character");
+    return false;
+  }
+  return true;
+}
+
 class CreateDeck extends React.Component<{ user: firebase.User }> {
   userDocRef: firebase.firestore.DocumentReference;
   constructor(props: Readonly<{ user: firebase.User }>) {
