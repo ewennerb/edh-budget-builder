@@ -9,15 +9,13 @@ interface deckInfo {
 }
 
 class CreateDeck extends React.Component<{ user: firebase.User }> {
-  userDocRef: firebase.firestore.DocumentReference;
   constructor(props: Readonly<{ user: firebase.User }>) {
     super(props);
-    this.userDocRef = firebase.firestore().collection("users").doc(this.props.user.uid);
     this.state = {value: ''};
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
-  handleSubmit(event:any, user = this.userDocRef.get()) {
+  handleSubmit(event:any) {
     event.preventDefault();
     
     firebase.firestore().collection('deck').add({

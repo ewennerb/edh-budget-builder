@@ -8,7 +8,23 @@ const AdapterLink = React.forwardRef<HTMLAnchorElement, LinkProps>((props, ref) 
 ));
 
 class DeckList extends React.Component<{ user: firebase.User }> {
+  userDocRef: firebase.firestore.DocumentReference;
 
+  constructor(props: Readonly<{ user: firebase.User }>) {
+    super(props);
+    this.userDocRef = firebase.firestore().collection("users").doc(this.props.user.uid);
+    this.retrieveDecks = this.retrieveDecks.bind(this);
+  }
+
+  retrieveDecks(){
+    
+  }
+
+  render() {
+    return(
+      <h1>[DeckList]</h1>
+    );
+  }
 }
 // class DeleteDeck extends React.Component { 
 
