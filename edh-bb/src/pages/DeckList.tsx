@@ -1,14 +1,14 @@
 import React from "react";
 
 
-import { Link, LinkProps } from 'react-router-dom';
-import Button from '@material-ui/core/Button';
+//import { Link, LinkProps } from 'react-router-dom';
+//import Button from '@material-ui/core/Button';
 
 // import firebase from "firebase/app"
 
-const AdapterLink = React.forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => (
-  <Link innerRef={ref} {...props} />
-));
+// const AdapterLink = React.forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => (
+//   <Link innerRef={ref} {...props} />
+// ));
 
 // class DeleteDeck extends React.Component { 
 
