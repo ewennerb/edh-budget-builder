@@ -19,7 +19,7 @@ class CreateDeck extends React.Component<{ user: firebase.User }> {
 
   isValidTitle(title: string) {
     if (title.length > 100) {
-      alert("Error: Deck name is too long (must be 100 characters or shorter");
+      alert("Error: Deck name is too long (must be 100 characters or shorter)");
       return false;
     }
     let hasNonSpaceChar: boolean = false;
