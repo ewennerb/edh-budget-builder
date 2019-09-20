@@ -47,8 +47,8 @@ class CreateDeck extends React.Component<{ user: firebase.User }> {
     firebase.firestore().collection('deck').add({
       deckName: event.target.deckName.value,
       deckDescription: event.target.deckDescription.value,
-      deck: []
-      //ownerID: user
+      deck: [],
+      ownerID: this.props.user.uid
     })
       .then(function (deckRef) {
         alert("Deck written with ID: " + deckRef.id);
