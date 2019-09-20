@@ -1,13 +1,6 @@
 import React from 'react';
-import clsx from 'clsx';
-import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
-import MenuItem from '@material-ui/core/MenuItem';
 import TextField from '@material-ui/core/TextField';
-import PostDeck from "./store/components/CreateDeck"
-
-
-
-
+import firebase from "firebase/app";
 
 interface deckInfo {
   deckName: string;
@@ -15,19 +8,58 @@ interface deckInfo {
   cards: string;
 }
 
+class CreateDeck extends React.Component<{ user: firebase.User }> {
+  userDocRef: firebase.firestore.DocumentReference;
+  constructor(props: Readonly<{ user: firebase.User }>) {
+    super(props);
+    this.userDocRef = firebase.firestore().collection("users").doc(this.props.user.uid);
+    this.state = {value: ''};
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
 
-const CreateDeck: React.FC = () => {
-  // TODO
+  handleSubmit(event:any, user = this.userDocRef.get()) {
+    event.preventDefault();
+    
+    firebase.firestore().collection('deck').add({
+        deckName:event.target.deckName.value,
+        deckDescription:event.target.deckDescription.value,
+        deck:[],
+        ownerID: user
+    })
+    .then(function(deckRef) {
+      alert("Deck written with ID: "+ deckRef.id);
+    }) 
 
-  const deck : deckInfo = {
-    deckName: "test123",
-    deckDescription: "test",
-    cards: "test"
-  };
+    alert('values input into database: name=' + event.target.deckName.value +', description='+ event.target.deckDescription.value);
+  }
 
-  const deckPostInstance = new PostDeck(deck); 
-  const result = deckPostInstance.render(); 
-return(result);
+  render() {
+    return (
+      <form
+      onSubmit={this.handleSubmit}
+      className="innerForm">
+          <h1>[CreateDeck]</h1>
+        <TextField
+          required
+          id="deckName"
+          label="Deck Name"
+          margin="normal"
+        />
+          <br></br>
+        <TextField
+          id="deckDescription"
+          placeholder="Deck Description"
+          label="Deck Description"
+          multiline
+          rowsMax="4"
+          margin="normal"
+        />
+        <br></br>
+        <br></br>
+        <input type="submit"/>
+    </form>
+    );
+  }
 }
 
 export default CreateDeck;
