@@ -34,7 +34,7 @@ const App: React.FC<{ user: firebase.User | null }> = (({ user }) => {
           <Header />
           <Switch>
             <Route exact path="/deck-list" component={DeckList} />
-            <Route exact path="/create-deck" component={CreateDeck} />
+            <Route exact path="/create-deck" render={() => <CreateDeck user={user} />} />
             <Route path="/deck-detail/" component={DeckDetail} />
             <Route exact path="/search" component={CardSearch} />
             <Route exact path="/logout" component={Logout} />
@@ -85,7 +85,7 @@ class Header extends React.Component {
         </Toolbar>
         <Route render={({ location }) => (
           <Tabs value={pathToTab(location.pathname)}>
-            <LinkTab label="deck list" value="/" />
+            <LinkTab label="deck list" value="/deck-list" />
             <LinkTab label="create deck" value="/create-deck" />
             <LinkTab label="search cards" value="/search" />
             <LinkTab label="change username" value="/change-username" />
