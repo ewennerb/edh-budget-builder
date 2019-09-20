@@ -1,5 +1,4 @@
-import React,{ Component } from 'react';
-import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
+import React from 'react';
 import TextField from '@material-ui/core/TextField';
 import firebase from "firebase/app";
 
@@ -28,11 +27,11 @@ class CreateDeck extends React.Component<{ user: firebase.User }> {
     })
     .then(function(deckRef) {
       alert("Deck written with ID: "+ deckRef.id);
-      firebase.firestore().collection('user-decks').add({
+      /*firebase.firestore().collection('user-decks').add({
         userID: user,
         deckID: deckRef.id
       });
-      alert("userID=" + user + "deckID=" + deckRef.id);
+      alert("userID=" + user + "deckID=" + deckRef.id);*/
     }) 
 
     alert('values input into database: name=' + event.target.deckName.value +', description='+ event.target.deckDescription.value);
