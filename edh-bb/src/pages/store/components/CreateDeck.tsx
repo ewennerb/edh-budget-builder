@@ -16,7 +16,7 @@ export default class PostDeck extends Component {
 
   isValidTitle(title: string) {
     if (title.length > 100) {
-      alert("Error: Your deck name must be shorter than 100 characters");
+      alert("Error: Your deck name cannot be longer than 100 characters");
       return false;
     }
     let hasNonSpaceChar: boolean = false;
