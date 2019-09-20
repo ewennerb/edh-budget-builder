@@ -42,6 +42,8 @@ class ChangeUsername extends React.Component<{ user: firebase.User } & WithSnack
         this.props.enqueueSnackbar('Could not change username', { variant: 'error' });
         console.log("Error setting username: ", err);
       });
+    } else {
+      this.props.enqueueSnackbar('Invalid username', { variant: 'error' });
     }
   }
 
