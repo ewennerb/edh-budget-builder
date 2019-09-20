@@ -44,13 +44,11 @@ class CreateDeck extends React.Component<{ user: firebase.User }> {
       return;
     }
 
-    console.log("deck is valid");
-
     firebase.firestore().collection('deck').add({
       deckName: event.target.deckName.value,
       deckDescription: event.target.deckDescription.value,
-      deck: [],
-      ownerID: user
+      deck: []
+      //ownerID: user
     })
       .then(function (deckRef) {
         alert("Deck written with ID: " + deckRef.id);
