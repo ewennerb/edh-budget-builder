@@ -31,8 +31,9 @@ class CreateDeck extends React.Component<{ user: firebase.User }> {
     }
     if (!hasNonSpaceChar) {
       alert("Error: Your deck title must have at least one alphanumeric character");
-      return false
+      return false;
     }
+    return true;
   }
 
   handleSubmit(event: any, user = this.userDocRef.get()) {
@@ -42,6 +43,8 @@ class CreateDeck extends React.Component<{ user: firebase.User }> {
     if (!this.isValidTitle(title)) {
       return;
     }
+
+    console.log("deck is valid");
 
     firebase.firestore().collection('deck').add({
       deckName: event.target.deckName.value,
