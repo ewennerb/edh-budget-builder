@@ -21,7 +21,9 @@
     "react-firebaseui": "^4.0.0",
     "react-router-dom": "^5.0.1",
     "react-scripts": "3.1.1",
-    "typescript": "3.6.3"
+    "react-window": "^1.8.5",
+    "typescript": "3.6.3",
+    "underscore": "^1.9.1"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -46,6 +48,7 @@
   },
   "devDependencies": {
     "@testing-library/react": "^9.1.4",
+    "@types/react-window": "^1.8.1",
     "firebase-mock": "^2.2.10"
   }
 }

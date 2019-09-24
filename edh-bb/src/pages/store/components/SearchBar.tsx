@@ -2,7 +2,7 @@ import React from 'react'
 import { Formik, Field, Form} from 'formik'
 import {
     Checkbox,
-    TextField,
+    // TextField,
     FormControlLabel,
     Button,
 } from '@material-ui/core';
@@ -39,7 +39,6 @@ class SearchBar extends React.Component {
         //@ts-ignore
         this.props.searchQuery(values);
     }
-
 
     render() {
         return(
