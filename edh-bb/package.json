@@ -14,6 +14,7 @@
     "formik": "^1.5.8",
     "jmespath": "^0.15.0",
     "mtg-json": "^1.0.1",
+    "mtgsdk": "^0.4.3",
     "notistack": "^0.9.0",
     "react": "^16.9.0",
     "react-async": "^8.0.0",
