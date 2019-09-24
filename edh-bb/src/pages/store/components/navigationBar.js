@@ -11,7 +11,9 @@ import Box from '@material-ui/core/Box';
 import { Route, Switch } from "react-router-dom";
 
 import DeckList from '../../DeckList';
-
+import CreateDeck from '../../CreateDeck';
+import CardSearch from '../../CardSearch';
+import ChangeUsername from '../../ChangeUsername';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -79,33 +81,32 @@ export default function NavTabs() {
           onChange={handleChange}
           aria-label="nav tabs example"
         >
-          <LinkTab label="Home" href="/" {...a11yProps(0)} />
-          <LinkTab label="My Decks" href="/create-deck" {...a11yProps(1)} />
-          <LinkTab label="Card Search" href="/spam" {...a11yProps(2)} />
-          <LinkTab label="Change Username" href="/spam" {...a11yProps(3)} />
+          <LinkTab label="Home/My Decks" href="/deck-list" {...a11yProps(0)} />
+          <LinkTab label="Create Deck" href="/create-deck" {...a11yProps(1)} />
+          <LinkTab label="Card Search" href="/search" {...a11yProps(2)} />
+          <LinkTab label="Something else" href="/" {...a11yProps(3)} />
           
-
         </Tabs>
       </AppBar>
       <TabPanel value={value} index={0}>
-        
-       
-     
         <Switch>
-        <Route exact path="/" component={DeckList} />
+          <Route exact path="/" component={DeckList} />
         </Switch>
-       
-       
       </TabPanel>
       <TabPanel value={value} index={1}>
-        Page Two
+        <Switch>
+          <Route exact path="/" component={CreateDeck} />
+        </Switch>
       </TabPanel>
       <TabPanel value={value} index={2}>
-        Page Three
+        <Switch>
+          <Route exact path="/" component={CardSearch} />
+        </Switch>
       </TabPanel>
-
       <TabPanel value={value} index={3}>
-        Page Three
+        <Switch>
+          Something else
+        </Switch>
       </TabPanel>
 
 
