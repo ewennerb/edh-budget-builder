@@ -10,35 +10,46 @@ const AdapterLink = React.forwardRef<HTMLAnchorElement, LinkProps>((props, ref) 
 class DeckList extends React.Component<{ user: firebase.User }> {
   decksRef: firebase.firestore.CollectionReference;
   decks: any;
+  queryRef: firebase.firestore.Query;
   constructor(props: Readonly<{ user: firebase.User }>) {
     super(props);
-    this.retrieveDecks = this.retrieveDecks.bind(this);
     this.decksRef = firebase.firestore().collection("deck");
-  }
-
-  retrieveDecks(){
-    const queryRef = this.decksRef.where('ownerID', '==', this.props.user.uid);
-    queryRef.get().then(doc => {
-      if (doc.empty) {
-        console.log('No decks, TODO render this');
-      } else {
-        console.log('OwnerID = ' + this.props.user.uid);
-        console.log('You have ' + doc.size + ' decks');
-        doc.docs.map((deck, index) => (
-          console.log('Deck name: ' + deck.data().deckName + " description: " + deck.data().deckDescription)
-        ));
-      }
-    })
-    .catch(err => {
-      console.log('Error getting document', err);
-    });
+    this.queryRef = this.decksRef.where('ownerID', '==', this.props.user.uid);
   }
 
   render() {
-    this.retrieveDecks();
+    //TODO start here, fix this method to stop returning errors.
+    //  Probably caused by loading the page before the data has been retrieved.
     return(
-      <h1>[DeckList]</h1>
-    );
+      this.queryRef.get().then(doc => {
+        if (doc.empty) {
+          return(
+            <div>
+              <h1>You have no decks.</h1>
+            </div>
+          );
+        } else {
+          console.log('OwnerID = ' + this.props.user.uid);
+          console.log('You have ' + doc.size + ' decks');
+          return (
+            <div>
+              {
+                doc.docs.map((deck, index) => {
+                  return <li key={index}>{deck.data()}</li>
+                  //return <li key={index}>'Deck name: ' + {deck.data().deckName} + " description: " + {deck.data().deckDescription}</li>;
+                })
+              }
+            </div>
+          )
+        }
+      })
+      .catch(err => {
+        console.log('Error getting document', err);
+        return(
+          <h1>Error</h1>
+        )
+      })
+    )
   }
 }
 // class DeleteDeck extends React.Component { 
