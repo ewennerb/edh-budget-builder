@@ -25,37 +25,41 @@ class CreateDeck extends React.Component<{ user: firebase.User }> {
         ownerID: this.props.user.uid
     })
     .then(function(deckRef) {
-      alert("Deck written with ID: "+ deckRef.id);
+      console.log("Deck written with ID: "+ deckRef.id);
     }) 
 
-    alert('values input into database: name=' + event.target.deckName.value +', description='+ event.target.deckDescription.value);
+    console.log('values input into database: name=' + event.target.deckName.value +', description='+ event.target.deckDescription.value);
+    //TODO redirect to DeckList herre
   }
 
   render() {
     return (
       <form
-      onSubmit={this.handleSubmit}
-      className="innerForm">
-          <h1>[CreateDeck]</h1>
-        <TextField
-          required
-          id="deckName"
-          label="Deck Name"
-          margin="normal"
-        />
-          <br></br>
-        <TextField
-          id="deckDescription"
-          placeholder="Deck Description"
-          label="Deck Description"
-          multiline
-          rowsMax="4"
-          margin="normal"
-        />
-        <br></br>
-        <br></br>
-        <input type="submit"/>
-    </form>
+        onSubmit={this.handleSubmit}
+        className="innerForm">
+            <h1>[CreateDeck]</h1>
+            <TextField
+              required
+              id="deckName"
+              label="Deck Name"
+              margin="normal"
+            />
+            
+            <br></br>
+            
+            <TextField
+              id="deckDescription"
+              placeholder="Deck Description"
+              label="Deck Description"
+              multiline
+              rowsMax="4"
+              margin="normal"
+            />
+            
+            <br></br>
+            <br></br>
+            <input type="submit"/>
+      </form>
     );
   }
 }

@@ -8,19 +8,34 @@ const AdapterLink = React.forwardRef<HTMLAnchorElement, LinkProps>((props, ref) 
 ));
 
 class DeckList extends React.Component<{ user: firebase.User }> {
-  userDocRef: firebase.firestore.DocumentReference;
-
+  decksRef: firebase.firestore.CollectionReference;
+  decks: any;
   constructor(props: Readonly<{ user: firebase.User }>) {
     super(props);
-    this.userDocRef = firebase.firestore().collection("users").doc(this.props.user.uid);
     this.retrieveDecks = this.retrieveDecks.bind(this);
+    this.decksRef = firebase.firestore().collection("deck");
   }
 
   retrieveDecks(){
-    
+    const queryRef = this.decksRef.where('ownerID', '==', this.props.user.uid);
+    queryRef.get().then(doc => {
+      if (doc.empty) {
+        console.log('No decks, TODO render this');
+      } else {
+        console.log('OwnerID = ' + this.props.user.uid);
+        console.log('You have ' + doc.size + ' decks');
+        doc.docs.map((deck, index) => (
+          console.log('Deck name: ' + deck.data().deckName + " description: " + deck.data().deckDescription)
+        ));
+      }
+    })
+    .catch(err => {
+      console.log('Error getting document', err);
+    });
   }
 
   render() {
+    this.retrieveDecks();
     return(
       <h1>[DeckList]</h1>
     );
