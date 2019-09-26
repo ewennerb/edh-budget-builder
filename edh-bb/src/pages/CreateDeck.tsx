@@ -1,6 +1,11 @@
 import React from 'react';
 import TextField from '@material-ui/core/TextField';
 import firebase from "firebase/app";
+import { Link, LinkProps } from 'react-router-dom';
+
+const AdapterLink = React.forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => (
+  <Link innerRef={ref} {...props} />
+));
 
 interface deckInfo {
   deckName: string;
@@ -29,7 +34,7 @@ class CreateDeck extends React.Component<{ user: firebase.User }> {
     }) 
 
     console.log('values input into database: name=' + event.target.deckName.value +', description='+ event.target.deckDescription.value);
-    //TODO redirect to DeckList herre
+    //TODO redirect back to DeckList here
   }
 
   render() {
