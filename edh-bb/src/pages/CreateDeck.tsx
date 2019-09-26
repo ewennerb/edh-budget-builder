@@ -1,6 +1,7 @@
 import React from 'react';
 import TextField from '@material-ui/core/TextField';
-import firebase from "firebase/app";
+import firebase from "./../index";
+
 
 interface deckInfo {
   deckName: string;
