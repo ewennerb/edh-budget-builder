@@ -1,6 +1,11 @@
 import React from 'react';
 import TextField from '@material-ui/core/TextField';
 import firebase from "firebase/app";
+//import { Link, LinkProps } from 'react-router-dom';
+
+/*const AdapterLink = React.forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => (
+  <Link innerRef={ref} {...props} />
+));*/
 
 interface deckInfo {
   deckName: string;
@@ -69,11 +74,12 @@ class CreateDeck extends React.Component<{ user: firebase.User }> {
       deck: [],
       ownerID: this.props.user.uid
     })
-      .then(function (deckRef) {
-        alert("Deck written with ID: " + deckRef.id);
-      })
+    .then(function(deckRef) {
+      console.log("Deck written with ID: "+ deckRef.id);
+    }) 
 
-    alert('values input into database: name=' + event.target.deckName.value + ', description=' + event.target.deckDescription.value);
+    console.log('values input into database: name=' + event.target.deckName.value +', description='+ event.target.deckDescription.value);
+    //TODO redirect back to DeckList here
   }
 
   render() {
