@@ -1,11 +1,11 @@
 import React from 'react';
 import TextField from '@material-ui/core/TextField';
 import firebase from "firebase/app";
-import { Link, LinkProps } from 'react-router-dom';
+//import { Link, LinkProps } from 'react-router-dom';
 
-const AdapterLink = React.forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => (
+/*const AdapterLink = React.forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => (
   <Link innerRef={ref} {...props} />
-));
+));*/
 
 interface deckInfo {
   deckName: string;
