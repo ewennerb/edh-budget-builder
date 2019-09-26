@@ -1,14 +1,81 @@
 import React from "react";
+import firebase from "firebase/app";
+import Button from '@material-ui/core/Button';
+import { Link, LinkProps } from 'react-router-dom';
+import Async, {IfPending, IfFulfilled} from "react-async";
+import { withSnackbar, WithSnackbarProps } from "notistack";
 
+const AdapterLink = React.forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => (
+  <Link innerRef={ref} {...props} />
+));
 
-//import { Link, LinkProps } from 'react-router-dom';
-//import Button from '@material-ui/core/Button';
+class DeckList extends React.Component<{ user: firebase.User } & WithSnackbarProps> {
+  decksRef: firebase.firestore.CollectionReference;
+  decks: any;
+  queryRef: firebase.firestore.Query;
+  loadPromise: () => Promise<firebase.firestore.QueryDocumentSnapshot[]>;
 
-// import firebase from "firebase/app"
+  constructor(props: Readonly<{ user: firebase.User } & WithSnackbarProps>) {
+    super(props);
+    this.decksRef = firebase.firestore().collection("deck");
+    this.queryRef = this.decksRef.where('ownerID', '==', this.props.user.uid);
+    this.loadPromise = async () => {
+      try {
+        const query = await this.queryRef.get();
+        const data = query.docs;
+        return data;
+      } catch (err) {
+        this.props.enqueueSnackbar('Could not get decks', { variant: 'error' });
+        console.error("Error retrieving decks: ", err);
+        throw err;
+      }
+    }
+  }
 
-// const AdapterLink = React.forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => (
-//   <Link innerRef={ref} {...props} />
-// ));
+  render() {
+    return(
+      <Async promiseFn={this.loadPromise}>
+        {state =>
+          <>
+            <IfPending state={state}>
+              <h1>Retrieving decks...</h1>
+            </IfPending>
+            <IfFulfilled state={state}>
+              {decks => {
+                if (decks.length === 0){
+                  return (
+                    <div>
+                      <h1>Deck List</h1>
+                      <h3>You have no decks.</h3>
+                      <Button variant='contained' component={AdapterLink} to='/create-deck'>
+                        Create a Deck
+                      </Button>
+                    </div>
+                  )
+                } else {
+                return (
+                  <>
+                    <h1>Deck List</h1>
+                    {console.log("Deck count: " + decks.length) }
+                    <div>
+                    {
+                      decks.map((deck, index) => {
+                        console.log('Deck name: ' + deck.data().deckName + " description: " + deck.data().deckDescription);
+                        return <ul key={index}><h3>{index+1}: {deck.data().deckName}</h3></ul>;
+                      })
+                    }
+                    </div>
+                  </>
+                )
+                  }
+              }}
+            </IfFulfilled>
+          </>
+        }
+      </Async>
+    )
+  }
+}
 
 // class DeleteDeck extends React.Component { 
 
@@ -20,26 +87,5 @@ import React from "react";
 //         console.error("Error removing document: ", error);
 //     });
 //   }
-    
- 
-// }
-  
- /*
-* Test 8: When a user has a(n) existing deck(s), they should be able to see links to all decks.
-* Test 9: When a user has no existing decks, they should see a message saying "You have no decks".
-*/
-  
-const DeckList: React.FC = () => {
-  // TODO
-  //const deleteDeckInstance = new DeleteDeck(""); 
-  //deleteDeckInstance.deleteDeck("BFX0TlBsEKj4LcAQiqkD")
-  return (
-    <div>
-      <h1>[DeckList]</h1>
-    </div>
-    
-  );
 
-}
-
-export default DeckList;
+export default withSnackbar(DeckList);
