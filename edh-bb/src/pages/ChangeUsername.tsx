@@ -70,6 +70,7 @@ class ChangeUsername extends React.Component<{ user: firebase.User } & WithSnack
                         error={username_error != null}
                         helperText={username_error}
                         onChange={ev => state.setData(ev.target.value)} />
+                      <br />
                       <Button variant="contained" onClick={this.handleSubmit(username)}>Submit</Button>
                     </div>
                   </>
