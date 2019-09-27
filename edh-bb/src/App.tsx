@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route, Redirect, Switch } from "react-router-dom";
+import { Route, Redirect, Switch, Link } from "react-router-dom";
 import Login from './pages/Login';
 import DeckList from './pages/DeckList';
 import CreateDeck from './pages/CreateDeck';
@@ -11,6 +11,7 @@ import firebase from "firebase/app";
 import { AuthContext } from "./common";
 import { AppBar, Toolbar, Typography, Tabs, Tab, Button } from '@material-ui/core';
 import { TabProps } from '@material-ui/core/Tab';
+import { LinkProps } from '@material-ui/core/Link';
 
 const App: React.FC<{ user: firebase.User | null }> = (({ user }) => {
   if (!user) {
@@ -57,10 +58,10 @@ const pathToTab = (pathname: string) => {
 type LinkTabProps = {
   label: string;
   value: string;
-} & TabProps<"a">;
+} & Omit<TabProps<typeof Link, LinkProps>, 'component' | 'id' | 'to'>;
 
 const LinkTab: React.FC<LinkTabProps> = props => (
-  <Tab component="a" id={"nav-tab-" + props.label.replace(' ', '-')} href={props.value} {...props} />
+  <Tab component={Link} id={"nav-tab-" + props.label.replace(' ', '-')} to={props.value} {...props} />
 )
 
 class Header extends React.Component {
