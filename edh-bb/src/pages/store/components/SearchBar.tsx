@@ -32,8 +32,8 @@ import {
 //     "World"
 // ];
 
-
-class SearchBar extends React.Component {
+interface SBar {searchQuery: any}
+class SearchBar extends React.Component <SBar>{
     //@ts-ignore
     handleSubmit(values){
         //@ts-ignore
