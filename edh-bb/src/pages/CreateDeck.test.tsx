@@ -29,7 +29,6 @@ it("changes text input", async() => {
   const deckDesc =await container.querySelector("#deckDescription") as HTMLInputElement;
   const submit = await getByTestId("submit")
   if(deckName==null){
-    console.log("null")
     expect("false").toBeTruthy
   }
   var event = new Event('change');
