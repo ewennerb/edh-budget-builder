@@ -102,7 +102,7 @@ class SearchBar extends React.Component <SBar>{
                             />
 
                             <br />
-                            <Button type="submit" disabled={isSubmitting}>Search</Button>
+                            <Button type="submit">Search</Button>
                         </Form>
                     )}
                 </Formik>
