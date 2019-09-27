@@ -5,3 +5,6 @@ import { render, waitForElement, getByText, fireEvent, RenderResult } from '@tes
 import Logout from './Logout';
 
 jest.mock('firebase/app');
+const mockauth = new firebasemock.MockAuthentication();
+mockauth.autoFlush(0);
+
