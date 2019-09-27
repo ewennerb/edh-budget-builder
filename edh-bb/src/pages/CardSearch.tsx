@@ -14,7 +14,6 @@ import {
 } from '@material-ui/core'
 import SearchBar from './store/components/SearchBar'
 
-// const admin = require("firebase-admin");*/
 const mtg = require("mtgsdk");
 const jmespath = require("jmespath");
 const _ = require("underscore");
@@ -106,6 +105,7 @@ class CardSearch extends React.Component<{ user: firebase.User } & WithSnackbarP
         const currID = this.state.deckField.currentDeck.id;
         const deckref = firebase.firestore().collection("deck").doc(currID);
         const arrUnion = deckref.update({deck: firebase.firestore.FieldValue.arrayUnion(cardName)});
+        console.log(arrUnion);
         //Todo: Return a snackbar message that says "Added <card> to deck!"
         return 0;
     }
