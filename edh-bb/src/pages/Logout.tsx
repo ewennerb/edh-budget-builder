@@ -1,11 +1,19 @@
 import React from "react"
 import firebase from "firebase/app";
-import { Redirect } from "react-router";
+import { Route, BrowserRouter } from "react-router-dom";
+import Login from './Login';
+
 
 const Logout: React.FC = () => {
 
   const redirectToLogin = () => {
-    return <Redirect to='login'/>
+    return (
+      <BrowserRouter>
+        <div>
+          <Route path="/login" component={Login} />
+        </div>
+      </BrowserRouter>
+    )
   }
 
   firebase.auth().signOut();
