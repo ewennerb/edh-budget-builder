@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Route, Redirect, Switch, Link } from "react-router-dom";
 import Login from './pages/Login';
 import DeckList from './pages/DeckList';
@@ -13,11 +13,17 @@ import { AppBar, Toolbar, Typography, Tabs, Tab, Button } from '@material-ui/cor
 import { TabProps } from '@material-ui/core/Tab';
 import { LinkProps } from '@material-ui/core/Link';
 
-const App: React.FC<{ user: firebase.User | null }> = (({ user }) => {
+const App: React.FC<{ user: firebase.User | null }> = (({ user: initialUser }) => {
+  const [user, setUser] = useState(initialUser);
   if (!user) {
     return (
       <Switch>
-        <Route exact path="/login" component={Login} />
+        {/*
+        onAuthStateChanged gets called after the redirect in Login happens,
+        so then the "not logged in" redirect happens before the user state here changes.
+        To work around this, we pass a callback to Login to be called before it redirects.
+        */}
+        <Route exact path="/login" render={() => <Login onUserChanged={setUser} />} />
         <Route render={props =>
           <Redirect
             to={{
