@@ -1,8 +1,10 @@
-import React from 'react';
-import CreateDeck from './CreateDeck';
+
+import React, { ReactComponentElement } from 'react';
+import CreateDeck, { isValidTitle } from './CreateDeck';
 import firebase from 'firebase/app';
 import {render,fireEvent} from '@testing-library/react'
 import firebasemock from 'firebase-mock';
+
 
 jest.mock('firebase/app');
 const mockfirestore = new firebasemock.MockFirestore();
@@ -20,13 +22,7 @@ it("renders", () => {
 
 
 it("changes text input", async() => {
- 
-  
-
-
   const testUser: firebase.User = { uid: "testUidAbc123" } as firebase.User;
-
-
   const { getByRole, getByTestId, getByLabelText,container} =  await render(<CreateDeck user={testUser} />);
  
   const deckName =await container.querySelector("#deckName") as HTMLInputElement;
@@ -74,4 +70,21 @@ it("addDeckToDatabase", async() => {
     })
     
 })
+
+test('A valid title is submitted', () => {
+    const validDeck: string = 'A very valid title';
+    expect(isValidTitle(validDeck)).toBeTruthy;
+});
+
+test('An invalid title is rejected (only spaces', () => {
+    expect(isValidTitle('     ')).toBeFalsy;
+});
+
+test('An invalid title (101 chars)', () => {
+    expect(isValidTitle('a'.repeat(101))).toBeFalsy;
+});
+
+test('A nearly invalid title passes (99 spaces and one char)', () => {
+    expect(isValidTitle((' '.repeat(99)) + 'f')).toBeTruthy;
+});
 
