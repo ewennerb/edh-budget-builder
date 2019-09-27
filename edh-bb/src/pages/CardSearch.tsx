@@ -131,7 +131,6 @@ class CardSearch extends React.Component<{ user: firebase.User } & WithSnackbarP
                             onChange={this.handleChange.bind(this)}>
                             {this.state.deckField.userDecks.map((deck: any) => <MenuItem value={deck}>{deck.data().deckName}</MenuItem>)}
                         </Select>
-                    // @ts-ignore
                     <SearchBar searchQuery={this.getSearchParams.bind(this)}/>
                 </div>
             );
