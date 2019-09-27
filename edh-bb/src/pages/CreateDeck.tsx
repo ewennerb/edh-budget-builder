@@ -1,6 +1,6 @@
 import React from 'react';
 import TextField from '@material-ui/core/TextField';
-import firebase from "./../index";
+import firebase from "firebase/app";
 
 
 interface deckInfo {
@@ -25,14 +25,14 @@ class CreateDeck extends React.Component<{ user: firebase.User }> {
         deckName:event.target.deckName.value,
         deckDescription:event.target.deckDescription.value,
         deck:[],
-        ownerID: user
+        ownerID: this.props.user.uid
     })
     .then(function(deckRef) {
       alert("Deck written with ID: "+ deckRef.id);
     }) 
 
     alert('values input into database: name=' + event.target.deckName.value +', description='+ event.target.deckDescription.value);
-  }
+}
 
   render() {
     return (
@@ -57,7 +57,7 @@ class CreateDeck extends React.Component<{ user: firebase.User }> {
         />
         <br></br>
         <br></br>
-        <input type="submit"/>
+        <button data-testid="submit">Submit</button>
     </form>
     );
   }
