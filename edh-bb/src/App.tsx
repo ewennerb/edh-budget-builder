@@ -47,7 +47,7 @@ const App: React.FC<{ user: firebase.User | null }> = (({ user: initialUser }) =
             <Route exact path="/search" render={() => <CardSearch user={user} />} />
             <Route exact path="/logout" component={Logout} />
             <Route exact path="/change-username" render={() => <ChangeUsername user={user} />} />
-            <Redirect from="/login" to="/" />
+            <Redirect from="/login" to="/deck-list" />
           </Switch>
         </AuthContext.Provider>
       </div>
