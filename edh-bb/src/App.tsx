@@ -58,7 +58,7 @@ const pathToTab = (pathname: string) => {
   const i = pathname.indexOf('/', 1)
   const firstSegment = pathname.substring(0, i === -1 ? undefined : i);
   // the DeckDetail pages should be under the deck list tab
-  return firstSegment === "/deck" ? "/" : firstSegment;
+  return firstSegment === "/deck-detail" ? "/deck-list" : firstSegment;
 };
 
 type LinkTabProps = {

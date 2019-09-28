@@ -74,7 +74,7 @@ it('redirects after signing in', async () => {
   fireEvent.click(signin_button);
 
   await userChangePromise;
-  expect(getByTestId(container, "location-display").innerHTML).toBe("/");
+  expect(getByTestId(container, "location-display").innerHTML).toBe("/deck-list");
 })
 
 it('redirects after signing in a new user', async () => {
