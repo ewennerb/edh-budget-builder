@@ -1,9 +1,10 @@
 
 import React, { ReactComponentElement } from 'react';
-import CreateDeck, { isValidTitle } from './CreateDeck';
+import CreateDeck, { isValidTitle }  from './CreateDeck';
 import firebase from 'firebase/app';
 import {render,fireEvent} from '@testing-library/react'
 import firebasemock from 'firebase-mock';
+import { SnackbarProvider } from 'notistack';
 
 
 jest.mock('firebase/app');
@@ -11,19 +12,20 @@ const mockfirestore = new firebasemock.MockFirestore();
 mockfirestore.autoFlush(0)
 firebase.firestore = (() => mockfirestore) as any;
 
-it("renders", () => {
-  
-  const testUser: firebase.User = { uid: "testUidAbc123" } as firebase.User;
-  var createDeckObj = new CreateDeck({user: testUser});
-  var rendered = createDeckObj.render();
-  
-  expect(rendered).toMatchSnapshot();
-})
 
+// it("renders", () => {
+  
+//   const testUser: firebase.User = { uid: "testUidAbc123" } as firebase.User;
+//   var createDeckObj = new CreateDeck({user: testUser});
+//   var rendered = createDeckObj.render();
+  
+//   expect(rendered).toMatchSnapshot();
+// })
 
+ 
 it("changes text input", async() => {
   const testUser: firebase.User = { uid: "testUidAbc123" } as firebase.User;
-  const { getByRole, getByTestId, getByLabelText,container} =  await render(<CreateDeck user={testUser} />);
+  const { getByRole, getByTestId, getByLabelText,container} =  await render(<SnackbarProvider><CreateDeck user={testUser} /></SnackbarProvider>);
  
   const deckName =await container.querySelector("#deckName") as HTMLInputElement;
   const deckDesc =await container.querySelector("#deckDescription") as HTMLInputElement;
@@ -39,16 +41,27 @@ it("changes text input", async() => {
   await expect(deckDesc.value).toBe('testDesc');
 })
 
+const deck2 = require('./CreateDeck');
+// const spy = jest.spyOn(deck2, 'isValidTitle').mockImplementation(() => true) 
+// const create = require('./CreateDeck');
+//   create.isValidTitle
+//    = jest.fn();
 
-it("addDeckToDatabase", async() => {
- 
+// jest.mock('./CreateDeck', () => ({
+//   ...jest.requireActual("./CreateDeck"),
+//  isValidTitle2: () => true
+// }))
+
+
+it("addDeckToDatabase", async() => { 
+  
   const testUser: firebase.User = { uid: "testUidAbc123" } as firebase.User;
 
-
-  const { getByRole, getByTestId, getByLabelText,container} =  await render(<CreateDeck user={testUser} />);
- 
+  const { getByRole, getByTestId, getByLabelText,container} =  await render(<SnackbarProvider><CreateDeck user={testUser} /></SnackbarProvider>);
+  // jest.spyOn(createDeckObj, ).mockImplementation(() => true)
+  // isValidTitle2 = jest.fn(() => true)
   const deckName =await container.querySelector("#deckName");
-  const deckDesc =await container.querySelector("#deckDescription");
+ 
   const submit = await getByTestId("submit")
   if(deckName==null){
     console.log("null")
