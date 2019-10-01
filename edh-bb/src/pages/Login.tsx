@@ -12,7 +12,7 @@ const Login: React.FC<LoginProps & RouteComponentProps> = ({ onUserChanged, onUi
   const uiConfig: firebaseui.auth.Config = {
     signInFlow: 'popup',
     callbacks: {
-      signInSuccessWithAuthResult: (authResult, redirectUrl = '/') => {
+      signInSuccessWithAuthResult: (authResult, redirectUrl = '/deck-list') => {
         if (authResult.additionalUserInfo.isNewUser) {
           redirectUrl = '/change-username';
         }
