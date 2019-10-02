@@ -18,11 +18,16 @@ class DisplayDeckDetails extends Component{
   }
 
   async getDeckName(deckID:string){
+    console.log(deckID)
+    
     const snapshot = await firebase.firestore().collection('deck').doc(deckID).get()
     const docSnap = snapshot.data()
     console.log(docSnap!.deckName)
     renderName(docSnap!.deckName)
+    
   }
+
+
 
   async displayDeckDescription(deckID:string){
     this.ID = deckID
@@ -31,6 +36,8 @@ class DisplayDeckDetails extends Component{
     console.log(docSnap!.deckDescription)
     renderDescription(docSnap!.deckDescription)
   }
+
+  
 
   handleSubmit(event:any) {
     event.preventDefault();
@@ -44,10 +51,14 @@ class DisplayDeckDetails extends Component{
       alert("Deck updated: "+ID);
   })
     alert('values updated in database: name=' + event.target.name.value +', description='+ event.target.desc.value);
+    
   }
 
   render() {
     const classes = useStyles();
+
+
+
 
   return (
     <form
@@ -77,6 +88,11 @@ class DisplayDeckDetails extends Component{
       <br></br>
       <input type="submit"/>
   </form>
+
+      
+    
+    
+    
   );
   }
 }
@@ -118,14 +134,32 @@ interface State {
 }
 
 const DeckDetail: React.FC = () => {
+
   const getDeckInstance = new DisplayDeckDetails(""); 
 
-  getDeckInstance.getDeckName("FxoenBqC6m9DlwsKvROe");
-  getDeckInstance.displayDeckDescription("FxoenBqC6m9DlwsKvROe");
+  console.log(window.location.href)
+  const link = window.location.href.split("/");
+  const deckID=link[link.length-1]
+
+  getDeckInstance.getDeckName(deckID);
+  getDeckInstance.displayDeckDescription(deckID);
+
+  
+
+        
+    
+  
+  
+
+    
 
   return (
+    
     getDeckInstance.render()
+      
   )
+  
+
 }
 
 export default DeckDetail;
