@@ -1,22 +1,23 @@
 import React from "react"
 import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
 import firebase from "firebase/app";
+import { withRouter, RouteComponentProps } from "react-router";
 
-/// used by tests only
 type LoginProps = {
-  authUiCallback?: () => void,
-  doRedirect?: (url: string) => void,
+  onUiRendered?: () => void, /// used by tests only
+  onUserChanged: (user: firebase.User) => void,
 };
 
-const Login: React.FC<LoginProps> = ({ authUiCallback: testAuthUiCallback_, doRedirect = window.location.assign }) => {
+const Login: React.FC<LoginProps & RouteComponentProps> = ({ onUserChanged, onUiRendered, history }) => {
   const uiConfig: firebaseui.auth.Config = {
     signInFlow: 'popup',
     callbacks: {
-      signInSuccessWithAuthResult: (authResult, redirectUrl = '/') => {
+      signInSuccessWithAuthResult: (authResult, redirectUrl = '/deck-list') => {
         if (authResult.additionalUserInfo.isNewUser) {
           redirectUrl = '/change-username';
         }
-        doRedirect(redirectUrl);
+        onUserChanged(authResult.user);
+        history.push(redirectUrl);
         return false;
       }
     },
@@ -27,9 +28,9 @@ const Login: React.FC<LoginProps> = ({ authUiCallback: testAuthUiCallback_, doRe
   return (
     <div>
       <h1>[Login]</h1>
-      <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={firebase.auth()} uiCallback={testAuthUiCallback_} />
+      <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={firebase.auth()} uiCallback={onUiRendered} />
     </div>
   )
 }
 
-export default Login;
+export default withRouter(Login);
