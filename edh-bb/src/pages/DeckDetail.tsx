@@ -6,6 +6,13 @@ import TextField from '@material-ui/core/TextField';
 
 import firebase from "firebase/app"
 
+import Button from '@material-ui/core/Button';
+
+import { Link, LinkProps } from 'react-router-dom';
+
+const AdapterLink = React.forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => (
+  <Link innerRef={ref} {...props} />
+));
 
 class DisplayDeckDetails extends Component{
   ID: string;
@@ -18,8 +25,7 @@ class DisplayDeckDetails extends Component{
   }
 
   async getDeckName(deckID:string){
-    console.log(deckID)
-    
+
     const snapshot = await firebase.firestore().collection('deck').doc(deckID).get()
     const docSnap = snapshot.data()
     console.log(docSnap!.deckName)
@@ -37,7 +43,14 @@ class DisplayDeckDetails extends Component{
     renderDescription(docSnap!.deckDescription)
   }
 
-  
+  deleteDeck(deckID:string){
+    firebase.firestore().collection('deck').doc(deckID).delete()
+    .then(function() {
+      window.location.reload(true);
+    }).catch(function(error) {
+        console.error("Error removing document: ", error);
+    });
+  }
 
   handleSubmit(event:any) {
     event.preventDefault();
@@ -64,7 +77,13 @@ class DisplayDeckDetails extends Component{
     <form
     onSubmit={this.handleSubmit}
     className="innerForm">
-        <h1>[CreateDeck]</h1>
+        <h1>[CreateDeck]
+        &nbsp;&nbsp;
+        <Button  variant='contained' color="primary" onClick={() => { this.deleteDeck(this.ID) }} component={AdapterLink} to="/deck-list">
+        Delete Deck
+      </Button>
+        </h1>
+       
       <TextField
         required
         id="name"
@@ -87,7 +106,9 @@ class DisplayDeckDetails extends Component{
       <br></br>
       <br></br>
       <input type="submit"/>
+  
   </form>
+  
 
       
     
