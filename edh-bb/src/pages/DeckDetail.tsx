@@ -16,10 +16,18 @@ const AdapterLink = React.forwardRef<HTMLAnchorElement, LinkProps>((props, ref) 
 
 class DisplayDeckDetails extends Component{
   ID: string;
+  deckName:string;
+  deckDesc: string;
+  ownerID: string;
+  deck:Array<string>;
   constructor(props: any) {
     super(props);
     this.state = {value: ''};
-    this.ID = ""
+    this.ID = "";
+    this.deckName="";
+    this.deckDesc="";
+    this.ownerID="";
+    this.deck=[];
 
     this.handleSubmit = this.handleSubmit.bind(this);
   }
@@ -29,6 +37,10 @@ class DisplayDeckDetails extends Component{
     const snapshot = await firebase.firestore().collection('deck').doc(deckID).get()
     const docSnap = snapshot.data()
     console.log(docSnap!.deckName)
+    this.deckName=docSnap!.deckName;
+    this.deckDesc= docSnap!.deckDescription;
+    this.ownerID = docSnap!.ownerID;
+    this.deck = docSnap!.deck
     renderName(docSnap!.deckName)
     
   }
@@ -51,6 +63,22 @@ class DisplayDeckDetails extends Component{
         console.error("Error removing document: ", error);
     });
   }
+
+  copyDeck(){
+    firebase.firestore().collection('deck').add({
+
+      deckName: this.deckName + "- copy",
+      deckDescription: this.deckDesc,
+      deck: this.deck,
+      ownerID: this.ownerID
+  
+    })
+      .then(function (deckRef) {
+        console.log("Deck written with ID: " + deckRef.id);
+      })
+
+    }
+ 
 
   handleSubmit(event:any) {
     event.preventDefault();
@@ -79,7 +107,11 @@ class DisplayDeckDetails extends Component{
     className="innerForm">
         <h1>[CreateDeck]
         &nbsp;&nbsp;
-        <Button  variant='contained' color="primary" onClick={() => { this.deleteDeck(this.ID) }} component={AdapterLink} to="/deck-list">
+      <Button  variant='contained' color="primary" onClick={() => { this.copyDeck() }} component={AdapterLink} to="/deck-list">
+        Create a Copy
+      </Button>
+        &nbsp;&nbsp;
+      <Button  variant='contained' color="primary" onClick={() => { this.deleteDeck(this.ID) }} component={AdapterLink} to="/deck-list">
         Delete Deck
       </Button>
         </h1>
