@@ -7,7 +7,6 @@ import firebasemock from 'firebase-mock';
 
 
 
-
 jest.mock('firebase/app');
 const mockfirestore = new firebasemock.MockFirestore();
 mockfirestore.autoFlush(0)
@@ -15,9 +14,10 @@ firebase.firestore = (() => mockfirestore) as any;
 
 
 
+
 it("Deletes Deck function deletes deck", async() => {
 
-
+  Object.defineProperty(window, 'location', {value: 'url'});
   var deckID = "";
   await firebase.firestore().collection('deck').add({
 
@@ -31,13 +31,12 @@ it("Deletes Deck function deletes deck", async() => {
       deckID = deckRef.id;
     })
 
+
+
     var deck = await firebase.firestore().collection('deck').get();
     expect(deck.empty).toBeFalsy();
-
-
-
   
-  deleteDeck(deckID);
+    deleteDeck(deckID);
 
   var deck = await firebase.firestore().collection('deck').get();
 

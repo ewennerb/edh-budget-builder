@@ -142,7 +142,6 @@ function renderDescription(desc:string){
 export function deleteDeck(deckID:string){
   firebase.firestore().collection('deck').doc(deckID).delete()
   .then(function() {
-    window.location.reload(true);
   }).catch(function(error) {
       console.error("Error removing document: ", error);
   });
