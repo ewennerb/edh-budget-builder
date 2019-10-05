@@ -110,6 +110,7 @@ export class DisplayDeckDetails extends Component{
         label="Required"
         defaultValue="Deck Name"
         margin="normal"
+        className={classes.textField}
        
       />
         <br></br>
@@ -119,6 +120,7 @@ export class DisplayDeckDetails extends Component{
         multiline
         rowsMax="4"
         margin="normal"
+        className={classes.textField}
       />
       <br></br>
       <br></br>
