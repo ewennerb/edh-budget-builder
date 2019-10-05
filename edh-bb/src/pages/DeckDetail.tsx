@@ -14,7 +14,7 @@ const AdapterLink = React.forwardRef<HTMLAnchorElement, LinkProps>((props, ref) 
   <Link innerRef={ref} {...props} />
 ));
 
-class DisplayDeckDetails extends Component{
+export class DisplayDeckDetails extends Component{
   ID: string;
   deckName:string;
   deckDesc: string;
@@ -55,15 +55,6 @@ class DisplayDeckDetails extends Component{
     renderDescription(docSnap!.deckDescription)
   }
 
-  deleteDeck(deckID:string){
-    firebase.firestore().collection('deck').doc(deckID).delete()
-    .then(function() {
-      window.location.reload(true);
-    }).catch(function(error) {
-        console.error("Error removing document: ", error);
-    });
-  }
-
   copyDeck(){
     firebase.firestore().collection('deck').add({
 
@@ -98,9 +89,6 @@ class DisplayDeckDetails extends Component{
   render() {
     const classes = useStyles();
 
-
-
-
   return (
     <form
     onSubmit={this.handleSubmit}
@@ -111,7 +99,7 @@ class DisplayDeckDetails extends Component{
         Create a Copy
       </Button>
         &nbsp;&nbsp;
-      <Button  variant='contained' color="primary" onClick={() => { this.deleteDeck(this.ID) }} component={AdapterLink} to="/deck-list">
+      <Button  variant='contained' color="primary" onClick={() => { deleteDeck(this.ID) }} component={AdapterLink} to="/deck-list">
         Delete Deck
       </Button>
         </h1>
@@ -121,7 +109,6 @@ class DisplayDeckDetails extends Component{
         id="name"
         label="Required"
         defaultValue="Deck Name"
-        className={classes.textField}
         margin="normal"
        
       />
@@ -131,8 +118,6 @@ class DisplayDeckDetails extends Component{
         placeholder="Deck Description"
         multiline
         rowsMax="4"
-  
-        className={classes.textField}
         margin="normal"
       />
       <br></br>
@@ -140,12 +125,7 @@ class DisplayDeckDetails extends Component{
       <input type="submit"/>
   
   </form>
-  
 
-      
-    
-    
-    
   );
   }
 }
@@ -157,6 +137,15 @@ function renderName(name:string){
 function renderDescription(desc:string){
   (document.getElementById("desc")as HTMLInputElement).value = desc;
 
+}
+
+export function deleteDeck(deckID:string){
+  firebase.firestore().collection('deck').doc(deckID).delete()
+  .then(function() {
+    window.location.reload(true);
+  }).catch(function(error) {
+      console.error("Error removing document: ", error);
+  });
 }
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -197,22 +186,12 @@ const DeckDetail: React.FC = () => {
   getDeckInstance.getDeckName(deckID);
   getDeckInstance.displayDeckDescription(deckID);
 
-  
-
-        
-    
-  
-  
-
-    
-
   return (
     
     getDeckInstance.render()
       
   )
   
-
 }
 
 export default DeckDetail;
