@@ -13,6 +13,7 @@ import { AppBar, Toolbar, Typography, Tabs, Tab, Button } from '@material-ui/cor
 import { TabProps } from '@material-ui/core/Tab';
 import { LinkProps } from '@material-ui/core/Link';
 import Async, { IfFulfilled } from 'react-async';
+import BetterDeckDetail from './pages/BetterDeckDetail';
 
 const App: React.FC<{ user: firebase.User | null }> = (({ user: initialUser }) => {
   const [user, setUser] = useState(initialUser);
@@ -43,7 +44,7 @@ const App: React.FC<{ user: firebase.User | null }> = (({ user: initialUser }) =
           <Switch>
             <Route exact path="/deck-list" render={() => <DeckList user={user} />} />
             <Route exact path="/create-deck" render={() => <CreateDeck user={user} />} />
-            <Route path="/deck-detail/" component={DeckDetail} />
+            <Route path="/deck-detail/:id" component={BetterDeckDetail} />
             <Route exact path="/search" render={() => <CardSearch user={user} />} />
             <Route exact path="/logout" component={Logout} />
             <Route exact path="/change-username" render={() => <ChangeUsername user={user} />} />
