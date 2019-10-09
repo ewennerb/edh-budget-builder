@@ -4,7 +4,7 @@ import firebase from "firebase/app";
 import "firebase/firestore"
 import { WithSnackbarProps, withSnackbar } from "notistack";
 import Async, { IfPending, IfFulfilled } from "react-async";
-import { TextField } from "@material-ui/core";
+import { TextField, Button } from "@material-ui/core";
 
 type Props = RouteChildrenProps<{ id: string }> & WithSnackbarProps;
 type DeckData = {
@@ -20,7 +20,6 @@ class BetterDeckDetail extends React.Component<Props> {
   };
   constructor(props: Readonly<Props>) {
     super(props);
-    console.log(props.match)
     if (props.match) {
       const deckId = props.match.params.id
       const deckDocRef = firebase.firestore().collection('deck').doc(deckId)
@@ -29,7 +28,6 @@ class BetterDeckDetail extends React.Component<Props> {
           const doc = await deckDocRef.get();
           const data = doc.data();
           if (!data) throw new Error("deck document has no data")
-          console.log(data)
           return data as DeckData
         } catch (err) {
           this.props.enqueueSnackbar('Could not get deck', { variant: 'error' });
@@ -40,6 +38,18 @@ class BetterDeckDetail extends React.Component<Props> {
       this.deckProps = { deckDocRef, loadPromise }
     }
   }
+
+  handleSubmit = (newDeck: DeckData) => async () => {
+    if (!this.deckProps) throw new Error('no deck props')
+    try {
+      await this.deckProps.deckDocRef.set(newDeck)
+      this.props.enqueueSnackbar('Saved changes');
+    } catch (err) {
+      this.props.enqueueSnackbar('Could not save changes', { variant: 'error' });
+      console.log("Error saving deck details: ", err);
+    }
+  }
+
   render() {
     if (!this.deckProps) return "url doesn't have deck id"
     return (
@@ -59,6 +69,7 @@ class BetterDeckDetail extends React.Component<Props> {
                       id="deckName"
                       label="Deck Name"
                       value={deck.deckName}
+                      onChange={ev => state.setData({ ...deck, deckName: ev.target.value })}
                     />
                     <br />
                     <TextField
@@ -67,10 +78,12 @@ class BetterDeckDetail extends React.Component<Props> {
                       multiline
                       rowsMax="4"
                       value={deck.deckDescription}
+                      onChange={ev => state.setData({ ...deck, deckDescription: ev.target.value })}
                     />
                     <br />
+                    <Button variant="contained" onClick={this.handleSubmit(deck)}>Save Changes</Button>
                     <ul>
-                      {deck.deck.map(cardName => <li>{cardName}</li>)}
+                      {deck.deck.map(cardName => <li key={cardName}>{cardName}</li>)}
                     </ul>
                   </div>
                 </>
