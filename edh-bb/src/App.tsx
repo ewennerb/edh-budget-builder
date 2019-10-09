@@ -79,7 +79,11 @@ class Header extends React.Component<{ user: firebase.User }> {
     const userDocRef = firebase.firestore().collection("users").doc(this.props.user.uid);
     this.loadPromise = async () => {
       const doc = await userDocRef.get();
-      return doc.get("username")
+      if (doc.exists) {
+        return doc.get("username")
+      } else {
+        throw new Error('no username doc')
+      }
     }
   }
 
