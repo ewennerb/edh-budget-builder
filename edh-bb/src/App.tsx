@@ -45,6 +45,7 @@ const App: React.FC<{ user: firebase.User | null }> = (({ user: initialUser }) =
             <Route exact path="/deck-list" render={() => <DeckList user={user} />} />
             <Route exact path="/create-deck" render={() => <CreateDeck user={user} />} />
             <Route path="/deck-detail/:id" component={BetterDeckDetail} />
+            <Route path="/old-deck-detail/:id" component={DeckDetail} />
             <Route exact path="/search" render={() => <CardSearch user={user} />} />
             <Route exact path="/logout" component={Logout} />
             <Route exact path="/change-username" render={() => <ChangeUsername user={user} />} />
