@@ -1,24 +1,30 @@
-import { RouteChildrenProps } from "react-router";
+import { RouteComponentProps } from "react-router";
 import React from "react";
 import firebase from "firebase/app";
 import "firebase/firestore"
 import { WithSnackbarProps, withSnackbar } from "notistack";
 import Async, { IfPending, IfFulfilled } from "react-async";
-import { TextField, Button } from "@material-ui/core";
+import { TextField, Button, IconButton, Popper, Fade, Paper } from "@material-ui/core";
+import ShareIcon from '@material-ui/icons/Share';
+import update from 'immutability-helper';
 
-type Props = RouteChildrenProps<{ id: string }> & WithSnackbarProps;
-type DeckData = {
+type BetterDeckDetailProps = RouteComponentProps<{ id: string }> & WithSnackbarProps;
+interface DeckData {
   deckName: string;
   deckDescription: string;
   deck: [string];
 }
-class BetterDeckDetail extends React.Component<Props> {
+interface LoadedData {
+  deckId: string;
+  deckData: DeckData;
+}
+class BetterDeckDetail extends React.Component<BetterDeckDetailProps> {
   /// undefined if `props.match` was null
   deckProps?: {
     deckDocRef: firebase.firestore.DocumentReference;
-    loadPromise: () => Promise<DeckData>;
+    loadPromise: () => Promise<LoadedData>;
   };
-  constructor(props: Readonly<Props>) {
+  constructor(props: Readonly<BetterDeckDetailProps>) {
     super(props);
     if (props.match) {
       const deckId = props.match.params.id
@@ -26,9 +32,9 @@ class BetterDeckDetail extends React.Component<Props> {
       const loadPromise = async () => {
         try {
           const doc = await deckDocRef.get();
-          const data = doc.data();
-          if (!data) throw new Error("deck document has no data")
-          return data as DeckData
+          const deckData = doc.data();
+          if (!deckData) throw new Error("deck document has no data")
+          return { deckId: doc.id, deckData: deckData as DeckData }
         } catch (err) {
           this.props.enqueueSnackbar('Could not get deck', { variant: 'error' });
           console.error("Error getting deck: ", err);
@@ -60,16 +66,16 @@ class BetterDeckDetail extends React.Component<Props> {
               <h1>Loading...</h1>
             </IfPending>
             <IfFulfilled state={state}>
-              {deck =>
+              {data =>
                 <>
-                  <h1>Deck Detail</h1>
+                  <h1>Deck Detail<ShareButton deckId={data.deckId} /></h1>
                   <div>
                     <TextField
                       required
                       id="deckName"
                       label="Deck Name"
-                      value={deck.deckName}
-                      onChange={ev => state.setData({ ...deck, deckName: ev.target.value })}
+                      value={data.deckData.deckName}
+                      onChange={ev => state.setData(update(data, { deckData: { deckName: { $set: ev.target.value } } }))}
                     />
                     <br />
                     <TextField
@@ -77,13 +83,13 @@ class BetterDeckDetail extends React.Component<Props> {
                       label="Deck Description"
                       multiline
                       rowsMax="4"
-                      value={deck.deckDescription}
-                      onChange={ev => state.setData({ ...deck, deckDescription: ev.target.value })}
+                      value={data.deckData.deckDescription}
+                      onChange={ev => state.setData(update(data, { deckData: { deckDescription: { $set: ev.target.value } } }))}
                     />
                     <br />
-                    <Button variant="contained" onClick={this.handleSubmit(deck)}>Save Changes</Button>
+                    <Button variant="contained" onClick={this.handleSubmit(data.deckData)}>Save Changes</Button>
                     <ul>
-                      {deck.deck.map(cardName => <li key={cardName}>{cardName}</li>)}
+                      {data.deckData.deck.map(cardName => <li key={cardName}>{cardName}</li>)}
                     </ul>
                   </div>
                 </>
@@ -94,6 +100,35 @@ class BetterDeckDetail extends React.Component<Props> {
       </Async>
     )
   }
+}
+
+interface ShareButtonProps {
+  deckId: string;
+}
+const ShareButton: React.FC<ShareButtonProps> = ({ deckId }) => {
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(anchorEl ? null : event.currentTarget);
+  };
+  const open = Boolean(anchorEl);
+  const id = open ? 'share-url-popper' : undefined;
+  // there doesn't appear to be a way to do this with react-router or history
+  // so we're using the 'native' url api
+  const publicUrl = new URL('/public-deck/' + deckId, window.location.href).href
+  return (
+    <>
+      <IconButton aria-describedby={id} onClick={handleClick}><ShareIcon /></IconButton>
+      <Popper id={id} open={open} anchorEl={anchorEl} transition>
+        {({ TransitionProps }) => (
+          <Fade {...TransitionProps} timeout={350}>
+            <Paper>
+              {publicUrl}
+            </Paper>
+          </Fade>
+        )}
+      </Popper>
+    </>
+  )
 }
 
 export default withSnackbar(BetterDeckDetail);
