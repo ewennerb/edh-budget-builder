@@ -12,15 +12,24 @@ import {
     MenuItem,
     Select,
 } from '@material-ui/core'
-import SearchBar from './store/components/SearchBar'
-import Async, { IfFulfilled } from 'react-async';
+import SearchBar from './SearchBar'
 
 const mtg = require("mtgsdk");
 const jmespath = require("jmespath");
 const _ = require("underscore");
 
-interface CardSearchState {searchQuery: Object, searchResults: Object, lenResults: number, selectedDeck?: any}
+class DropFields {
+    currentDeck: any;
+    userDecks: any;
+}
+
+var t = 0;
+
+interface CardSearchState {searchQuery: Object, searchResults: Object, lenResults: number, deckField: DropFields}
 class CardSearch extends React.Component<{ user: firebase.User } & WithSnackbarProps, CardSearchState> {
+    decksRef: firebase.firestore.CollectionReference;
+    decks: any;
+    queryRef: firebase.firestore.Query;
     loadPromise: () => Promise<firebase.firestore.QueryDocumentSnapshot[]>;
 
     constructor(props: Readonly<{ user: firebase.User } & WithSnackbarProps>) {
@@ -29,10 +38,15 @@ class CardSearch extends React.Component<{ user: firebase.User } & WithSnackbarP
             searchQuery: {},
             searchResults: {results: []},
             lenResults: 0,
+            deckField: {
+                currentDeck: {},
+                userDecks: []
+            }
         };
-        const queryRef = firebase.firestore().collection("deck").where('ownerID', '==', this.props.user.uid);
+        this.decksRef = firebase.firestore().collection("deck");
+        this.queryRef = this.decksRef.where('ownerID', '==', this.props.user.uid);
         this.loadPromise = async () => {
-            const query = await queryRef.get();
+            const query = await this.queryRef.get();
             const data = query.docs;
             return data;
         }
@@ -63,12 +77,32 @@ class CardSearch extends React.Component<{ user: firebase.User } & WithSnackbarP
     handleChange(event: any){
         console.log(event.target.value);
         this.setState({
-          selectedDeck: event.target.value
+            deckField: {
+                currentDeck: event.target.value as Object,
+                userDecks: this.state.deckField.userDecks
+            }
         });
+
+        console.log(this.state.deckField.currentDeck);
+        console.log(this.state.deckField.userDecks);
+        this.render();
+    }
+
+    async mountDropDown() {
+        const decks = await this.loadPromise();
+        console.log("I am setting the state to default now");
+        this.setState({
+            deckField:
+                {
+                    currentDeck: {},
+                    userDecks: decks
+                }
+        });
+        return 1;
     }
 
     addToDeck(cardName: any){
-        const currID = this.state.selectedDeck.id;
+        const currID = this.state.deckField.currentDeck.id;
         const deckref = firebase.firestore().collection("deck").doc(currID);
         const arrUnion = deckref.update({deck: firebase.firestore.FieldValue.arrayUnion(cardName)});
         console.log(arrUnion);
@@ -77,54 +111,80 @@ class CardSearch extends React.Component<{ user: firebase.User } & WithSnackbarP
     }
 
     render() {
+        if (t === 0) {
+            this.mountDropDown();
+            t = 1;
+        }
+
         const listVals = jmespath.search(this.state.searchResults, "results[*].name");
 
-      return (
-        <div>
-          <Async promiseFn={this.loadPromise}>
-            {state =>
-              <IfFulfilled state={state}>
-                {decks =>
-                  <>
-                    <FormControl>
-                      <InputLabel htmlFor="current-deck">Current Deck</InputLabel>
-                      <Select
-                        inputProps={{ id: 'current-deck' }}
-                        value={this.state.selectedDeck}
+        var sc = document.createElement("script");
+        sc.setAttribute("src", 'http://tappedout.net/tappedout.js');
+        sc.setAttribute("type", "text/javascript");
+        document.head.appendChild(sc);
+        // @ts-ignore
+        if (this.state.lenResults === 0){
+            return (
+                <div>
+                    <InputLabel htmlFor="current-deck">Current Deck</InputLabel>
+                    <Select
+                        inputProps={{
+                            id: 'current-deck',
+                        }}
+                        value={this.state.deckField.currentDeck}
                         onChange={this.handleChange.bind(this)}>
-                        {decks.map((deck: any) => <MenuItem value={deck}>{deck.data().deckName}</MenuItem>)}
-                      </Select>
+                        {this.state.deckField.userDecks.map((deck: any) => <MenuItem value={deck}>{deck.data().deckName}</MenuItem>)}
+                    </Select>
+                    <SearchBar searchQuery={this.getSearchParams.bind(this)}>Card Search</SearchBar>
+                </div>
+            );
+        } else {
+            return (
+                <div>
+                    <script src="http://tappedout.net/tappedout.js"></script>
+                    <FormControl>
+                        <InputLabel htmlFor="current-deck">Current Deck</InputLabel>
+                        <InputLabel htmlFor="current-deck">Current Deck</InputLabel>
+                        <Select
+                            inputProps={{
+                                id: 'current-deck',
+                            }}
+                            value={this.state.deckField.currentDeck}
+                            onChange={this.handleChange.bind(this)}>
+                            {this.state.deckField.userDecks.map((deck: any) => <MenuItem value={deck}>{deck.data().deckName}</MenuItem>)}
+                        </Select>
                     </FormControl>
-                    <SearchBar searchQuery={this.getSearchParams.bind(this)} />
-                  </>
-                }
-              </IfFulfilled>
-            }
-          </Async>
-          {(this.state.lenResults !== 0) && (
-            <>
-              <br />
-              <div>
-                <List dense>
-                  {listVals.map((value: any) => {
-                    const labelId = `list-item-${value}`;
-                    return (
-                      <ListItem key={value} button>
-                        <ListItemText id={labelId} primary={`${value}`} />
-                        <ListItemSecondaryAction>
-                          <Button onClick={this.addToDeck.bind(this, value)} >
-                            Add to Deck
-                          </Button>
-                        </ListItemSecondaryAction>
-                      </ListItem>
-                    );
-                  })}
-                </List>
-              </div>
-            </>
-          )}
-        </div>
-      );
+
+                    <SearchBar searchQuery={this.getSearchParams.bind(this)}/>
+
+                    <br />
+                    <div>
+                        <List dense>
+                            {listVals.map((value: any) => {
+                                const labelId = `list-item-${value}`;
+                                return (
+                                    <ListItem key={value} button>
+                                        <ListItemText id={labelId} primary={<span className="mtgcard">`${value}`</span>} />
+                                        <ListItemSecondaryAction>
+                                            <Button
+                                                onClick={this.addToDeck.bind(this, value)}
+                                            >
+                                                Add to Deck
+                                            </Button>
+                                        </ListItemSecondaryAction>
+                                    </ListItem>
+                                );
+                            })}
+                        </List>
+                    </div>
+                    <br />
+                    <br />
+                    <br />
+                    <br />
+                    <br />
+                </div>
+            )
+        }
     }
 }
 
