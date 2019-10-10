@@ -4,8 +4,10 @@ import firebase from "firebase/app";
 import "firebase/firestore"
 import { WithSnackbarProps, withSnackbar } from "notistack";
 import Async, { IfPending, IfFulfilled } from "react-async";
-import { TextField, Button, IconButton, Popper, Fade, Paper } from "@material-ui/core";
+import { TextField, Button, IconButton, Tooltip } from "@material-ui/core";
 import ShareIcon from '@material-ui/icons/Share';
+import FileCopyIcon from '@material-ui/icons/FileCopy';
+import DeleteIcon from '@material-ui/icons/Delete';
 import update from 'immutability-helper';
 
 type BetterDeckDetailProps = RouteComponentProps<{ id: string }> & WithSnackbarProps;
@@ -53,6 +55,11 @@ class BetterDeckDetail extends React.Component<BetterDeckDetailProps> {
     }
   }
 
+  showPublicUrl = (deckId: string) => {
+    const publicUrl = new URL('/public-deck/' + deckId, window.location.href).href
+    this.props.enqueueSnackbar(publicUrl)
+  }
+
   deleteDeck = async () => {
     try {
       await this.deckDocRef.delete()
@@ -85,13 +92,22 @@ class BetterDeckDetail extends React.Component<BetterDeckDetailProps> {
             <IfFulfilled state={state}>
               {data =>
                 <>
-                  <h1>Deck Detail<ShareButton deckId={data.deckId} /></h1>
-                  <Button variant='contained' color="primary" onClick={() => this.copyDeck(data.deckData)}>
-                    Create a Copy
-                  </Button>
-                  <Button variant='contained' color="primary" onClick={this.deleteDeck}>
-                    Delete Deck
-                  </Button>
+                  <h1>Deck Detail</h1>
+                  <Tooltip title="Public URL">
+                    <IconButton aria-label="public URL" onClick={() => this.showPublicUrl(data.deckId)}>
+                      <ShareIcon />
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title="Make a copy">
+                    <IconButton aria-label="make a copy" onClick={() => this.copyDeck(data.deckData)}>
+                      <FileCopyIcon />
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title="Delete deck">
+                    <IconButton aria-label="delete" onClick={this.deleteDeck}>
+                      <DeleteIcon />
+                    </IconButton>
+                  </Tooltip>
                   <div>
                     <TextField
                       required
@@ -123,35 +139,6 @@ class BetterDeckDetail extends React.Component<BetterDeckDetailProps> {
       </Async>
     )
   }
-}
-
-interface ShareButtonProps {
-  deckId: string;
-}
-const ShareButton: React.FC<ShareButtonProps> = ({ deckId }) => {
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(anchorEl ? null : event.currentTarget);
-  };
-  const open = Boolean(anchorEl);
-  const id = open ? 'share-url-popper' : undefined;
-  // there doesn't appear to be a way to do this with react-router or history
-  // so we're using the 'native' url api
-  const publicUrl = new URL('/public-deck/' + deckId, window.location.href).href
-  return (
-    <>
-      <IconButton aria-describedby={id} onClick={handleClick}><ShareIcon /></IconButton>
-      <Popper id={id} open={open} anchorEl={anchorEl} transition>
-        {({ TransitionProps }) => (
-          <Fade {...TransitionProps} timeout={350}>
-            <Paper>
-              {publicUrl}
-            </Paper>
-          </Fade>
-        )}
-      </Popper>
-    </>
-  )
 }
 
 export default withSnackbar(BetterDeckDetail);
