@@ -13,6 +13,7 @@ interface DeckData {
   deckName: string;
   deckDescription: string;
   deck: [string];
+  ownerID: string;
 }
 interface LoadedData {
   deckId: string;
@@ -39,6 +40,14 @@ class BetterDeckDetail extends React.Component<BetterDeckDetailProps> {
     }
   }
 
+  copyDeck = async (deckData: DeckData) => {
+    const deckRef = await firebase.firestore().collection('deck').add(
+      update(deckData, { deckName: { $apply: oldName => oldName + '- copy' } }))
+    console.log("Deck written with ID: " + deckRef.id);
+    this.props.enqueueSnackbar('Created a copy')
+    this.props.history.push('/deck-list')
+  }
+
   handleSubmit = (newDeck: DeckData) => async () => {
     try {
       await this.deckDocRef.set(newDeck)
@@ -61,6 +70,9 @@ class BetterDeckDetail extends React.Component<BetterDeckDetailProps> {
               {data =>
                 <>
                   <h1>Deck Detail<ShareButton deckId={data.deckId} /></h1>
+                  <Button variant='contained' color="primary" onClick={() => this.copyDeck(data.deckData)}>
+                    Create a Copy
+                  </Button>
                   <div>
                     <TextField
                       required
