@@ -9,14 +9,9 @@ import ShareIcon from '@material-ui/icons/Share';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
 import DeleteIcon from '@material-ui/icons/Delete';
 import update from 'immutability-helper';
+import { DeckData } from "../common";
 
 type BetterDeckDetailProps = RouteComponentProps<{ id: string }> & WithSnackbarProps;
-interface DeckData {
-  deckName: string;
-  deckDescription: string;
-  deck: [string];
-  ownerID: string;
-}
 interface LoadedData {
   deckId: string;
   deckData: DeckData;

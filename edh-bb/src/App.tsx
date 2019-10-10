@@ -14,12 +14,14 @@ import { TabProps } from '@material-ui/core/Tab';
 import { LinkProps } from '@material-ui/core/Link';
 import Async, { IfFulfilled } from 'react-async';
 import BetterDeckDetail from './pages/BetterDeckDetail';
+import PublicDeckDetail from './pages/PublicDeckDetail';
 
 const App: React.FC<{ user: firebase.User | null }> = (({ user: initialUser }) => {
   const [user, setUser] = useState(initialUser);
   if (!user) {
     return (
       <Switch>
+        <Route path="/public-deck/:id" component={PublicDeckDetail}/>
         {/*
         onAuthStateChanged gets called after the redirect in Login happens,
         so then the "not logged in" redirect happens before the user state here changes.
