@@ -41,11 +41,16 @@ class BetterDeckDetail extends React.Component<BetterDeckDetailProps> {
   }
 
   copyDeck = async (deckData: DeckData) => {
-    const deckRef = await firebase.firestore().collection('deck').add(
-      update(deckData, { deckName: { $apply: oldName => oldName + '- copy' } }))
-    console.log("Deck written with ID: " + deckRef.id);
-    this.props.enqueueSnackbar('Created a copy')
-    this.props.history.push('/deck-list')
+    try {
+      const newDeckRef = await firebase.firestore().collection('deck').add(
+        update(deckData, { deckName: { $apply: oldName => oldName + '- copy' } }))
+      console.log("Deck written with ID: " + newDeckRef.id);
+      this.props.enqueueSnackbar('Created a copy')
+      this.props.history.push('/deck-list')
+    } catch (err) {
+      this.props.enqueueSnackbar('Could not create a copy', { variant: 'error' });
+      console.error("Error copying deck: ", err);
+    }
   }
 
   handleSubmit = (newDeck: DeckData) => async () => {
