@@ -19,36 +19,29 @@ interface LoadedData {
   deckData: DeckData;
 }
 class BetterDeckDetail extends React.Component<BetterDeckDetailProps> {
-  /// undefined if `props.match` was null
-  deckProps?: {
-    deckDocRef: firebase.firestore.DocumentReference;
-    loadPromise: () => Promise<LoadedData>;
-  };
+  deckDocRef: firebase.firestore.DocumentReference;
+  loadPromise: () => Promise<LoadedData>;
   constructor(props: Readonly<BetterDeckDetailProps>) {
     super(props);
-    if (props.match) {
-      const deckId = props.match.params.id
-      const deckDocRef = firebase.firestore().collection('deck').doc(deckId)
-      const loadPromise = async () => {
-        try {
-          const doc = await deckDocRef.get();
-          const deckData = doc.data();
-          if (!deckData) throw new Error("deck document has no data")
-          return { deckId: doc.id, deckData: deckData as DeckData }
-        } catch (err) {
-          this.props.enqueueSnackbar('Could not get deck', { variant: 'error' });
-          console.error("Error getting deck: ", err);
-          throw err
-        }
+    const deckId = props.match.params.id
+    this.deckDocRef = firebase.firestore().collection('deck').doc(deckId)
+    this.loadPromise = async () => {
+      try {
+        const doc = await this.deckDocRef.get();
+        const deckData = doc.data();
+        if (!deckData) throw new Error("deck document has no data")
+        return { deckId: doc.id, deckData: deckData as DeckData }
+      } catch (err) {
+        this.props.enqueueSnackbar('Could not get deck', { variant: 'error' });
+        console.error("Error getting deck: ", err);
+        throw err
       }
-      this.deckProps = { deckDocRef, loadPromise }
     }
   }
 
   handleSubmit = (newDeck: DeckData) => async () => {
-    if (!this.deckProps) throw new Error('no deck props')
     try {
-      await this.deckProps.deckDocRef.set(newDeck)
+      await this.deckDocRef.set(newDeck)
       this.props.enqueueSnackbar('Saved changes');
     } catch (err) {
       this.props.enqueueSnackbar('Could not save changes', { variant: 'error' });
@@ -57,9 +50,8 @@ class BetterDeckDetail extends React.Component<BetterDeckDetailProps> {
   }
 
   render() {
-    if (!this.deckProps) return "url doesn't have deck id"
     return (
-      <Async promiseFn={this.deckProps.loadPromise}>
+      <Async promiseFn={this.loadPromise}>
         {state =>
           <>
             <IfPending state={state}>
