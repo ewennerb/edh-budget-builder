@@ -4,7 +4,7 @@ import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
 
 import TextField from '@material-ui/core/TextField';
 
-import firebase from "./../index"
+import firebase from "firebase/app"
 
 
 class DisplayDeckDetails extends Component{

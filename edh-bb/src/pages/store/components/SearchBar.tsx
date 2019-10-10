@@ -32,8 +32,8 @@ import {
 //     "World"
 // ];
 
-
-class SearchBar extends React.Component {
+interface SBar {searchQuery: any}
+class SearchBar extends React.Component <SBar>{
     //@ts-ignore
     handleSubmit(values){
         //@ts-ignore
@@ -63,44 +63,46 @@ class SearchBar extends React.Component {
                                 type="text"
                                 placeholder="Search by Card Name"
                             />
-                            <br />
+
+
                             <FormControlLabel
                                 control={
                                     <Field type="checkbox" name="colors" value="R" label="Red" component={Checkbox}/>
                                 }
-                                label="Red"
-                                labelPlacement="top"
+                                label="R"
+                                labelPlacement="start"
                             />
                             <FormControlLabel
                                 control={
                                     <Field type="checkbox" name="colors" value="G" label="Green" component={Checkbox}/>
                                 }
-                                label="Green"
-                                labelPlacement="top"
+                                label="G"
+                                labelPlacement="start"
                             />
                             <FormControlLabel
                                 control={
                                     <Field type="checkbox" name="colors" value="U" label="Blue" component={Checkbox}/>
                                 }
-                                label="Blue"
-                                labelPlacement="top"
+                                label="U"
+                                labelPlacement="start"
                             />
                             <FormControlLabel
                                 control={
                                     <Field type="checkbox" name="colors" value="B" label="Black" component={Checkbox}/>
                                 }
-                                label="Black"
-                                labelPlacement="top"
+                                label="B"
+                                labelPlacement="start"
                             />
                             <FormControlLabel
                                 control={
                                     <Field type="checkbox" name="colors" value="W" label="White" component={Checkbox}/>
                                 }
-                                label="White"
-                                labelPlacement="top"
+                                label="W"
+                                labelPlacement="start"
                             />
 
-                            <Button type="submit" disabled={isSubmitting}>Search</Button>
+                            <br />
+                            <Button type="submit">Search</Button>
                         </Form>
                     )}
                 </Formik>

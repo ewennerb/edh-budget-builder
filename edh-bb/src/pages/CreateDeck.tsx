@@ -1,6 +1,7 @@
 import React from 'react';
 import TextField from '@material-ui/core/TextField';
 import firebase from "firebase/app";
+import { withSnackbar, WithSnackbarProps } from "notistack";
 //import { Link, LinkProps } from 'react-router-dom';
 
 /*const AdapterLink = React.forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => (
@@ -15,7 +16,6 @@ interface deckInfo {
 
 export function isValidTitle(title: string) {
   if (title.length > 100) {
-    alert("Error: Deck name is too long (must be 100 characters or shorter)");
     return false;
   }
   let hasNonSpaceChar: boolean = false;
@@ -26,15 +26,14 @@ export function isValidTitle(title: string) {
     }
   }
   if (!hasNonSpaceChar) {
-    alert("Error: Your deck title must have at least one alphanumeric character");
     return false;
   }
   return true;
 }
 
-class CreateDeck extends React.Component<{ user: firebase.User }> {
+class CreateDeck extends React.Component<{ user: firebase.User } & WithSnackbarProps> {
   userDocRef: firebase.firestore.DocumentReference;
-  constructor(props: Readonly<{ user: firebase.User }>) {
+  constructor(props: Readonly<{ user: firebase.User } & WithSnackbarProps>) {
     super(props);
     this.userDocRef = firebase.firestore().collection("users").doc(this.props.user.uid);
     this.state = { value: '' };
@@ -43,7 +42,7 @@ class CreateDeck extends React.Component<{ user: firebase.User }> {
 
   isValidTitle(title: string) {
     if (title.length > 100) {
-      alert("Error: Deck name is too long (must be 100 characters or shorter)");
+      this.props.enqueueSnackbar('Deck name is too long', { variant: 'error' });
       return false;
     }
     let hasNonSpaceChar: boolean = false;
@@ -54,7 +53,7 @@ class CreateDeck extends React.Component<{ user: firebase.User }> {
       }
     }
     if (!hasNonSpaceChar) {
-      alert("Error: Your deck title must have at least one alphanumeric character");
+      this.props.enqueueSnackbar('Deck name needs at least 1 nonspace character', { variant: 'error' })
       return false;
     }
     return true;
@@ -74,11 +73,11 @@ class CreateDeck extends React.Component<{ user: firebase.User }> {
       deck: [],
       ownerID: this.props.user.uid
     })
-    .then(function(deckRef) {
-      console.log("Deck written with ID: "+ deckRef.id);
-    }) 
+      .then(function (deckRef) {
+        console.log("Deck written with ID: " + deckRef.id);
+      })
 
-    console.log('values input into database: name=' + event.target.deckName.value +', description='+ event.target.deckDescription.value);
+    console.log('values input into database: name=' + event.target.deckName.value + ', description=' + event.target.deckDescription.value);
     //TODO redirect back to DeckList here
   }
 
@@ -111,4 +110,4 @@ class CreateDeck extends React.Component<{ user: firebase.User }> {
   }
 }
 
-export default CreateDeck;
+export default withSnackbar(CreateDeck);

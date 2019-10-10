@@ -1,8 +1,9 @@
 import React from 'react';
 import firebase from 'firebase/app';
 import firebasemock from 'firebase-mock';
-import { render, waitForElement, getByText, fireEvent, RenderResult } from '@testing-library/react'
+import { render, waitForElement, getByText, fireEvent, RenderResult, getByTestId } from '@testing-library/react'
 import Login from './Login';
+import { MemoryRouter, withRouter } from 'react-router';
 
 jest.mock('firebase/app');
 const mockauth = new firebasemock.MockAuthentication();
@@ -31,11 +32,18 @@ beforeEach(() => {
   mockauth.currentUser = null;
 })
 
+const LocationDisplay = withRouter(({ location }) => (
+  <div data-testid="location-display">{location.pathname}</div>
+));
+
 const doRender = () => (
-  new Promise<{ renderResult: RenderResult, redirectPromise: Promise<string> }>(resolveRender => {
-    const redirectPromise = new Promise<string>(resolveRedirect => {
+  new Promise<{ renderResult: RenderResult, userChangePromise: Promise<firebase.User | null> }>(resolveRender => {
+    const userChangePromise = new Promise<firebase.User | null>(resolveUserChange => {
       const renderResult = render(
-        <Login authUiCallback={() => resolveRender({ renderResult, redirectPromise })} doRedirect={resolveRedirect} />
+        <MemoryRouter>
+          <Login onUiRendered={() => resolveRender({ renderResult, userChangePromise })} onUserChanged={resolveUserChange} />
+          <LocationDisplay />
+        </MemoryRouter>
       );
     })
   })
@@ -49,31 +57,33 @@ it('renders without crashing', async () => {
 })
 
 it('signs the user in', async () => {
-  const { renderResult: { container }, redirectPromise } = await doRender();
+  const { renderResult: { container }, userChangePromise } = await doRender();
   const signin_button = await waitForElement(() => getByText(container, "Sign in with Google"), { container });
 
-  const authStateChangedPromise = new Promise(resolve => firebase.auth().onAuthStateChanged(resolve));
+  const authStateChangedPromise = new Promise<firebase.User | null>(resolve => firebase.auth().onAuthStateChanged(resolve));
   fireEvent.click(signin_button);
 
   expect(await authStateChangedPromise).toBeTruthy();
-  await redirectPromise; // required to keep auth module in a consistent state for subsequent tests
+  await userChangePromise; // required to keep auth module in a consistent state for subsequent tests
 })
 
 it('redirects after signing in', async () => {
-  const { renderResult: { container }, redirectPromise } = await doRender();
+  const { renderResult: { container }, userChangePromise } = await doRender();
   const signin_button = await waitForElement(() => getByText(container, "Sign in with Google"), { container });
 
   fireEvent.click(signin_button);
 
-  expect(await redirectPromise).toBe('/');
+  await userChangePromise;
+  expect(getByTestId(container, "location-display").innerHTML).toBe("/deck-list");
 })
 
 it('redirects after signing in a new user', async () => {
-  const { renderResult: { container }, redirectPromise } = await doRender();
+  const { renderResult: { container }, userChangePromise } = await doRender();
   const signin_button = await waitForElement(() => getByText(container, "Sign in with Google"), { container });
 
   getMockAdditionalUserInfo.mockReturnValueOnce({ isNewUser: true } as any);
   fireEvent.click(signin_button);
 
-  expect(await redirectPromise).toBe('/change-username');
+  await userChangePromise;
+  expect(getByTestId(container, "location-display").innerHTML).toBe("/change-username");
 })
