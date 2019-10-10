@@ -53,6 +53,17 @@ class BetterDeckDetail extends React.Component<BetterDeckDetailProps> {
     }
   }
 
+  deleteDeck = async () => {
+    try {
+      await this.deckDocRef.delete()
+      this.props.enqueueSnackbar('Deck deleted')
+      this.props.history.push('/deck-list')
+    } catch (err) {
+      this.props.enqueueSnackbar('Could delete deck', { variant: 'error' });
+      console.error("Error deleting deck: ", err);
+    }
+  }
+
   handleSubmit = (newDeck: DeckData) => async () => {
     try {
       await this.deckDocRef.set(newDeck)
@@ -77,6 +88,9 @@ class BetterDeckDetail extends React.Component<BetterDeckDetailProps> {
                   <h1>Deck Detail<ShareButton deckId={data.deckId} /></h1>
                   <Button variant='contained' color="primary" onClick={() => this.copyDeck(data.deckData)}>
                     Create a Copy
+                  </Button>
+                  <Button variant='contained' color="primary" onClick={this.deleteDeck}>
+                    Delete Deck
                   </Button>
                   <div>
                     <TextField
