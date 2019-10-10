@@ -8,8 +8,10 @@ import { TextField, Button, IconButton, Tooltip } from "@material-ui/core";
 import ShareIcon from '@material-ui/icons/Share';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
 import DeleteIcon from '@material-ui/icons/Delete';
+import GetAppIcon from '@material-ui/icons/GetApp';
 import update from 'immutability-helper';
 import { DeckData } from "../common";
+import FileSaver from "file-saver";
 
 type BetterDeckDetailProps = RouteComponentProps<{ id: string }> & WithSnackbarProps;
 interface LoadedData {
@@ -66,6 +68,11 @@ class BetterDeckDetail extends React.Component<BetterDeckDetailProps> {
     }
   }
 
+  downloadDeck = (deckData: DeckData) => {
+    const blob = new Blob([JSON.stringify(deckData)], {type: 'application/json'})
+    FileSaver.saveAs(blob)
+  }
+
   handleSubmit = (newDeck: DeckData) => async () => {
     try {
       await this.deckDocRef.set(newDeck)
@@ -101,6 +108,11 @@ class BetterDeckDetail extends React.Component<BetterDeckDetailProps> {
                   <Tooltip title="Delete deck">
                     <IconButton aria-label="delete" onClick={this.deleteDeck}>
                       <DeleteIcon />
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title="Download deck">
+                    <IconButton aria-label="download" onClick={() => this.downloadDeck(data.deckData)}>
+                      <GetAppIcon />
                     </IconButton>
                   </Tooltip>
                   <div>
