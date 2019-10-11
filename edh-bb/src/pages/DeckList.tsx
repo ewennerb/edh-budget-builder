@@ -57,16 +57,16 @@ class DeckList extends React.Component<{ user: firebase.User } & WithSnackbarPro
                   <>
                     <h1>Deck List</h1>
                     {console.log("Deck count: " + decks.length) }
-                    <div>
+                    <ul>
                     {
                       decks.map((deck, index) => {
                         console.log('Deck name: ' + deck.data().deckName + " description: " + deck.data().deckDescription);
                         
-                        return <ul key={index}><Link to={'/deck-detail/'+deck.id}><h3>{index+1}: {deck.data().deckName}</h3></Link></ul>;
+                        return <li key={index}><Link to={'/deck-detail/'+deck.id}>{index+1}: {deck.data().deckName}</Link></li>;
 
                       })
                     }
-                    </div>
+                    </ul>
                   </>
                 )
                   }
