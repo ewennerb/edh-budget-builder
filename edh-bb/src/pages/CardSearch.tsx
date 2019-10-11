@@ -11,7 +11,6 @@ import {
     ListItemText,
     MenuItem,
     Select,
-    NativeSelect
 } from '@material-ui/core'
 import SearchBar from './SearchBar'
 
@@ -56,7 +55,6 @@ class CardSearch extends React.Component<{ user: firebase.User } & WithSnackbarP
 
     async getSearchParams(params: any) {
         console.log(params);
-        console.log(this.state.sortBy)
         if (params !== {}) {
             var results = null;
             // @ts-ignore
