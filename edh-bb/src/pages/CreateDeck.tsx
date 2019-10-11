@@ -8,6 +8,7 @@ import { withSnackbar, WithSnackbarProps } from "notistack";
   <Link innerRef={ref} {...props} />
 ));*/
 
+
 interface deckInfo {
   deckName: string;
   deckDescription: string;
@@ -38,9 +39,10 @@ class CreateDeck extends React.Component<{ user: firebase.User } & WithSnackbarP
     this.userDocRef = firebase.firestore().collection("users").doc(this.props.user.uid);
     this.state = { value: '' };
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.isValidTitle2 = this.isValidTitle2.bind(this);
   }
 
-  isValidTitle(title: string) {
+  public isValidTitle2(title: string="testString") {
     if (title.length > 100) {
       this.props.enqueueSnackbar('Deck name is too long', { variant: 'error' });
       return false;
@@ -63,15 +65,17 @@ class CreateDeck extends React.Component<{ user: firebase.User } & WithSnackbarP
     event.preventDefault();
 
     let title: string = event.target.deckName.value;
-    if (!this.isValidTitle(title)) {
+    if (!this.isValidTitle2(title)) {
       return;
     }
 
     firebase.firestore().collection('deck').add({
+
       deckName: event.target.deckName.value,
       deckDescription: event.target.deckDescription.value,
       deck: [],
       ownerID: this.props.user.uid
+
     })
       .then(function (deckRef) {
         console.log("Deck written with ID: " + deckRef.id);
@@ -80,6 +84,7 @@ class CreateDeck extends React.Component<{ user: firebase.User } & WithSnackbarP
     console.log('values input into database: name=' + event.target.deckName.value + ', description=' + event.target.deckDescription.value);
     //TODO redirect back to DeckList here
   }
+
 
   render() {
     return (
@@ -104,8 +109,9 @@ class CreateDeck extends React.Component<{ user: firebase.User } & WithSnackbarP
         />
         <br></br>
         <br></br>
-        <input type="submit" />
-      </form>
+
+        <button data-testid="submit">Submit</button>
+    </form>
     );
   }
 }
