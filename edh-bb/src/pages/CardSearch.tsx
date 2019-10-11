@@ -11,6 +11,7 @@ import {
     ListItemText,
     MenuItem,
     Select,
+    NativeSelect
 } from '@material-ui/core'
 import SearchBar from './SearchBar'
 
@@ -26,6 +27,7 @@ class DropFields {
 var t = 0;
 
 interface CardSearchState {searchQuery: Object, searchResults: Object, lenResults: number, deckField: DropFields}
+
 class CardSearch extends React.Component<{ user: firebase.User } & WithSnackbarProps, CardSearchState> {
     decksRef: firebase.firestore.CollectionReference;
     decks: any;
@@ -54,10 +56,11 @@ class CardSearch extends React.Component<{ user: firebase.User } & WithSnackbarP
 
     async getSearchParams(params: any) {
         console.log(params);
+        console.log(this.state.sortBy)
         if (params !== {}) {
             var results = null;
             // @ts-ignore
-            await mtg.card.where({name: params.cardName}).then(card => {
+            await mtg.card.where({name: params.cardName, orderBy: this.state.sortBy}).then(card => {
                 results = card
             });
             const finalResult = _.uniq(results, function(r: any){ return r.name});
@@ -155,6 +158,7 @@ class CardSearch extends React.Component<{ user: firebase.User } & WithSnackbarP
                         </Select>
                     </FormControl>
 
+
                     <SearchBar searchQuery={this.getSearchParams.bind(this)}/>
 
                     <br />
@@ -185,6 +189,7 @@ class CardSearch extends React.Component<{ user: firebase.User } & WithSnackbarP
                 </div>
             )
         }
+
     }
 }
 
