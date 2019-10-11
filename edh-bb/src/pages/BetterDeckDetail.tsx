@@ -74,6 +74,7 @@ class BetterDeckDetail extends React.Component<BetterDeckDetailProps> {
   }
 
   handleSubmit = (newDeck: DeckData) => async () => {
+    // TODO: validation
     try {
       await this.deckDocRef.set(newDeck)
       this.props.enqueueSnackbar('Saved changes');

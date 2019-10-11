@@ -7,6 +7,6 @@ export const AuthContext = React.createContext(null as unknown as firebase.User)
 export interface DeckData {
   deckName: string;
   deckDescription: string;
-  deck: [string];
+  deck: string[];
   ownerID: string;
 }
