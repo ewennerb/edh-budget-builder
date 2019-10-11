@@ -13,15 +13,15 @@ import update from 'immutability-helper';
 import { DeckData } from "../common";
 import FileSaver from "file-saver";
 
-type BetterDeckDetailProps = RouteComponentProps<{ id: string }> & WithSnackbarProps;
+type DeckDetailProps = RouteComponentProps<{ id: string }> & WithSnackbarProps;
 interface LoadedData {
   deckId: string;
   deckData: DeckData;
 }
-class BetterDeckDetail extends React.Component<BetterDeckDetailProps> {
+class DeckDetail extends React.Component<DeckDetailProps> {
   deckDocRef: firebase.firestore.DocumentReference;
   loadPromise: () => Promise<LoadedData>;
-  constructor(props: Readonly<BetterDeckDetailProps>) {
+  constructor(props: Readonly<DeckDetailProps>) {
     super(props);
     const deckId = props.match.params.id
     this.deckDocRef = firebase.firestore().collection('deck').doc(deckId)
@@ -149,4 +149,4 @@ class BetterDeckDetail extends React.Component<BetterDeckDetailProps> {
   }
 }
 
-export default withSnackbar(BetterDeckDetail);
+export default withSnackbar(DeckDetail);

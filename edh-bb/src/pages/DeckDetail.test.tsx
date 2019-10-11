@@ -3,7 +3,7 @@ import firebase from 'firebase/app';
 import firebasemock from 'firebase-mock';
 import { render, waitForElement, getByLabelText, getByText, fireEvent } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack';
-import BetterDeckDetail from './BetterDeckDetail';
+import DeckDetail from './DeckDetail';
 import { Route, MemoryRouter } from 'react-router';
 import { DeckData } from '../common';
 import update from 'immutability-helper';
@@ -26,7 +26,7 @@ const doRender = (deckId: string) => {
   const renderResult = render(
     <SnackbarProvider>
       <MemoryRouter initialEntries={["/deck-detail/" + deckId]}>
-        <Route path="/deck-detail/:id" component={BetterDeckDetail} />
+        <Route path="/deck-detail/:id" component={DeckDetail} />
       </MemoryRouter>
     </SnackbarProvider>
   );
