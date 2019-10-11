@@ -3,7 +3,6 @@ import { Route, Redirect, Switch, Link } from "react-router-dom";
 import Login from './pages/Login';
 import DeckList from './pages/DeckList';
 import CreateDeck from './pages/CreateDeck';
-import DeckDetail from './pages/DeckDetail';
 import CardSearch from './pages/CardSearch';
 import ChangeUsername from './pages/ChangeUsername';
 import Logout from './pages/Logout';
@@ -47,7 +46,6 @@ const App: React.FC<{ user: firebase.User | null }> = (({ user: initialUser }) =
             <Route exact path="/deck-list" render={() => <DeckList user={user} />} />
             <Route exact path="/create-deck" render={() => <CreateDeck user={user} />} />
             <Route path="/deck-detail/:id" component={BetterDeckDetail} />
-            <Route path="/old-deck-detail/:id" component={DeckDetail} />
             <Route exact path="/search" render={() => <CardSearch user={user} />} />
             <Route exact path="/logout" component={Logout} />
             <Route exact path="/change-username" render={() => <ChangeUsername user={user} />} />
