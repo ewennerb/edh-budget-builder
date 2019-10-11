@@ -13,12 +13,15 @@ import { AppBar, Toolbar, Typography, Tabs, Tab, Button } from '@material-ui/cor
 import { TabProps } from '@material-ui/core/Tab';
 import { LinkProps } from '@material-ui/core/Link';
 import Async, { IfFulfilled } from 'react-async';
+import BetterDeckDetail from './pages/BetterDeckDetail';
+import PublicDeckDetail from './pages/PublicDeckDetail';
 
 const App: React.FC<{ user: firebase.User | null }> = (({ user: initialUser }) => {
   const [user, setUser] = useState(initialUser);
   if (!user) {
     return (
       <Switch>
+        <Route path="/public-deck/:id" component={PublicDeckDetail}/>
         {/*
         onAuthStateChanged gets called after the redirect in Login happens,
         so then the "not logged in" redirect happens before the user state here changes.
@@ -43,7 +46,8 @@ const App: React.FC<{ user: firebase.User | null }> = (({ user: initialUser }) =
           <Switch>
             <Route exact path="/deck-list" render={() => <DeckList user={user} />} />
             <Route exact path="/create-deck" render={() => <CreateDeck user={user} />} />
-            <Route path="/deck-detail/" component={DeckDetail} />
+            <Route path="/deck-detail/:id" component={BetterDeckDetail} />
+            <Route path="/old-deck-detail/:id" component={DeckDetail} />
             <Route exact path="/search" render={() => <CardSearch user={user} />} />
             <Route exact path="/logout" component={Logout} />
             <Route exact path="/change-username" render={() => <ChangeUsername user={user} />} />
@@ -79,7 +83,11 @@ class Header extends React.Component<{ user: firebase.User }> {
     const userDocRef = firebase.firestore().collection("users").doc(this.props.user.uid);
     this.loadPromise = async () => {
       const doc = await userDocRef.get();
-      return doc.get("username")
+      if (doc.exists) {
+        return doc.get("username")
+      } else {
+        throw new Error('no username doc')
+      }
     }
   }
 
