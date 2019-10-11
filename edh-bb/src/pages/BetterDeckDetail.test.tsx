@@ -1,5 +1,5 @@
 import React from 'react';
-import firebase, { firestore } from 'firebase/app';
+import firebase from 'firebase/app';
 import firebasemock from 'firebase-mock';
 import { render, waitForElement, getByLabelText, getByText, fireEvent } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack';
@@ -7,6 +7,9 @@ import BetterDeckDetail from './BetterDeckDetail';
 import { Route, MemoryRouter } from 'react-router';
 import { DeckData } from '../common';
 import update from 'immutability-helper';
+import FileSaver from 'file-saver';
+
+jest.mock('file-saver')
 
 jest.mock('firebase/app');
 const mockfirestore = new firebasemock.MockFirestore();
@@ -96,4 +99,21 @@ it('changes the deck description', async () => {
 
   const userDocRef = firebase.firestore().collection('deck').doc(testDeckId);
   expect(await getFirestoreDocData(userDocRef)).toStrictEqual(update(testDeckData, { deckDescription: { $set: newDeckDesc } }));
+})
+
+it('downloads the deck', async () => {
+  firebase.firestore().collection('deck').doc(testDeckId).set(testDeckData);
+  const { container } = doRender(testDeckId);
+  const download_button = await waitForElement(() => getByLabelText(container, "download"), { container });
+
+  fireEvent.click(download_button);
+
+  expect(FileSaver.saveAs).toHaveBeenCalled();
+  // seems like `FileReader` is the only way to extract the contents of a `Blob`
+  const fr = new FileReader();
+  const pBlobContents = new Promise(resolve => {
+    fr.addEventListener('load', function () { resolve(this.result) })
+    fr.readAsText((FileSaver.saveAs as jest.Mock).mock.calls[0][0])
+  });
+  expect(await pBlobContents).toBe(JSON.stringify(testDeckData));
 })
