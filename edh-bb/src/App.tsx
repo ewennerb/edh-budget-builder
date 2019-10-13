@@ -3,7 +3,6 @@ import { Route, Redirect, Switch, Link } from "react-router-dom";
 import Login from './pages/Login';
 import DeckList from './pages/DeckList';
 import CreateDeck from './pages/CreateDeck';
-import DeckDetail from './pages/DeckDetail';
 import CardSearch from './pages/CardSearch';
 import ChangeUsername from './pages/ChangeUsername';
 import Logout from './pages/Logout';
@@ -13,7 +12,7 @@ import { AppBar, Toolbar, Typography, Tabs, Tab, Button } from '@material-ui/cor
 import { TabProps } from '@material-ui/core/Tab';
 import { LinkProps } from '@material-ui/core/Link';
 import Async, { IfFulfilled } from 'react-async';
-import BetterDeckDetail from './pages/BetterDeckDetail';
+import DeckDetail from './pages/DeckDetail';
 import PublicDeckDetail from './pages/PublicDeckDetail';
 
 const App: React.FC<{ user: firebase.User | null }> = (({ user: initialUser }) => {
@@ -46,8 +45,7 @@ const App: React.FC<{ user: firebase.User | null }> = (({ user: initialUser }) =
           <Switch>
             <Route exact path="/deck-list" render={() => <DeckList user={user} />} />
             <Route exact path="/create-deck" render={() => <CreateDeck user={user} />} />
-            <Route path="/deck-detail/:id" component={BetterDeckDetail} />
-            <Route path="/old-deck-detail/:id" component={DeckDetail} />
+            <Route path="/deck-detail/:id" component={DeckDetail} />
             <Route exact path="/search" render={() => <CardSearch user={user} />} />
             <Route exact path="/logout" component={Logout} />
             <Route exact path="/change-username" render={() => <ChangeUsername user={user} />} />
