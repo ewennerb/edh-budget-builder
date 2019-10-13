@@ -77,7 +77,7 @@ class CardSearch extends React.Component<{ user: firebase.User } & WithSnackbarP
 
   addToFavorites(cardName: any) {
     //Add check that card is not already in user's favorites
-    var userRef = firebase.firestore().collection("users").doc(this.props.user.uid);
+    const userRef = firebase.firestore().collection("users").doc(this.props.user.uid);
     const arrUnion = userRef.update({
       favorites: firebase.firestore.FieldValue.arrayUnion(cardName)
     });
