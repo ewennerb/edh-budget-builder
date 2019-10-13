@@ -61,7 +61,9 @@ class DeckList extends React.Component<{ user: firebase.User } & WithSnackbarPro
                         {
                           decks.map((deck, index) => {
                             console.log('Deck name: ' + deck.data().deckName + " description: " + deck.data().deckDescription);
-                            return <ul key={index}><h3>{index + 1}: {deck.data().deckName}</h3></ul>;
+
+                            return <ul key={index}><Link to={'/deck-detail/' + deck.id}><h3>{index + 1}: {deck.data().deckName}</h3></Link></ul>;
+
                           })
                         }
                       </div>
@@ -77,15 +79,6 @@ class DeckList extends React.Component<{ user: firebase.User } & WithSnackbarPro
   }
 }
 
-// class DeleteDeck extends React.Component { 
 
-//   deleteDeck(deckID:string){
-//     firebase.firestore().collection('deck').doc(deckID).delete()
-//     .then(function() {
-//       window.location.reload(true);
-//     }).catch(function(error) {
-//         console.error("Error removing document: ", error);
-//     });
-//   }
 
 export default withSnackbar(DeckList);
