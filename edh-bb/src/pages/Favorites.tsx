@@ -31,7 +31,7 @@ class Favorites extends React.Component<{ user: firebase.User } & WithSnackbarPr
         this.queryRef = this.favoritesRef.orderBy("key");
         this.loadPromise = async () => {
             try {
-                const query = await this.queryRef.get();
+                await this.queryRef.get();
                 const data = this.favorites;
                 return data;
             } catch (err) {
