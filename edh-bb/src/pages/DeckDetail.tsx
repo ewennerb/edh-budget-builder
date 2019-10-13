@@ -9,6 +9,11 @@ import ShareIcon from '@material-ui/icons/Share';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
 import DeleteIcon from '@material-ui/icons/Delete';
 import GetAppIcon from '@material-ui/icons/GetApp';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
 import update from 'immutability-helper';
 import { DeckData } from "../common";
 import FileSaver from "file-saver";
@@ -58,7 +63,7 @@ class DeckDetail extends React.Component<DeckDetailProps> {
   }
 
   deleteDeck = async () => {
-   if( window.confirm("Are you sure you want to delete this deck?")){
+
     try {
       await this.deckDocRef.delete()
       this.props.enqueueSnackbar('Deck deleted')
@@ -67,7 +72,7 @@ class DeckDetail extends React.Component<DeckDetailProps> {
       this.props.enqueueSnackbar('Could delete deck', { variant: 'error' });
       console.error("Error deleting deck: ", err);
     }
-   }
+   
    
   }
 
@@ -85,6 +90,48 @@ class DeckDetail extends React.Component<DeckDetailProps> {
       this.props.enqueueSnackbar('Could not save changes', { variant: 'error' });
       console.log("Error saving deck details: ", err);
     }
+  }
+
+  deleteButton(){
+    const [open, setOpen] = React.useState(false);
+
+    const handleClickOpen = () => {
+      setOpen(true);
+    };
+
+    const handleClose = () => {
+      setOpen(false);
+    };
+    return(
+      <span>
+      <Tooltip title="Delete deck">
+        <IconButton aria-label="delete" onClick={handleClickOpen}>
+            <DeleteIcon />
+        </IconButton>
+      </Tooltip>
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">{"Delete Deck?"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Are you sure you would like to delete this deck?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            No
+          </Button>
+          <Button onClick={this.deleteDeck} color="primary" autoFocus>
+            Yes
+          </Button>
+        </DialogActions>
+      </Dialog>
+      </span>
+    )
   }
 
   render() {
@@ -109,11 +156,7 @@ class DeckDetail extends React.Component<DeckDetailProps> {
                       <FileCopyIcon />
                     </IconButton>
                   </Tooltip>
-                  <Tooltip title="Delete deck">
-                    <IconButton aria-label="delete" onClick={this.deleteDeck}>
-                      <DeleteIcon />
-                    </IconButton>
-                  </Tooltip>
+                  {this.deleteButton()}
                   <Tooltip title="Download deck">
                     <IconButton aria-label="download" onClick={() => this.downloadDeck(data.deckData)}>
                       <GetAppIcon />

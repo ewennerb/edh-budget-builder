@@ -120,21 +120,17 @@ it('downloads the deck', async () => {
   expect(await pBlobContents).toBe(JSON.stringify(testDeckData));
 })
 
-// it("delete deck function called on click", async() => {
-//     const mockDelete = jest.fn();
-//     jest.mock('./DeckDetail', () => {
-//       return jest.fn().mockImplementation(() => {
-//         return {deleteDeck: mockDelete};
-//       });
-//     });
+it("prompts users to confirm delete, canceling will not delete deck", async() => {
 
-//     firebase.firestore().collection('deck').doc(testDeckId).set(testDeckData);
-//     const { container } = doRender(testDeckId);
-//     const deleteButton = await waitForElement(() => getByLabelText(container, "delete"), { container });
+    firebase.firestore().collection('deck').doc(testDeckId).set(testDeckData);
+    const { container } = doRender(testDeckId);
+    const deleteButton = await waitForElement(() => getByLabelText(container, "delete"), { container });
 
 
-//     fireEvent.click(deleteButton);
+    fireEvent.click(deleteButton);
 
-//     expect(mockDelete).toHaveBeenCalled();
-//     // expect( firebase.firestore().collection('deck').doc(testDeckId)).toEqual(null);
-// })
+    const cancelButton = await waitForElement(() => getByText(container, "cancel"), { container });
+
+    fireEvent.click(cancelButton);
+    // expect( firebase.firestore().collection('deck').doc(testDeckId)).toEqual(null);
+})
