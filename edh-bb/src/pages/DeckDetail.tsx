@@ -58,6 +58,7 @@ class DeckDetail extends React.Component<DeckDetailProps> {
   }
 
   deleteDeck = async () => {
+   if( window.confirm("Are you sure you want to delete this deck?")){
     try {
       await this.deckDocRef.delete()
       this.props.enqueueSnackbar('Deck deleted')
@@ -66,6 +67,8 @@ class DeckDetail extends React.Component<DeckDetailProps> {
       this.props.enqueueSnackbar('Could delete deck', { variant: 'error' });
       console.error("Error deleting deck: ", err);
     }
+   }
+   
   }
 
   downloadDeck = (deckData: DeckData) => {

@@ -22,7 +22,9 @@ const testDeckData: DeckData = {
   deckName: "name",
   ownerID: "abc",
 }
+const mockDelete = jest.fn();
 const doRender = (deckId: string) => {
+
   const renderResult = render(
     <SnackbarProvider>
       <MemoryRouter initialEntries={["/deck-detail/" + deckId]}>
@@ -117,3 +119,22 @@ it('downloads the deck', async () => {
   });
   expect(await pBlobContents).toBe(JSON.stringify(testDeckData));
 })
+
+// it("delete deck function called on click", async() => {
+//     const mockDelete = jest.fn();
+//     jest.mock('./DeckDetail', () => {
+//       return jest.fn().mockImplementation(() => {
+//         return {deleteDeck: mockDelete};
+//       });
+//     });
+
+//     firebase.firestore().collection('deck').doc(testDeckId).set(testDeckData);
+//     const { container } = doRender(testDeckId);
+//     const deleteButton = await waitForElement(() => getByLabelText(container, "delete"), { container });
+
+
+//     fireEvent.click(deleteButton);
+
+//     expect(mockDelete).toHaveBeenCalled();
+//     // expect( firebase.firestore().collection('deck').doc(testDeckId)).toEqual(null);
+// })
