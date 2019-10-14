@@ -45,6 +45,7 @@ class CardSearch extends React.Component<{ user: firebase.User } & WithSnackbarP
         if (params !== {}) {
             var results = null;
             // @ts-ignore
+            //TODO add search param here to filter out banned cards
             await mtg.card.where({name: params.cardName, orderBy: this.state.sortBy}).then(card => {
                 results = card
             });
