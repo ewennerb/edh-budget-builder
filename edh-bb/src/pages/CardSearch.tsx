@@ -14,7 +14,8 @@ import {
 } from '@material-ui/core'
 import SearchBar from './SearchBar'
 
-const mtg = require("mtgsdk");
+// const mtg = require("mtgsdk");
+const Scry = require("scryfall-sdk");
 const jmespath = require("jmespath");
 const _ = require("underscore");
 
@@ -24,8 +25,19 @@ class DropFields {
 }
 
 var t = 0;
+const multiCards = [
+    "Island",
+    "Mountain",
+    "Swamp",
+    "Forest",
+    "Plains",
+    "Relentless Rats",
+    "Rat Colony",
+    "Persistent Petitioners",
+    "Shadowborn Apostle"
+];
 
-interface CardSearchState {searchQuery: Object, searchResults: Object, lenResults: number, deckField: DropFields}
+interface CardSearchState {searchQuery: Object, searchResults: any, lenResults: number, deckField: DropFields}
 
 class CardSearch extends React.Component<{ user: firebase.User } & WithSnackbarProps, CardSearchState> {
     decksRef: firebase.firestore.CollectionReference;
@@ -56,22 +68,21 @@ class CardSearch extends React.Component<{ user: firebase.User } & WithSnackbarP
     async getSearchParams(params: any) {
         console.log(params);
         if (params !== {}) {
-            var results = null;
+            var results = new Array;
             // @ts-ignore
-            await mtg.card.where({name: params.cardName, orderBy: this.state.sortBy}).then(card => {
-                results = card
-            });
-            const finalResult = _.uniq(results, function(r: any){ return r.name});
-
+            await Scry.Cards.search(params.q, params.order, params.unique, params.page).on("data", card => {
+                results.push(card);
+            }).waitForAll();
             this.setState({
-                searchQuery: params.cardName,
+                searchQuery: params,
                 //@ts-ignore
-                searchResults: {results: finalResult},
+                searchResults: {results: results},
                 //@ts-ignore
-                lenResults: finalResult.length,
+                lenResults: results.length + 1,
             });
 
-            this.render()
+            console.log(this.state);
+            this.render();
         }
     }
 
@@ -102,29 +113,64 @@ class CardSearch extends React.Component<{ user: firebase.User } & WithSnackbarP
         return 1;
     }
 
-    addToDeck(cardName: any){
+    async addToDeck(cardName: any){
         const currID = this.state.deckField.currentDeck.id;
-        const deckref = firebase.firestore().collection("deck").doc(currID);
-        const arrUnion = deckref.update({deck: firebase.firestore.FieldValue.arrayUnion(cardName)});
-        console.log(arrUnion);
-        //Todo: Return a snackbar message that says "Added <card> to deck!"
+        if (currID === undefined){
+            this.props.enqueueSnackbar('No deck currently selected', {variant: 'error'});
+            console.error("Error getting deck: ");
+        } else {
+
+            const deckref = firebase.firestore().collection("deck").doc(currID);
+            const cardlist = async () => {
+                try {
+                    const doc = await deckref.get();
+                    const deckData = doc.data();
+                    if (!deckData) throw new Error("deck document has no data")
+                    return deckData.deck;
+                } catch (err) {
+                    this.props.enqueueSnackbar('Could not get deck', {variant: 'error'});
+                    console.error("Error getting deck: ", err);
+                    throw err
+                }
+            }
+
+            var x = await cardlist()
+
+            if (!multiCards.includes(cardName) && x.includes(cardName)) {
+                this.props.enqueueSnackbar('Only one copy of this card can exist in a deck', {variant: 'error'});
+            } else {
+                const arrUnion = deckref.update({deck: firebase.firestore.FieldValue.arrayUnion(cardName)});
+                console.log(arrUnion);
+                var msg = "Added " + cardName + "to deck";
+                this.props.enqueueSnackbar(msg, {variant: 'success'});
+            }
+        }
+
+
         return 0;
     }
 
+
     render() {
         if (t === 0) {
+            var ss = document.createElement("link");
+            ss.setAttribute("href", "https://www.foilking.dev/ts-scryfall/static/css/main.a2ec1a5b.css");
+            ss.setAttribute("rel", "stylesheet")
+            ss.setAttribute("type", "text/css")
+            document.head.appendChild(ss);
             this.mountDropDown();
             t = 1;
         }
-
-        const listVals = jmespath.search(this.state.searchResults, "results[*].name");
 
         var sc = document.createElement("script");
         sc.setAttribute("src", 'http://tappedout.net/tappedout.js');
         sc.setAttribute("type", "text/javascript");
         document.head.appendChild(sc);
+        var listVals = this.state.searchResults.results
+
         // @ts-ignore
         if (this.state.lenResults === 0){
+            console.log("Nothing Was Found")
             return (
                 <div>
                     <InputLabel htmlFor="current-deck">Current Deck</InputLabel>
@@ -163,16 +209,16 @@ class CardSearch extends React.Component<{ user: firebase.User } & WithSnackbarP
                     <div>
                         <List dense>
                             {listVals.map((value: any) => {
-                                const labelId = `list-item-${value}`;
+                                const labelId = `list-item-${value.name}`;
                                 return (
                                     <ListItem key={value} button>
-                                        <ListItemText id={labelId} primary={<span className="mtgcard">`${value}`</span>} />
+                                        <ListItemText id={labelId} primary={
+                                            <div>
+                                                <span className="mtgcard">($ `${value.name}`)</span>&emsp;&emsp;
+                                                <span> &emsp;{value.prices.usd}</span>
+                                            </div>}/>
                                         <ListItemSecondaryAction>
-                                            <Button
-                                                onClick={this.addToDeck.bind(this, value)}
-                                            >
-                                                Add to Deck
-                                            </Button>
+                                            <Button onClick={this.addToDeck.bind(this, value.name)}>Add to Deck</Button>
                                         </ListItemSecondaryAction>
                                     </ListItem>
                                 );
