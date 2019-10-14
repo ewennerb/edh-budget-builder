@@ -84,6 +84,15 @@ class DeckDetail extends React.Component<DeckDetailProps> {
     }
   }
 
+  deleteCardFromDeck = (deckData: DeckData, cardName: string) => {
+    this.deckDocRef.update({
+      deck: firebase.firestore.FieldValue.arrayRemove(cardName)
+      });
+    this.props.enqueueSnackbar(cardName + ' deleted from ' + deckData.deckName); 
+    //TODO update list without refreshing page
+    console.log(cardName + ' deleted from ' + deckData.deckName);
+  }
+
   downloadDeck = (deckData: DeckData) => {
     const blob = new Blob([JSON.stringify(deckData)], {type: 'application/json'})
     FileSaver.saveAs(blob)
@@ -155,9 +164,19 @@ class DeckDetail extends React.Component<DeckDetailProps> {
                     {this.checkEDHStatus(data.deckData)}
                     
                     <ul>
-                      {data.deckData.deck.map(cardName => <li key={cardName}>{cardName}</li>)}
+                      {data.deckData.deck.map((cardName) => (
+                        <ul key={cardName}>
+                          <Tooltip title="Delete card">
+                            <IconButton aria-label="delete-card" onClick={() => this.deleteCardFromDeck(data.deckData, cardName)}>
+                              <DeleteIcon />
+                            </IconButton>
+                          </Tooltip>
+                          {cardName}
+                        </ul>
+                      ))}
                     </ul>
                   </div>
+
                 </>
               }
             </IfFulfilled>
