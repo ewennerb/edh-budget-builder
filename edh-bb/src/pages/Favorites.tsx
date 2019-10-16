@@ -42,6 +42,20 @@ class Favorites extends React.Component<{ user: firebase.User } & WithSnackbarPr
         }
     }
 
+    removeFromFavorites(card: any) {
+        let cardName: string = card.index;
+        console.log("Remove " + cardName);
+        const userRef = firebase.firestore().collection("users").doc(this.props.user.uid);
+        userRef.update({
+            favorites: firebase.firestore.FieldValue.arrayRemove(cardName)
+        });
+        setTimeout(function () {
+            window.location.reload();
+        }, 750);
+        this.props.enqueueSnackbar('Removed ' + cardName + ' from your favorite cards. You may re-add any card to your favorites through the search page', { variant: 'success' });
+
+    }
+
     render() {
         return (
             <Async promiseFn={this.loadPromise}>
@@ -81,7 +95,14 @@ class Favorites extends React.Component<{ user: firebase.User } & WithSnackbarPr
                                                 <ul>
                                                     {
                                                         favorites.map((index) => {
-                                                            return <li><h3>{index}</h3></li>
+                                                            return (
+                                                                <li>
+                                                                    <div>
+                                                                        <h3>{index}</h3>
+                                                                        <Button onClick={() => this.removeFromFavorites({ index })}>Remove From Favorites</Button>
+                                                                    </div>
+                                                                </li>
+                                                            )
                                                         })
                                                     }
                                                 </ul>
