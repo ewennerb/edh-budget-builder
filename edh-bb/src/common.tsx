@@ -10,3 +10,12 @@ export interface DeckData {
   deck: string[];
   ownerID: string;
 }
+
+/// returns an error message, or null if its valid
+export const validateDeckName = (newDeckName: string) => {
+    if (newDeckName.length > 100)
+      return "Deck name must be 100 characters or fewer";
+    if (newDeckName.trim().length === 0)
+      return "Deck name must contain at least 1 non-whitespace character";
+    return null;
+}
