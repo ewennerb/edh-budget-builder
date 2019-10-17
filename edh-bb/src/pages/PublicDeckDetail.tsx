@@ -39,7 +39,7 @@ class PublicDeckDetail extends React.Component<PublicDeckDetailProps> {
               {data =>
                 <>
                   <h1>{data.deckName}</h1>
-                  <p>
+                  <p style={{ whiteSpace: 'pre-wrap' }}>
                     {data.deckDescription}
                   </p>
                   <ul>

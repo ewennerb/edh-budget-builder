@@ -10,7 +10,7 @@ import FileCopyIcon from '@material-ui/icons/FileCopy';
 import DeleteIcon from '@material-ui/icons/Delete';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import update from 'immutability-helper';
-import { DeckData } from "../common";
+import { DeckData, validateDeckName } from "../common";
 import FileSaver from "file-saver";
 
 type DeckDetailProps = RouteComponentProps<{ id: string }> & WithSnackbarProps;
@@ -74,13 +74,16 @@ class DeckDetail extends React.Component<DeckDetailProps> {
   }
 
   handleSubmit = (newDeck: DeckData) => async () => {
-    // TODO: validation
-    try {
-      await this.deckDocRef.set(newDeck)
-      this.props.enqueueSnackbar('Saved changes');
-    } catch (err) {
-      this.props.enqueueSnackbar('Could not save changes', { variant: 'error' });
-      console.log("Error saving deck details: ", err);
+    if (validateDeckName(newDeck.deckName) === null) {
+      try {
+        await this.deckDocRef.set(newDeck)
+        this.props.enqueueSnackbar('Saved changes');
+      } catch (err) {
+        this.props.enqueueSnackbar('Could not save changes', { variant: 'error' });
+        console.log("Error saving deck details: ", err);
+      }
+    } else {
+      this.props.enqueueSnackbar('Invalid deck title', { variant: 'error' })
     }
   }
 
@@ -93,54 +96,59 @@ class DeckDetail extends React.Component<DeckDetailProps> {
               <h1>Loading...</h1>
             </IfPending>
             <IfFulfilled state={state}>
-              {data =>
-                <>
-                  <h1>Deck Detail</h1>
-                  <Tooltip title="Public URL">
-                    <IconButton aria-label="public URL" onClick={() => this.showPublicUrl(data.deckId)}>
-                      <ShareIcon />
-                    </IconButton>
-                  </Tooltip>
-                  <Tooltip title="Make a copy">
-                    <IconButton aria-label="make a copy" onClick={() => this.copyDeck(data.deckData)}>
-                      <FileCopyIcon />
-                    </IconButton>
-                  </Tooltip>
-                  <Tooltip title="Delete deck">
-                    <IconButton aria-label="delete" onClick={this.deleteDeck}>
-                      <DeleteIcon />
-                    </IconButton>
-                  </Tooltip>
-                  <Tooltip title="Download deck">
-                    <IconButton aria-label="download" onClick={() => this.downloadDeck(data.deckData)}>
-                      <GetAppIcon />
-                    </IconButton>
-                  </Tooltip>
-                  <div>
-                    <TextField
-                      required
-                      id="deckName"
-                      label="Deck Name"
-                      value={data.deckData.deckName}
-                      onChange={ev => state.setData(update(data, { deckData: { deckName: { $set: ev.target.value } } }))}
-                    />
-                    <br />
-                    <TextField
-                      id="deckDescription"
-                      label="Deck Description"
-                      multiline
-                      rowsMax="4"
-                      value={data.deckData.deckDescription}
-                      onChange={ev => state.setData(update(data, { deckData: { deckDescription: { $set: ev.target.value } } }))}
-                    />
-                    <br />
-                    <Button variant="contained" onClick={this.handleSubmit(data.deckData)}>Save Changes</Button>
-                    <ul>
-                      {data.deckData.deck.map(cardName => <li key={cardName}>{cardName}</li>)}
-                    </ul>
-                  </div>
-                </>
-              }
+              {data => {
+                const deckName_error = validateDeckName(data.deckData.deckName);
+                return (
+                  <>
+                    <h1>Deck Detail</h1>
+                    <Tooltip title="Public URL">
+                      <IconButton aria-label="public URL" onClick={() => this.showPublicUrl(data.deckId)}>
+                        <ShareIcon />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Make a copy">
+                      <IconButton aria-label="make a copy" onClick={() => this.copyDeck(data.deckData)}>
+                        <FileCopyIcon />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Delete deck">
+                      <IconButton aria-label="delete" onClick={this.deleteDeck}>
+                        <DeleteIcon />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Download deck">
+                      <IconButton aria-label="download" onClick={() => this.downloadDeck(data.deckData)}>
+                        <GetAppIcon />
+                      </IconButton>
+                    </Tooltip>
+                    <div>
+                      <TextField
+                        required
+                        id="deckName"
+                        label="Deck Name"
+                        error={deckName_error != null}
+                        helperText={deckName_error}
+                        value={data.deckData.deckName}
+                        onChange={ev => state.setData(update(data, { deckData: { deckName: { $set: ev.target.value } } }))}
+                      />
+                      <br />
+                      <TextField
+                        id="deckDescription"
+                        label="Deck Description"
+                        multiline
+                        rowsMax="4"
+                        value={data.deckData.deckDescription}
+                        onChange={ev => state.setData(update(data, { deckData: { deckDescription: { $set: ev.target.value } } }))}
+                      />
+                      <br />
+                      <Button variant="contained" onClick={this.handleSubmit(data.deckData)}>Save Changes</Button>
+                      <ul>
+                        {data.deckData.deck.map(cardName => <li key={cardName}>{cardName}</li>)}
+                      </ul>
+                    </div>
+                  </>
+                );
+              }}
             </IfFulfilled>
           </>
         }
