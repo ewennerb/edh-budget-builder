@@ -23,7 +23,7 @@ const testDeckData: DeckData = {
   deckName: "name",
   ownerID: "abc",
 }
-const mockDelete = jest.fn();
+
 const doRender = (deckId: string) => {
 
   const renderResult = render(
@@ -140,3 +140,25 @@ it('downloads the deck', async () => {
 //     fireEvent.click(cancelButton);
 //     expect( firebase.firestore().collection('deck').doc(testDeckId)).toEqual(null);
 // })
+
+it("creates a copy", async() => {
+
+    firebase.firestore().collection('deck').doc(testDeckId);
+    const { container } = doRender(testDeckId);
+    const copyButton = await waitForElement(() => getByLabelText(container, "make a copy"), { container });
+
+
+    await fireEvent.click(copyButton);
+    mockfirestore.autoFlush();
+
+    var deck = await firebase.firestore().collection("deck").get();
+  
+
+    deck.forEach(deckItem => {
+      if(deckItem.id!=testDeckId){
+        expect(deckItem.data()).toStrictEqual(update(testDeckData, { deckName: { $set: "name- copy"} }));
+      }
+      
+    })
+
+})
