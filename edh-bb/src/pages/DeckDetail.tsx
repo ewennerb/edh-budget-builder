@@ -21,7 +21,7 @@ interface LoadedData {
 class DeckDetail extends React.Component<DeckDetailProps> {
   deckDocRef: firebase.firestore.DocumentReference;
   loadPromise: () => Promise<LoadedData>;
-  constructor(props: Readonly<DeckDetailProps>) {
+  constructor(props: DeckDetailProps) {
     super(props);
     const deckId = props.match.params.id
     this.deckDocRef = firebase.firestore().collection('deck').doc(deckId)
@@ -36,6 +36,22 @@ class DeckDetail extends React.Component<DeckDetailProps> {
         console.error("Error getting deck: ", err);
         throw err
       }
+    }
+  }
+
+  checkEDHStatus = (deckData: DeckData) => {
+    try {
+      const cardCount = deckData.deck.length;
+      if (cardCount === 100) {
+        return (<h3>Deck is legal for EDH format</h3>)
+      } else {
+        return (<h3>Deck is illegal for EDH format. You currently have {cardCount} cards,
+         but you must have 100 cards.</h3>)
+      }
+    } catch (err){
+      this.props.enqueueSnackbar('Could not get deck length', {variant: 'error'});
+      console.error("Error getting deck length: ", err);
+      throw err;
     }
   }
 
@@ -66,6 +82,15 @@ class DeckDetail extends React.Component<DeckDetailProps> {
       this.props.enqueueSnackbar('Could delete deck', { variant: 'error' });
       console.error("Error deleting deck: ", err);
     }
+  }
+
+  deleteCardFromDeck = (deckData: DeckData, cardName: string) => {
+    this.deckDocRef.update({
+      deck: firebase.firestore.FieldValue.arrayRemove(cardName)
+      });
+    this.props.enqueueSnackbar(cardName + ' deleted from ' + deckData.deckName); 
+    //TODO update list without refreshing page
+    console.log(cardName + ' deleted from ' + deckData.deckName);
   }
 
   downloadDeck = (deckData: DeckData) => {
@@ -124,8 +149,8 @@ class DeckDetail extends React.Component<DeckDetailProps> {
                     <div>
                       <TextField
                         required
-                        id="deckName"
                         label="Deck Name"
+                        id="deckName"
                         error={deckName_error != null}
                         helperText={deckName_error}
                         value={data.deckData.deckName}
@@ -142,10 +167,22 @@ class DeckDetail extends React.Component<DeckDetailProps> {
                       />
                       <br />
                       <Button variant="contained" onClick={this.handleSubmit(data.deckData)}>Save Changes</Button>
-                      <ul>
-                        {data.deckData.deck.map(cardName => <li key={cardName}>{cardName}</li>)}
-                      </ul>
-                    </div>
+                    
+                    {this.checkEDHStatus(data.deckData)}
+                    
+                    <ul>
+                      {data.deckData.deck.map((cardName) => (
+                        <ul key={cardName}>
+                          <Tooltip title="Delete card">
+                            <IconButton aria-label="delete-card" onClick={() => this.deleteCardFromDeck(data.deckData, cardName)}>
+                              <DeleteIcon />
+                            </IconButton>
+                          </Tooltip>
+                          {cardName}
+                        </ul>
+                      ))}
+                    </ul>
+                  </div>
                   </>
                 );
               }}

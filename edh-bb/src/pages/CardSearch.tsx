@@ -38,16 +38,17 @@ class CardSearch extends React.Component<{ user: firebase.User } & WithSnackbarP
     }
   }
 
-  async getSearchParams(params: any) {
-    console.log(params);
-    console.log(this.state.sortBy)
-    if (params !== {}) {
-      var results = null;
-      // @ts-ignore
-      await mtg.card.where({ name: params.cardName, orderBy: this.state.sortBy }).then(card => {
-        results = card
-      });
-      const finalResult = _.uniq(results, function (r: any) { return r.name });
+    async getSearchParams(params: any) {
+        console.log(params);
+        console.log(this.state.sortBy)
+        if (params !== {}) {
+            var results = null;
+            // @ts-ignore
+            //TODO add search param here to filter out banned cards
+            await mtg.card.where({name: params.cardName, orderBy: this.state.sortBy}).then(card => {
+                results = card
+            });
+            const finalResult = _.uniq(results, function(r: any){ return r.name});
 
       this.setState({
         searchQuery: params.cardName,

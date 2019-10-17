@@ -27,6 +27,23 @@ class PublicDeckDetail extends React.Component<PublicDeckDetailProps> {
       }
     }
   }
+
+  checkEDHStatus = (deckData: DeckData) => {
+    try {
+      const cardCount = deckData.deck.length;
+      if (cardCount === 100) {
+        return (<h3>Deck is legal for EDH format</h3>)
+      } else {
+        return (<h3>Deck is illegal for EDH format. This deck has {cardCount} cards,
+         but it must have 100 cards.</h3>)
+      }
+    } catch (err){
+      this.props.enqueueSnackbar('Could not get deck length', {variant: 'error'});
+      console.error("Error getting deck length: ", err);
+      throw err;
+    }
+  }
+
   render() {
     return (
       <Async promiseFn={this.loadPromise}>
@@ -39,6 +56,7 @@ class PublicDeckDetail extends React.Component<PublicDeckDetailProps> {
               {data =>
                 <>
                   <h1>{data.deckName}</h1>
+                  <h3>{this.checkEDHStatus(data)}</h3>
                   <p style={{ whiteSpace: 'pre-wrap' }}>
                     {data.deckDescription}
                   </p>
