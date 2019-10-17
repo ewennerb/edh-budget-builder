@@ -16,8 +16,8 @@ import SearchBar from './SearchBar'
 
 // const mtg = require("mtgsdk");
 const Scry = require("scryfall-sdk");
-const jmespath = require("jmespath");
-const _ = require("underscore");
+// const jmespath = require("jmespath");
+// const _ = require("underscore");
 
 class DropFields {
     currentDeck: any;
