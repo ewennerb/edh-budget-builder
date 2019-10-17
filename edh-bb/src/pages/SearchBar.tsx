@@ -326,7 +326,7 @@ class SearchBar extends React.Component<SearchProps, SearchState> {
                                 </select>
                                 <span className="select2 select2-container select2-container--default" dir="ltr">
                                     <span className="selection">
-                                        <span className="select2-selection select2-selection--multiple" role="combobox" aria-haspopup="true" aria-expanded="false" tabIndex={-1}>
+                                        <span className="select2-selection select2-selection--multiple" aria-haspopup="true" aria-expanded="false" tabIndex={-1}>
                                             <ul className="select2-selection__rendered">
                                                 <li className="select2-search select2-search--inline">
                                                     <input className="select2-search__field" tabIndex={0} role="textbox" aria-autocomplete="list" placeholder="Enter a criteria or choose from the list" type="search" />

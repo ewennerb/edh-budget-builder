@@ -68,7 +68,8 @@ class CardSearch extends React.Component<{ user: firebase.User } & WithSnackbarP
     async getSearchParams(params: any) {
         console.log(params);
         if (params !== {}) {
-            var results = new Array;
+            // @ts-ignore
+            var results = [];
             // @ts-ignore
             await Scry.Cards.search(params.q, params.order, params.unique, params.page).on("data", card => {
                 results.push(card);
