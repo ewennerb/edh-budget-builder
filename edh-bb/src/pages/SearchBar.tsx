@@ -96,32 +96,32 @@ class SearchBar extends React.Component<SearchProps, SearchState> {
                                 <legend className="visuallyhidden">Commander colors</legend>
                                 <div className="form-row-content-band">
                                     <label className="advanced-search-checkbox small-columns">
-                                        <input name="commanderIdentity" id="false" value={Color.WHITE} type="checkbox" onChange={event => this.onMultiCheckboxChange(event.currentTarget.name, event.currentTarget.value)} />
+                                        <input name="commanderIdentity" id="white" value={Color.WHITE} type="checkbox" onChange={event => this.onMultiCheckboxChange(event.currentTarget.name, event.currentTarget.value)} />
                                         <abbr className="card-symbol card-symbol-W" title="one white mana">{`W`}</abbr>
                                         White
                                     </label>
                                     <label className="advanced-search-checkbox small-columns">
-                                        <input name="commanderIdentity" id="false" value={Color.BLUE} type="checkbox" onChange={event => this.onMultiCheckboxChange(event.currentTarget.name, event.currentTarget.value)} />
+                                        <input name="commanderIdentity" id="blue" value={Color.BLUE} type="checkbox" onChange={event => this.onMultiCheckboxChange(event.currentTarget.name, event.currentTarget.value)} />
                                         <abbr className="card-symbol card-symbol-U" title="one blue mana">{`U`}</abbr>
                                         Blue
                                     </label>
                                     <label className="advanced-search-checkbox small-columns">
-                                        <input name="commanderIdentity" id="false" value={Color.BLACK} type="checkbox" onChange={event => this.onMultiCheckboxChange(event.currentTarget.name, event.currentTarget.value)} />
+                                        <input name="commanderIdentity" id="black" value={Color.BLACK} type="checkbox" onChange={event => this.onMultiCheckboxChange(event.currentTarget.name, event.currentTarget.value)} />
                                         <abbr className="card-symbol card-symbol-B" title="one black mana">{`B`}</abbr>
                                         Black
                                     </label>
                                     <label className="advanced-search-checkbox small-columns">
-                                        <input name="commanderIdentity" id="false" value={Color.RED} type="checkbox" onChange={event => this.onMultiCheckboxChange(event.currentTarget.name, event.currentTarget.value)} />
+                                        <input name="commanderIdentity" id="red" value={Color.RED} type="checkbox" onChange={event => this.onMultiCheckboxChange(event.currentTarget.name, event.currentTarget.value)} />
                                         <abbr className="card-symbol card-symbol-R" title="one red mana">{`R`}</abbr>
                                         Red
                                     </label>
                                     <label className="advanced-search-checkbox small-columns">
-                                        <input name="commanderIdentity" id="false" value={Color.GREEN} type="checkbox" onChange={event => this.onMultiCheckboxChange(event.currentTarget.name, event.currentTarget.value)} />
+                                        <input name="commanderIdentity" id="green" value={Color.GREEN} type="checkbox" onChange={event => this.onMultiCheckboxChange(event.currentTarget.name, event.currentTarget.value)} />
                                         <abbr className="card-symbol card-symbol-G" title="one green mana">{`G`}</abbr>
                                         Green
                                     </label>
                                     <label className="advanced-search-checkbox small-columns">
-                                        <input name="commanderIdentity" id="false" value={Color.COLORLESS} type="checkbox" onChange={event => this.onMultiCheckboxChange(event.currentTarget.name, event.currentTarget.value)} />
+                                        <input name="commanderIdentity" id="colorless" value={Color.COLORLESS} type="checkbox" onChange={event => this.onMultiCheckboxChange(event.currentTarget.name, event.currentTarget.value)} />
                                         <abbr className="card-symbol card-symbol-C" title="one colorless mana">{`C`}</abbr>
                                         Colorless
                                     </label>
@@ -144,19 +144,19 @@ class SearchBar extends React.Component<SearchProps, SearchState> {
                                 <legend className="visuallyhidden">Desired rarities</legend>
                                 <div className="form-row-content-band">
                                     <label className="advanced-search-checkbox small-columns">
-                                        <input name="rarities" id="false" value="c" type="checkbox" onChange={event => this.onMultiCheckboxChange(event.currentTarget.name, event.currentTarget.value)}  />
+                                        <input name="rarities" id="common" value="c" type="checkbox" onChange={event => this.onMultiCheckboxChange(event.currentTarget.name, event.currentTarget.value)}  />
                                         Common
                                     </label>
                                     <label className="advanced-search-checkbox small-columns">
-                                        <input name="rarities" id="false" value="u" type="checkbox" onChange={event => this.onMultiCheckboxChange(event.currentTarget.name, event.currentTarget.value)} />
+                                        <input name="rarities" id="uncommon" value="u" type="checkbox" onChange={event => this.onMultiCheckboxChange(event.currentTarget.name, event.currentTarget.value)} />
                                         Uncommon
                                     </label>
                                     <label className="advanced-search-checkbox small-columns">
-                                        <input name="rarities" id="false" value="r" type="checkbox" onChange={event => this.onMultiCheckboxChange(event.currentTarget.name, event.currentTarget.value)} />
+                                        <input name="rarities" id="rare" value="r" type="checkbox" onChange={event => this.onMultiCheckboxChange(event.currentTarget.name, event.currentTarget.value)} />
                                         Rare
                                     </label>
                                     <label className="advanced-search-checkbox small-columns">
-                                        <input name="rarities" id="false" value="m" type="checkbox" onChange={event => this.onMultiCheckboxChange(event.currentTarget.name, event.currentTarget.value)} />
+                                        <input name="rarities" id="mythicRare" value="m" type="checkbox" onChange={event => this.onMultiCheckboxChange(event.currentTarget.name, event.currentTarget.value)} />
                                         Mythic Rare
                                     </label>
                                 </div>

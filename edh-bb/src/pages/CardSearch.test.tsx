@@ -1,7 +1,7 @@
 import React from 'react';
 import firebase from 'firebase/app';
 import firebasemock from 'firebase-mock';
-import { render, waitForElement, getByLabelText, getByText, fireEvent, getByPlaceholderText } from '@testing-library/react'
+import { render, waitForElement, getByLabelText, getByText, fireEvent, getByPlaceholderText} from '@testing-library/react'
 import { SnackbarProvider } from 'notistack';
 import CardSearch from './CardSearch';
 
@@ -23,20 +23,20 @@ const doRender = (user: firebase.User) => {
     mockfirestore.autoFlush(0)
     // mockfirestore.flush();
     return renderResult;
-}
+};
 
 const getFirestoreDocData = async (docRef: firebase.firestore.DocumentReference) => {
     const pNewDoc = docRef.get();
     mockfirestore.flush();
     return (await pNewDoc).data();
-}
+};
 
 it('renders without crashing', async () => {
     const { container } = doRender(testUser);
     const deckSelect = await waitForElement(() => getByLabelText(container, "Current Deck"), {container});
     // const searchBar = await waitForElement(() => getBy(container, "Card Search"), { container });
     expect(deckSelect).toBeDefined();
-})
+});
 
 it('displays and sets the current deck', async () => {
     const {container} = doRender(testUser);
@@ -45,4 +45,4 @@ it('displays and sets the current deck', async () => {
     fireEvent.change(dropDown, { target: { value: testDeck.deckName } });
 
     expect(dropDown).toHaveProperty("value", testDeck.deckName);
-})
+});
