@@ -41,25 +41,12 @@ it("changes text input", async() => {
   await expect(deckDesc.value).toBe('testDesc');
 })
 
-const deck2 = require('./CreateDeck');
-// const spy = jest.spyOn(deck2, 'isValidTitle').mockImplementation(() => true) 
-// const create = require('./CreateDeck');
-//   create.isValidTitle
-//    = jest.fn();
-
-// jest.mock('./CreateDeck', () => ({
-//   ...jest.requireActual("./CreateDeck"),
-//  isValidTitle2: () => true
-// }))
-
-
 it("addDeckToDatabase", async() => { 
   
   const testUser: firebase.User = { uid: "testUidAbc123" } as firebase.User;
 
   const { getByRole, getByTestId, getByLabelText,container} =  await render(<SnackbarProvider><CreateDeck user={testUser} /></SnackbarProvider>);
-  // jest.spyOn(createDeckObj, ).mockImplementation(() => true)
-  // isValidTitle2 = jest.fn(() => true)
+
   const deckName =await container.querySelector("#deckName");
  
   const submit = await getByTestId("submit")
@@ -82,6 +69,20 @@ it("addDeckToDatabase", async() => {
     })
     
 })
+
+it("redirects to homepage", async()=>{
+  const testUser: firebase.User = { uid: "testUidAbc123" } as firebase.User;
+
+  const {  getByTestId, container} =  await render(<SnackbarProvider><CreateDeck user={testUser} /></SnackbarProvider>);
+  
+  const submit = await getByTestId("submit")
+
+  var event = new Event('change');
+
+  await fireEvent.submit(submit, { target: { "deckName": "testName","deckDescription": "testDesc" } });
+
+  expect(getByTestId('location-display').innerHTML).toBe("/deck-list");
+});
 
 test('A valid title is submitted', () => {
     const validDeck: string = 'A very valid title';

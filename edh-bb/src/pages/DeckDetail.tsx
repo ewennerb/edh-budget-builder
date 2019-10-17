@@ -114,6 +114,7 @@ class DeckDetail extends React.Component<DeckDetailProps> {
         onClose={handleClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
+        id="confirmDelete"
       >
         <DialogTitle id="alert-dialog-title">{"Delete Deck?"}</DialogTitle>
         <DialogContent>
@@ -122,10 +123,10 @@ class DeckDetail extends React.Component<DeckDetailProps> {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} color="primary">
+          <Button id="No" onClick={handleClose} color="primary">
             No
           </Button>
-          <Button onClick={this.deleteDeck} color="primary" autoFocus>
+          <Button id="Yes" onClick={this.deleteDeck} color="primary" autoFocus>
             Yes
           </Button>
         </DialogActions>
