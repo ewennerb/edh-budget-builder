@@ -5,6 +5,8 @@ import firebase from 'firebase/app';
 import {render,fireEvent} from '@testing-library/react'
 import firebasemock from 'firebase-mock';
 import { SnackbarProvider } from 'notistack';
+import { getThemeProps } from '@material-ui/styles';
+import { createMemoryHistory } from 'history'
 
 
 jest.mock('firebase/app');
@@ -21,11 +23,11 @@ firebase.firestore = (() => mockfirestore) as any;
   
 //   expect(rendered).toMatchSnapshot();
 // })
-
+const history = createMemoryHistory()
  
 it("changes text input", async() => {
   const testUser: firebase.User = { uid: "testUidAbc123" } as firebase.User;
-  const { getByRole, getByTestId, getByLabelText,container} =  await render(<SnackbarProvider><CreateDeck user={testUser} /></SnackbarProvider>);
+  const { getByRole, getByTestId, getByLabelText,container} =  await render(<SnackbarProvider><CreateDeck user={testUser} history={history}/></SnackbarProvider>);
  
   const deckName =await container.querySelector("#deckName") as HTMLInputElement;
   const deckDesc =await container.querySelector("#deckDescription") as HTMLInputElement;
@@ -45,7 +47,7 @@ it("addDeckToDatabase", async() => {
   
   const testUser: firebase.User = { uid: "testUidAbc123" } as firebase.User;
 
-  const { getByRole, getByTestId, getByLabelText,container} =  await render(<SnackbarProvider><CreateDeck user={testUser} /></SnackbarProvider>);
+  const { getByRole, getByTestId, getByLabelText,container} =  await render(<SnackbarProvider><CreateDeck user={testUser} history={history} /></SnackbarProvider>);
 
   const deckName =await container.querySelector("#deckName");
  
@@ -73,7 +75,7 @@ it("addDeckToDatabase", async() => {
 it("redirects to homepage", async()=>{
   const testUser: firebase.User = { uid: "testUidAbc123" } as firebase.User;
 
-  const {  getByTestId, container} =  await render(<SnackbarProvider><CreateDeck user={testUser} /></SnackbarProvider>);
+  const {  getByTestId, container} =  await render(<SnackbarProvider><CreateDeck user={testUser} history={history}/></SnackbarProvider>);
   
   const submit = await getByTestId("submit")
 
@@ -81,7 +83,7 @@ it("redirects to homepage", async()=>{
 
   await fireEvent.submit(submit, { target: { "deckName": "testName","deckDescription": "testDesc" } });
 
-  expect(getByTestId('location-display').innerHTML).toBe("/deck-list");
+  expect(history.location.pathname).toBe("/deck-list");
 });
 
 test('A valid title is submitted', () => {
