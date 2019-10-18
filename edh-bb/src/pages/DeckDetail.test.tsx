@@ -1,7 +1,7 @@
 import React from 'react';
 import firebase from 'firebase/app';
 import firebasemock from 'firebase-mock';
-import { render, waitForElement, getByLabelText, getByText, fireEvent } from '@testing-library/react'
+import { render, waitForElement, getByLabelText, getByText, fireEvent, findByText } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack';
 import DeckDetail from './DeckDetail';
 import { Route, MemoryRouter } from 'react-router';
@@ -24,6 +24,8 @@ const testDeckData: DeckData = {
   ownerID: "abc",
 }
 
+mockfirestore.autoFlush(0);
+
 const doRender = (deckId: string) => {
 
   const renderResult = render(
@@ -33,7 +35,6 @@ const doRender = (deckId: string) => {
       </MemoryRouter>
     </SnackbarProvider>
   );
-  mockfirestore.flush();
   return renderResult;
 }
 
@@ -121,25 +122,21 @@ it('downloads the deck', async () => {
   expect(await pBlobContents).toBe(JSON.stringify(testDeckData));
 })
 
-// it("prompts users to confirm delete, canceling will not delete deck", async() => {
+it("prompts users to confirm delete, canceling will not delete deck", async() => {
 
-//     firebase.firestore().collection('deck').doc(testDeckId).set(testDeckData);
-//     const { container } = doRender(testDeckId);
-//     const deleteButton = await waitForElement(() => getByLabelText(container, "delete"), { container });
+    firebase.firestore().collection('deck').doc(testDeckId).set(testDeckData);
+    const { getByText, container } = doRender(testDeckId);
+    const deleteButton = await waitForElement(() => getByLabelText(container, "delete"), { container });
 
+  
+    await fireEvent.click(deleteButton);
 
-//     fireEvent.click(deleteButton);
+    const cancelButton =await waitForElement(() => getByText("No"), { container });
 
-//     const cancelButton =await waitForElement(() => getByLabelText(container, "No"), { container });
+    fireEvent.click(cancelButton);
 
-     
-//     console.log(cancelButton);
-
-
-
-//     fireEvent.click(cancelButton);
-//     expect( firebase.firestore().collection('deck').doc(testDeckId)).toEqual(null);
-// })
+    expect( firebase.firestore().collection('deck').doc(testDeckId).data).toEqual(testDeckData);
+})
 
 it("creates a copy", async() => {
 
@@ -149,7 +146,6 @@ it("creates a copy", async() => {
 
 
     await fireEvent.click(copyButton);
-    mockfirestore.autoFlush();
 
     var deck = await firebase.firestore().collection("deck").get();
   
