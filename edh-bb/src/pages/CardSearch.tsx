@@ -13,11 +13,9 @@ import {
     Select,
 } from '@material-ui/core'
 import SearchBar from './SearchBar'
+import Async, { IfFulfilled } from 'react-async';
 
-// const mtg = require("mtgsdk");
 const Scry = require("scryfall-sdk");
-// const jmespath = require("jmespath");
-// const _ = require("underscore");
 
 class DropFields {
     currentDeck: any;
@@ -157,8 +155,6 @@ class CardSearch extends React.Component<{ user: firebase.User } & WithSnackbarP
                 this.props.enqueueSnackbar(msg, {variant: 'success'});
             }
         }
-
-
         return 0;
     }
 
@@ -181,77 +177,63 @@ class CardSearch extends React.Component<{ user: firebase.User } & WithSnackbarP
         var listVals = this.state.searchResults.results
 
         // @ts-ignore
-        if (this.state.lenResults === 0){
-            console.log("Nothing Was Found")
-            return (
+        return (
                 <div>
-                    <InputLabel htmlFor="current-deck">Current Deck</InputLabel>
-                    <Select
-                        inputProps={{
-                            id: 'current-deck',
-                        }}
-                        value={this.state.deckField.currentDeck}
-                        onChange={this.handleChange.bind(this)}>
-                        {this.state.deckField.userDecks.map((deck: any) => <MenuItem value={deck}>{deck.data().deckName}</MenuItem>)}
-                    </Select>
-                    <SearchBar searchQuery={this.getSearchParams.bind(this)}>Card Search</SearchBar>
+                    <Async promiseFn={this.loadPromise}>
+                        {state =>
+                            <IfFulfilled state={state}>
+                                {decks =>
+                                    <>
+                                        <InputLabel htmlFor="current-deck">Current Deck</InputLabel>
+                                        <Select inputProps={{id: 'current-deck',}}
+                                                value={this.state.deckField.currentDeck}
+                                                onChange={this.handleChange.bind(this)}>
+                                            {this.state.deckField.userDecks.map((deck: any) => <MenuItem
+                                                value={deck}>{deck.data().deckName}</MenuItem>)}
+                                        </Select>
+                                        <SearchBar searchQuery={this.getSearchParams.bind(this)}>Card Search</SearchBar>
+                                    </>
+                                }
+                            </IfFulfilled>
+                        }
+                    </Async>
+                    {(this.state.lenResults != 0) && (
+                        <>
+                            <br />
+                            <div>
+                                <script src="http://tappedout.net/tappedout.js"></script>
+                                <List dense>
+                                    {listVals.map((value: any) => {const labelId = `list-item-${value.name}`;
+                                        return (
+                                            <ListItem key={value} button>
+                                                <ListItemText id={labelId} primary={
+                                                    <div>
+                                                        <span className="mtgcard">($ `${value.name}`)</span>&emsp;&emsp;
+                                                        <span> &emsp;{value.prices.usd}</span>
+                                                    </div>}/>
+                                                <ListItemSecondaryAction>
+                                                    <Button onClick={this.addToFavorites.bind(this, value)} >
+                                                        Add to Favorites
+                                                    </Button>
+                                                    <Button onClick={this.addToDeck.bind(this, value.name)}>
+                                                        Add to Deck
+                                                    </Button>
+                                                </ListItemSecondaryAction>
+                                            </ListItem>
+                                        );
+                                    })}
+                                </List>
+                            </div>
+                        <br />
+                        <br />
+                        <br />
+                        <br />
+                        <br />
+                    </>
+                    )}
                 </div>
             );
-        } else {
-            return (
-                <div>
-                    <script src="http://tappedout.net/tappedout.js"></script>
-                    <FormControl>
-                        <InputLabel htmlFor="current-deck">Current Deck</InputLabel>
-                        <InputLabel htmlFor="current-deck">Current Deck</InputLabel>
-                        <Select
-                            inputProps={{
-                                id: 'current-deck',
-                            }}
-                            value={this.state.deckField.currentDeck}
-                            onChange={this.handleChange.bind(this)}>
-                            {this.state.deckField.userDecks.map((deck: any) => <MenuItem value={deck}>{deck.data().deckName}</MenuItem>)}
-                        </Select>
-                    </FormControl>
-
-
-                    <SearchBar searchQuery={this.getSearchParams.bind(this)}/>
-
-                    <br />
-                    <div>
-                        <List dense>
-                            {listVals.map((value: any) => {
-                                const labelId = `list-item-${value.name}`;
-                                return (
-                                    <ListItem key={value} button>
-                                        <ListItemText id={labelId} primary={
-                                            <div>
-                                                <span className="mtgcard">($ `${value.name}`)</span>&emsp;&emsp;
-                                                <span> &emsp;{value.prices.usd}</span>
-                                            </div>}/>
-                                        <ListItemSecondaryAction>
-                                            <Button onClick={this.addToFavorites.bind(this, value)} >
-                                                Add to Favorites
-                                            </Button>
-                                            <Button onClick={this.addToDeck.bind(this, value.name)}>
-                                                Add to Deck
-                                            </Button>
-                                        </ListItemSecondaryAction>
-                                    </ListItem>
-                                );
-                            })}
-                        </List>
-                    </div>
-                    <br />
-                    <br />
-                    <br />
-                    <br />
-                    <br />
-                </div>
-            )
         }
-
-    }
-}
+        }
 
 export default withSnackbar(CardSearch);
