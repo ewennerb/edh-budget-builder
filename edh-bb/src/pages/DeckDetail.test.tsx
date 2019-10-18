@@ -24,8 +24,6 @@ const testDeckData: DeckData = {
   ownerID: "abc",
 }
 
-mockfirestore.autoFlush(0);
-
 const doRender = (deckId: string) => {
 
   const renderResult = render(
@@ -35,6 +33,7 @@ const doRender = (deckId: string) => {
       </MemoryRouter>
     </SnackbarProvider>
   );
+  mockfirestore.flush();
   return renderResult;
 }
 
@@ -122,33 +121,16 @@ it('downloads the deck', async () => {
   expect(await pBlobContents).toBe(JSON.stringify(testDeckData));
 })
 
-it("prompts users to confirm delete, canceling will not delete deck", async() => {
-
-    firebase.firestore().collection('deck').doc(testDeckId).set(testDeckData);
-    const { getByText, container } = doRender(testDeckId);
-    const deleteButton = await waitForElement(() => getByLabelText(container, "delete"), { container });
-
-  
-    await fireEvent.click(deleteButton);
-
-    const cancelButton =await waitForElement(() => getByText("No"), { container });
-
-    fireEvent.click(cancelButton);
-
-    expect( firebase.firestore().collection('deck').doc(testDeckId).data).toEqual(testDeckData);
-})
-
 it("creates a copy", async() => {
 
     firebase.firestore().collection('deck').doc(testDeckId);
     const { container } = doRender(testDeckId);
     const copyButton = await waitForElement(() => getByLabelText(container, "make a copy"), { container });
 
-
     await fireEvent.click(copyButton);
-
+    mockfirestore.autoFlush(0);
     var deck = await firebase.firestore().collection("deck").get();
-  
+ 
 
     deck.forEach(deckItem => {
       if(deckItem.id!=testDeckId){
@@ -157,4 +139,38 @@ it("creates a copy", async() => {
       
     })
 
+})
+
+it("prompts users to confirm delete, canceling will not delete deck", async() => {
+
+  firebase.firestore().collection('deck').doc(testDeckId).set(testDeckData);
+  const { getByText, container } = doRender(testDeckId);
+  const deleteButton = await waitForElement(() => getByLabelText(container, "delete"), { container });
+
+
+  await fireEvent.click(deleteButton);
+
+  const cancelButton =await waitForElement(() => getByText("No"), { container });
+
+  fireEvent.click(cancelButton);
+  
+  expect( firebase.firestore().collection('deck').doc(testDeckId).data).toEqual(testDeckData);
+})
+
+it("prompts users to confirm delete, clicking yes will delete deck", async() => {
+
+firebase.firestore().collection('deck').doc(testDeckId).set(testDeckData);
+const { getByText, container } = doRender(testDeckId);
+const deleteButton = await waitForElement(() => getByLabelText(container, "delete"), { container });
+
+
+await fireEvent.click(deleteButton);
+
+const confirmButton =await waitForElement(() => getByText("Yes"), { container });
+
+fireEvent.click(confirmButton);
+
+mockfirestore.flush();
+
+expect( firebase.firestore().collection('deck').doc(testDeckId).data).toEqual(null);
 })
