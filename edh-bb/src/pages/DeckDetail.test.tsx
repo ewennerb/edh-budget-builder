@@ -1,7 +1,7 @@
 import React from 'react';
 import firebase from 'firebase/app';
 import firebasemock from 'firebase-mock';
-import { render, waitForElement, getByLabelText, getByText, fireEvent } from '@testing-library/react'
+import { render, waitForElement, getByLabelText, getByText, fireEvent, getByTestId } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack';
 import DeckDetail from './DeckDetail';
 import { Route, MemoryRouter } from 'react-router';
@@ -20,6 +20,27 @@ const testDeckData: DeckData = {
   deck: ["card 1", "card 2"],
   deckDescription: "desc",
   deckName: "name",
+  ownerID: "abc",
+}
+const testCardDeleteData: DeckData = {
+  deck: ["card 2"],
+  deckDescription: "desc",
+  deckName: "name",
+  ownerID: "abc",
+}
+const testBigDeckEnergy: DeckData = {
+  deck: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10",
+    "11", "12", "13", "14", "15", "16", "17", "18", "19", "20",
+    "21", "22", "23", "24", "25", "26", "27", "28", "29", "30",
+    "31", "32", "33", "34", "35", "36", "37", "38", "39", "40",
+    "41", "42", "43", "44", "45", "46", "47", "48", "49", "50",
+    "51", "52", "53", "54", "55", "56", "57", "58", "59", "60",
+    "61", "62", "63", "64", "65", "66", "67", "68", "69", "70",
+    "71", "72", "73", "74", "75", "76", "77", "78", "79", "80",
+    "81", "82", "83", "84", "85", "86", "87", "88", "89", "90", 
+    "91", "92", "93", "94", "95", "96", "97", "98", "99", "100"],
+  deckDescription: "big desc",
+  deckName: "big name",
   ownerID: "abc",
 }
 const doRender = (deckId: string) => {
@@ -63,6 +84,22 @@ it('shows the cards', async () => {
 
   expect(getByText(container, "card 1")).toBeDefined()
   expect(getByText(container, "card 2")).toBeDefined()
+})
+
+it('rejects an invalid deck in EDH format', async () => {
+  firebase.firestore().collection('deck').doc(testDeckId).set(testDeckData);
+  const { container } = doRender(testDeckId);
+  await waitForElement(() => getByLabelText(container, /Deck Name/), { container });
+
+  expect(getByTestId(container, "illegal")).toBeDefined();
+})
+
+it('accepts a valid deck in EDH format', async () => {
+  firebase.firestore().collection('deck').doc(testDeckId).set(testBigDeckEnergy);
+  const { container } = doRender(testDeckId);
+  await waitForElement(() => getByLabelText(container, /Deck Name/), { container });
+
+  expect(getByTestId(container, "legal")).toBeDefined();
 })
 
 it('shows the deck description', async () => {
@@ -156,3 +193,15 @@ it('downloads the deck', async () => {
   });
   expect(await pBlobContents).toBe(JSON.stringify(testDeckData));
 })
+
+/* it('deletes a card from the deck', async () => {
+  firebase.firestore().collection('deck').doc(testDeckId).set(testDeckData);
+  const { container } = doRender(testDeckId);
+  const deleteCard1Button = await waitForElement(() => getByTestId(container, '0'), { container });
+
+  fireEvent.click(deleteCard1Button);
+  
+  const userDocRef = firebase.firestore().collection('deck').doc(testDeckId);
+  
+  expect(await getFirestoreDocData(userDocRef)).toEqual(testCardDeleteData);
+}) */
