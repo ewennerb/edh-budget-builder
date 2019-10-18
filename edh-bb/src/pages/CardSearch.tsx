@@ -197,7 +197,7 @@ class CardSearch extends React.Component<{ user: firebase.User } & WithSnackbarP
                             </IfFulfilled>
                         }
                     </Async>
-                    {(this.state.lenResults != 0) && (
+                    {(this.state.lenResults !== 0) && (
                         <>
                             <br />
                             <div>
