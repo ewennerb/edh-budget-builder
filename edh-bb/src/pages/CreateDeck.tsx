@@ -2,11 +2,13 @@ import React from 'react';
 import TextField from '@material-ui/core/TextField';
 import firebase from "firebase/app";
 import { withSnackbar, WithSnackbarProps } from "notistack";
+import { validateDeckName } from '../common';
 //import { Link, LinkProps } from 'react-router-dom';
 
 /*const AdapterLink = React.forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => (
   <Link innerRef={ref} {...props} />
 ));*/
+
 
 interface deckInfo {
   deckName: string;
@@ -38,22 +40,13 @@ class CreateDeck extends React.Component<{ user: firebase.User } & WithSnackbarP
     this.userDocRef = firebase.firestore().collection("users").doc(this.props.user.uid);
     this.state = { value: '' };
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.isValidTitle2 = this.isValidTitle2.bind(this);
   }
 
-  isValidTitle(title: string) {
-    if (title.length > 100) {
-      this.props.enqueueSnackbar('Deck name is too long', { variant: 'error' });
-      return false;
-    }
-    let hasNonSpaceChar: boolean = false;
-    for (var char of title) {
-      if (char !== ' ') {
-        hasNonSpaceChar = true;
-        break;
-      }
-    }
-    if (!hasNonSpaceChar) {
-      this.props.enqueueSnackbar('Deck name needs at least 1 nonspace character', { variant: 'error' })
+  public isValidTitle2(title: string="testString") {
+    const errorMsg = validateDeckName(title);
+    if (errorMsg != null) {
+      this.props.enqueueSnackbar(errorMsg, { variant: 'error' });
       return false;
     }
     return true;
@@ -63,15 +56,17 @@ class CreateDeck extends React.Component<{ user: firebase.User } & WithSnackbarP
     event.preventDefault();
 
     let title: string = event.target.deckName.value;
-    if (!this.isValidTitle(title)) {
+    if (!this.isValidTitle2(title)) {
       return;
     }
 
     firebase.firestore().collection('deck').add({
+
       deckName: event.target.deckName.value,
       deckDescription: event.target.deckDescription.value,
       deck: [],
       ownerID: this.props.user.uid
+
     })
       .then(function (deckRef) {
         console.log("Deck written with ID: " + deckRef.id);
@@ -80,6 +75,7 @@ class CreateDeck extends React.Component<{ user: firebase.User } & WithSnackbarP
     console.log('values input into database: name=' + event.target.deckName.value + ', description=' + event.target.deckDescription.value);
     //TODO redirect back to DeckList here
   }
+
 
   render() {
     return (
@@ -104,8 +100,9 @@ class CreateDeck extends React.Component<{ user: firebase.User } & WithSnackbarP
         />
         <br></br>
         <br></br>
-        <input type="submit" />
-      </form>
+
+        <button data-testid="submit">Submit</button>
+    </form>
     );
   }
 }

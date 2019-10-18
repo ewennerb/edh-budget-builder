@@ -4,15 +4,19 @@
   "private": true,
   "dependencies": {
     "@material-ui/core": "^4.4.3",
+    "@material-ui/icons": "^4.4.3",
     "@types/jest": "24.0.18",
     "@types/node": "12.7.4",
     "@types/react": "16.9.2",
     "@types/react-dom": "16.9.0",
     "@types/react-router-dom": "^5.1.0",
+    "file-saver": "^2.0.2",
     "firebase": "^6.6.2",
     "firebaseui": "^4.2.0",
     "formik": "^1.5.8",
+    "immutability-helper": "^3.0.1",
     "jmespath": "^0.15.0",
+    "material-ui-popup-state": "^1.4.1",
     "mtgsdk": "^0.4.3",
     "notistack": "^0.9.2",
     "react": "^16.9.0",
@@ -48,6 +52,7 @@
   },
   "devDependencies": {
     "@testing-library/react": "^9.2.0",
+    "@types/file-saver": "^2.0.1",
     "@types/react-window": "^1.8.1",
     "firebase-mock": "^2.2.10"
   }

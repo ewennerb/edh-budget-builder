@@ -2,7 +2,7 @@ import React from "react";
 import firebase from "firebase/app";
 import Button from '@material-ui/core/Button';
 import { Link, LinkProps } from 'react-router-dom';
-import Async, {IfPending, IfFulfilled} from "react-async";
+import Async, { IfPending, IfFulfilled } from "react-async";
 import { withSnackbar, WithSnackbarProps } from "notistack";
 
 const AdapterLink = React.forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => (
@@ -33,7 +33,7 @@ class DeckList extends React.Component<{ user: firebase.User } & WithSnackbarPro
   }
 
   render() {
-    return(
+    return (
       <Async promiseFn={this.loadPromise}>
         {state =>
           <>
@@ -42,7 +42,7 @@ class DeckList extends React.Component<{ user: firebase.User } & WithSnackbarPro
             </IfPending>
             <IfFulfilled state={state}>
               {decks => {
-                if (decks.length === 0){
+                if (decks.length === 0) {
                   return (
                     <div>
                       <h1>Deck List</h1>
@@ -53,21 +53,23 @@ class DeckList extends React.Component<{ user: firebase.User } & WithSnackbarPro
                     </div>
                   )
                 } else {
-                return (
-                  <>
-                    <h1>Deck List</h1>
-                    {console.log("Deck count: " + decks.length) }
-                    <div>
-                    {
-                      decks.map((deck, index) => {
-                        console.log('Deck name: ' + deck.data().deckName + " description: " + deck.data().deckDescription);
-                        return <ul key={index}><h3>{index+1}: {deck.data().deckName}</h3></ul>;
-                      })
-                    }
-                    </div>
-                  </>
-                )
-                  }
+                  return (
+                    <>
+                      <h1>Deck List</h1>
+                      {console.log("Deck count: " + decks.length)}
+                      <ul>
+                        {
+                          decks.map((deck, index) => {
+                            console.log('Deck name: ' + deck.data().deckName + " description: " + deck.data().deckDescription);
+
+                            return <li key={index}><Link to={'/deck-detail/' + deck.id}>{index + 1}: {deck.data().deckName}</Link></li>;
+
+                          })
+                        }
+                      </ul>
+                    </>
+                  )
+                }
               }}
             </IfFulfilled>
           </>
@@ -77,15 +79,6 @@ class DeckList extends React.Component<{ user: firebase.User } & WithSnackbarPro
   }
 }
 
-// class DeleteDeck extends React.Component { 
 
-//   deleteDeck(deckID:string){
-//     firebase.firestore().collection('deck').doc(deckID).delete()
-//     .then(function() {
-//       window.location.reload(true);
-//     }).catch(function(error) {
-//         console.error("Error removing document: ", error);
-//     });
-//   }
 
 export default withSnackbar(DeckList);

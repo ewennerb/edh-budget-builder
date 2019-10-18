@@ -3,22 +3,25 @@ import { Route, Redirect, Switch, Link } from "react-router-dom";
 import Login from './pages/Login';
 import DeckList from './pages/DeckList';
 import CreateDeck from './pages/CreateDeck';
-import DeckDetail from './pages/DeckDetail';
 import CardSearch from './pages/CardSearch';
 import ChangeUsername from './pages/ChangeUsername';
 import Logout from './pages/Logout';
+import Favorites from './pages/Favorites';
 import firebase from "firebase/app";
 import { AuthContext } from "./common";
 import { AppBar, Toolbar, Typography, Tabs, Tab, Button } from '@material-ui/core';
 import { TabProps } from '@material-ui/core/Tab';
 import { LinkProps } from '@material-ui/core/Link';
 import Async, { IfFulfilled } from 'react-async';
+import DeckDetail from './pages/DeckDetail';
+import PublicDeckDetail from './pages/PublicDeckDetail';
 
 const App: React.FC<{ user: firebase.User | null }> = (({ user: initialUser }) => {
   const [user, setUser] = useState(initialUser);
   if (!user) {
     return (
       <Switch>
+        <Route path="/public-deck/:id" component={PublicDeckDetail}/>
         {/*
         onAuthStateChanged gets called after the redirect in Login happens,
         so then the "not logged in" redirect happens before the user state here changes.
@@ -41,12 +44,14 @@ const App: React.FC<{ user: firebase.User | null }> = (({ user: initialUser }) =
         <AuthContext.Provider value={user}>
           <Header user={user} />
           <Switch>
+            <Route path="/public-deck/:id" component={PublicDeckDetail}/>
             <Route exact path="/deck-list" render={() => <DeckList user={user} />} />
             <Route exact path="/create-deck" render={() => <CreateDeck user={user} />} />
-            <Route path="/deck-detail/" component={DeckDetail} />
+            <Route path="/deck-detail/:id" component={DeckDetail} />
             <Route exact path="/search" render={() => <CardSearch user={user} />} />
             <Route exact path="/logout" component={Logout} />
             <Route exact path="/change-username" render={() => <ChangeUsername user={user} />} />
+            <Route exact path="/favorites" render={() => <Favorites user={user} />} />
             <Redirect from="/login" to="/deck-list" />
           </Switch>
         </AuthContext.Provider>
@@ -79,7 +84,11 @@ class Header extends React.Component<{ user: firebase.User }> {
     const userDocRef = firebase.firestore().collection("users").doc(this.props.user.uid);
     this.loadPromise = async () => {
       const doc = await userDocRef.get();
-      return doc.get("username")
+      if (doc.exists) {
+        return doc.get("username")
+      } else {
+        throw new Error('no username doc')
+      }
     }
   }
 
@@ -111,6 +120,7 @@ class Header extends React.Component<{ user: firebase.User }> {
             <LinkTab label="create deck" value="/create-deck" />
             <LinkTab label="search cards" value="/search" />
             <LinkTab label="change username" value="/change-username" />
+            <LinkTab label="favorite cards" value="/favorites" />
           </Tabs>
         )} />
       </AppBar>
