@@ -172,6 +172,7 @@ class DeckDetail extends React.Component<DeckDetailProps> {
                         onChange={ev => state.setData(update(data, { deckData: { deckDescription: { $set: ev.target.value } } }))}
                       />
                       <br />
+                      <br />
                       <Button variant="contained" onClick={this.handleSubmit(data.deckData)}>Save Changes</Button>
                     
                     {this.checkEDHStatus(data.deckData)}
