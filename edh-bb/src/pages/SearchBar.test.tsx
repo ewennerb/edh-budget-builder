@@ -1,7 +1,7 @@
 import React from 'react';
 import firebase from 'firebase/app';
 import firebasemock from 'firebase-mock';
-import { render, waitForElement, getByLabelText, getByText, fireEvent, getQueriesForElement} from '@testing-library/react'
+import { render, waitForElement, getByLabelText, getByText} from '@testing-library/react'
 import SearchBar from './SearchBar';
 import getSearchParams from './CardSearch'
 import { SnackbarProvider } from 'notistack';
