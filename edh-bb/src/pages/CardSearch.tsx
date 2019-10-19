@@ -2,159 +2,237 @@ import React from 'react'
 import firebase from "firebase/app";
 import { withSnackbar, WithSnackbarProps } from "notistack";
 import {
-  Button,
-  FormControl,
-  InputLabel,
-  ListItem,
-  List,
-  ListItemSecondaryAction,
-  ListItemText,
-  MenuItem,
-  Select,
-  NativeSelect
+    Button,
+    InputLabel,
+    ListItem,
+    List,
+    ListItemSecondaryAction,
+    ListItemText,
+    MenuItem,
+    Select,
 } from '@material-ui/core'
-import SearchBar from './store/components/SearchBar'
+import SearchBar from './SearchBar'
 import Async, { IfFulfilled } from 'react-async';
 
-const mtg = require("mtgsdk");
-const jmespath = require("jmespath");
-const _ = require("underscore");
+const Scry = require("scryfall-sdk");
 
-interface CardSearchState { searchQuery: Object, searchResults: Object, lenResults: number, selectedDeck?: any, sortBy?: any }
+class DropFields {
+    currentDeck: any;
+    userDecks: any;
+}
+
+var t = 0;
+const multiCards = [
+    "Island",
+    "Mountain",
+    "Swamp",
+    "Forest",
+    "Plains",
+    "Relentless Rats",
+    "Rat Colony",
+    "Persistent Petitioners",
+    "Shadowborn Apostle"
+];
+
+interface CardSearchState {searchQuery: Object, searchResults: any, lenResults: number, deckField: DropFields}
+
 class CardSearch extends React.Component<{ user: firebase.User } & WithSnackbarProps, CardSearchState> {
-  loadPromise: () => Promise<firebase.firestore.QueryDocumentSnapshot[]>;
-  constructor(props: Readonly<{ user: firebase.User } & WithSnackbarProps>) {
-    super(props);
-    this.state = {
-      searchQuery: {},
-      searchResults: { results: [] },
-      lenResults: 0,
-    };
-    const queryRef = firebase.firestore().collection("deck").where('ownerID', '==', this.props.user.uid);
-    this.loadPromise = async () => {
-      const query = await queryRef.get();
-      const data = query.docs;
-      return data;
+    decksRef: firebase.firestore.CollectionReference;
+    decks: any;
+    queryRef: firebase.firestore.Query;
+    loadPromise: () => Promise<firebase.firestore.QueryDocumentSnapshot[]>;
+
+    constructor(props: Readonly<{ user: firebase.User } & WithSnackbarProps>) {
+        super(props);
+        this.state = {
+            searchQuery: {},
+            searchResults: {results: []},
+            lenResults: 0,
+            deckField: {
+                currentDeck: {},
+                userDecks: []
+            }
+        };
+        this.decksRef = firebase.firestore().collection("deck");
+        this.queryRef = this.decksRef.where('ownerID', '==', this.props.user.uid);
+        this.loadPromise = async () => {
+            const query = await this.queryRef.get();
+            const data = query.docs;
+            return data;
+        }
     }
-  }
 
     async getSearchParams(params: any) {
         console.log(params);
-        console.log(this.state.sortBy)
         if (params !== {}) {
-            var results = null;
             // @ts-ignore
-            //TODO add search param here to filter out banned cards
-            await mtg.card.where({name: params.cardName, orderBy: this.state.sortBy}).then(card => {
-                results = card
+            var results = [];
+            // @ts-ignore
+            await Scry.Cards.search(params.q, params.order, params.unique, params.page).on("data", card => {
+                results.push(card);
+            }).waitForAll();
+            this.setState({
+                searchQuery: params,
+                //@ts-ignore
+                searchResults: {results: results},
+                //@ts-ignore
+                lenResults: results.length + 1,
             });
-            const finalResult = _.uniq(results, function(r: any){ return r.name});
 
-      this.setState({
-        searchQuery: params.cardName,
-        //@ts-ignore
-        searchResults: { results: finalResult },
-        //@ts-ignore
-        lenResults: finalResult.length,
-      });
-
-      this.render()
+            console.log(this.state);
+            this.render();
+        }
     }
-  }
 
-  handleChange(event: any) {
-    console.log(event.target.value);
-    this.setState({
-      selectedDeck: event.target.value
-    });
-  }
+    handleChange(event: any){
+        console.log(event.target.value);
+        this.setState({
+            deckField: {
+                currentDeck: event.target.value as Object,
+                userDecks: this.state.deckField.userDecks
+            }
+        });
 
-  addToDeck(cardName: any) {
-    const currID = this.state.selectedDeck.id;
-    const deckref = firebase.firestore().collection("deck").doc(currID);
-    const arrUnion = deckref.update({ deck: firebase.firestore.FieldValue.arrayUnion(cardName) });
-    console.log(arrUnion);
-    //Todo: Return a snackbar message that says "Added <card> to deck!"
-    return 0;
-  }
+        console.log(this.state.deckField.currentDeck);
+        console.log(this.state.deckField.userDecks);
+        this.render();
+    }
 
-  addToFavorites(cardName: any) {
-    //Add check that card is not already in user's favorites
-    const userRef = firebase.firestore().collection("users").doc(this.props.user.uid);
-    const arrUnion = userRef.update({
-      favorites: firebase.firestore.FieldValue.arrayUnion(cardName)
-    });
-    console.log(arrUnion);
-    this.props.enqueueSnackbar('Added ' + cardName + ' to your favorites!', { variant: 'success' })
-  }
-  render() {
-    const listVals = jmespath.search(this.state.searchResults, "results[*].name");
-    return (
-      <div>
-        <Async promiseFn={this.loadPromise}>
-          {state =>
-            <IfFulfilled state={state}>
-              {decks =>
-                <>
-                  <FormControl>
-                    <InputLabel htmlFor="current-deck">Current Deck</InputLabel>
-                    <Select
-                      inputProps={{ id: 'current-deck' }}
-                      value={this.state.selectedDeck}
-                      onChange={this.handleChange.bind(this)}>
-                      {decks.map((deck: any) => <MenuItem value={deck}>{deck.data().deckName}</MenuItem>)}
-                    </Select>
-                  </FormControl>
-                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    <FormControl>
-                    <InputLabel htmlFor="Sort By">Sort By</InputLabel>
-                    <NativeSelect
-                      onChange={(e) => this.setState({ sortBy: e.target.value })}
-                    >
+    async mountDropDown() {
+        const decks = await this.loadPromise();
+        console.log("I am setting the state to default now");
+        this.setState({
+            deckField:
+                {
+                    currentDeck: {},
+                    userDecks: decks
+                }
+        });
+        return 1;
+    }
 
-                      <option value="" />
-                      <option value="price">Price</option>
-                      <option value="power">Power</option>
-                      <option value="toughness">Toughness</option>
-                    </NativeSelect>
-
-                  </FormControl>
+    addToFavorites(cardName: any) {
+        //Add check that card is not already in user's favorites
+        const userRef = firebase.firestore().collection("users").doc(this.props.user.uid);
+        const arrUnion = userRef.update({
+            favorites: firebase.firestore.FieldValue.arrayUnion(cardName)
+        });
+        console.log(arrUnion);
+        this.props.enqueueSnackbar('Added ' + cardName + ' to your favorites!', { variant: 'success' })
+    }
 
 
-                  <SearchBar searchQuery={this.getSearchParams.bind(this)} />
-                </>
-              }
-            </IfFulfilled>
-          }
-        </Async>
-        {(this.state.lenResults !== 0) && (
-          <>
-            <br />
-            <div>
-              <List dense>
-                {listVals.map((value: any) => {
-                  const labelId = `list-item-${value}`;
-                  return (
-                    <ListItem key={value} button>
-                      <ListItemText id={labelId} primary={`${value}`} />
-                      <ListItemSecondaryAction>
-                        <Button onClick={this.addToFavorites.bind(this, value)} >
-                          Add to Favorites
-                          </Button>
-                        <Button onClick={this.addToDeck.bind(this, value)} >
-                          Add to Deck
-                          </Button>
-                      </ListItemSecondaryAction>
-                    </ListItem>
-                  );
-                })}
-              </List>
-            </div>
-          </>
-        )}
-      </div>
-    );
-  }
-}
+    async addToDeck(cardName: any){
+        const currID = this.state.deckField.currentDeck.id;
+        if (currID === undefined){
+            this.props.enqueueSnackbar('No deck currently selected', {variant: 'error'});
+            console.error("Error getting deck: ");
+        } else {
+
+            const deckref = firebase.firestore().collection("deck").doc(currID);
+            const cardlist = async () => {
+                try {
+                    const doc = await deckref.get();
+                    const deckData = doc.data();
+                    if (!deckData) throw new Error("deck document has no data")
+                    return deckData.deck;
+                } catch (err) {
+                    this.props.enqueueSnackbar('Could not get deck', {variant: 'error'});
+                    console.error("Error getting deck: ", err);
+                    throw err
+                }
+            }
+
+            var x = await cardlist()
+
+            if (!multiCards.includes(cardName) && x.includes(cardName)) {
+                this.props.enqueueSnackbar('Only one copy of this card can exist in a deck', {variant: 'error'});
+            } else {
+                const arrUnion = deckref.update({deck: firebase.firestore.FieldValue.arrayUnion(cardName)});
+                console.log(arrUnion);
+                var msg = "Added " + cardName + "to deck";
+                this.props.enqueueSnackbar(msg, {variant: 'success'});
+            }
+        }
+        return 0;
+    }
+
+
+    render() {
+        if (t === 0) {
+            var ss = document.createElement("link");
+            ss.setAttribute("href", "https://www.foilking.dev/ts-scryfall/static/css/main.a2ec1a5b.css");
+            ss.setAttribute("rel", "stylesheet")
+            ss.setAttribute("type", "text/css")
+            document.head.appendChild(ss);
+            this.mountDropDown();
+            t = 1;
+        }
+
+        var sc = document.createElement("script");
+        sc.setAttribute("src", 'http://tappedout.net/tappedout.js');
+        sc.setAttribute("type", "text/javascript");
+        document.head.appendChild(sc);
+        var listVals = this.state.searchResults.results
+
+        // @ts-ignore
+        return (
+                <div>
+                    <Async promiseFn={this.loadPromise}>
+                        {state =>
+                            <IfFulfilled state={state}>
+                                {decks =>
+                                    <>
+                                        <InputLabel htmlFor="current-deck">Current Deck</InputLabel>
+                                        <Select inputProps={{id: 'current-deck',}}
+                                                value={this.state.deckField.currentDeck}
+                                                onChange={this.handleChange.bind(this)}>
+                                            {this.state.deckField.userDecks.map((deck: any) => <MenuItem
+                                                value={deck}>{deck.data().deckName}</MenuItem>)}
+                                        </Select>
+                                        <SearchBar searchQuery={this.getSearchParams.bind(this)}>Card Search</SearchBar>
+                                    </>
+                                }
+                            </IfFulfilled>
+                        }
+                    </Async>
+                    {(this.state.lenResults !== 0) && (
+                        <>
+                            <br />
+                            <div>
+                                <script src="http://tappedout.net/tappedout.js"></script>
+                                <List dense>
+                                    {listVals.map((value: any) => {const labelId = `list-item-${value.name}`;
+                                        return (
+                                            <ListItem key={value} button>
+                                                <ListItemText id={labelId} primary={
+                                                    <div>
+                                                        <span className="mtgcard">($ `${value.name}`)</span>&emsp;&emsp;
+                                                        <span> &emsp;{value.prices.usd}</span>
+                                                    </div>}/>
+                                                <ListItemSecondaryAction>
+                                                    <Button onClick={this.addToFavorites.bind(this, value)} >
+                                                        Add to Favorites
+                                                    </Button>
+                                                    <Button onClick={this.addToDeck.bind(this, value.name)}>
+                                                        Add to Deck
+                                                    </Button>
+                                                </ListItemSecondaryAction>
+                                            </ListItem>
+                                        );
+                                    })}
+                                </List>
+                            </div>
+                        <br />
+                        <br />
+                        <br />
+                        <br />
+                        <br />
+                    </>
+                    )}
+                </div>
+            );
+        }
+        }
 
 export default withSnackbar(CardSearch);
