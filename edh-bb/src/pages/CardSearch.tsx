@@ -170,7 +170,7 @@ class CardSearch extends React.Component<{ user: firebase.User } & WithSnackbarP
         }
 
         var sc = document.createElement("script");
-        sc.setAttribute("src", 'http://tappedout.net/tappedout.js');
+        sc.setAttribute("src", 'https://tappedout.net/tappedout.js');
         sc.setAttribute("type", "text/javascript");
         document.head.appendChild(sc);
         var listVals = this.state.searchResults.results
@@ -200,7 +200,7 @@ class CardSearch extends React.Component<{ user: firebase.User } & WithSnackbarP
                         <>
                             <br />
                             <div>
-                                <script src="http://tappedout.net/tappedout.js"></script>
+                                <script src="https://tappedout.net/tappedout.js"></script>
                                 <List dense>
                                     {listVals.map((value: any) => {const labelId = `list-item-${value.name}`;
                                         return (
