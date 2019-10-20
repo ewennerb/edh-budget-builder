@@ -43,9 +43,9 @@ class DeckDetail extends React.Component<DeckDetailProps> {
     try {
       const cardCount = deckData.deck.length;
       if (cardCount === 100) {
-        return (<h3>Deck is legal for EDH format</h3>)
+        return (<h3 data-testid="legal">Deck is legal for EDH format.</h3>)
       } else {
-        return (<h3>Deck is illegal for EDH format. You currently have {cardCount} cards,
+        return (<h3 data-testid="illegal">Deck is illegal for EDH format. You currently have {cardCount} cards,
          but you must have 100 cards.</h3>)
       }
     } catch (err){
@@ -85,12 +85,19 @@ class DeckDetail extends React.Component<DeckDetailProps> {
   }
 
   deleteCardFromDeck = (deckData: DeckData, cardName: string) => {
-    this.deckDocRef.update({
-      deck: firebase.firestore.FieldValue.arrayRemove(cardName)
-      });
-    this.props.enqueueSnackbar(cardName + ' deleted from ' + deckData.deckName); 
-    //TODO update list without refreshing page
-    console.log(cardName + ' deleted from ' + deckData.deckName);
+    try {
+      this.deckDocRef.update({
+        deck: firebase.firestore.FieldValue.arrayRemove(cardName)
+        });
+      this.props.enqueueSnackbar(cardName + ' deleted from ' + deckData.deckName); 
+      //TODO update list without refreshing page
+      console.log(cardName + ' deleted from ' + deckData.deckName);
+      window.location.reload(true);
+      //this.state.reload();
+    } catch (err) {
+      this.props.enqueueSnackbar('Card no longer exists in deck', { variant: 'error' });
+      console.error(cardName + " no longer exists in deck: ", err);
+    }
   }
 
   downloadDeck = (deckData: DeckData) => {
@@ -166,15 +173,16 @@ class DeckDetail extends React.Component<DeckDetailProps> {
                         onChange={ev => state.setData(update(data, { deckData: { deckDescription: { $set: ev.target.value } } }))}
                       />
                       <br />
+                      <br />
                       <Button variant="contained" onClick={this.handleSubmit(data.deckData)}>Save Changes</Button>
                     
                     {this.checkEDHStatus(data.deckData)}
                     
                     <ul>
-                      {data.deckData.deck.map((cardName) => (
+                      {data.deckData.deck.map((cardName, index) => (
                         <ul key={cardName}>
                           <Tooltip title="Delete card">
-                            <IconButton aria-label="delete-card" onClick={() => this.deleteCardFromDeck(data.deckData, cardName)}>
+                            <IconButton aria-label="delete-card" data-testid={index} onClick={() => this.deleteCardFromDeck(data.deckData, cardName)}>
                               <DeleteIcon />
                             </IconButton>
                           </Tooltip>

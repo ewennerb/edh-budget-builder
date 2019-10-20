@@ -9,7 +9,6 @@ import { validateDeckName } from '../common';
   <Link innerRef={ref} {...props} />
 ));*/
 
-
 interface deckInfo {
   deckName: string;
   deckDescription: string;
@@ -76,13 +75,12 @@ class CreateDeck extends React.Component<{ user: firebase.User } & WithSnackbarP
     //TODO redirect back to DeckList here
   }
 
-
   render() {
     return (
       <form
         onSubmit={this.handleSubmit}
         className="innerForm">
-        <h1>[CreateDeck]</h1>
+        <h1>Create Deck</h1>
         <TextField
           required
           id="deckName"
