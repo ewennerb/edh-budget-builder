@@ -28,11 +28,18 @@ class Favorites extends React.Component<{ user: firebase.User } & WithSnackbarPr
             }
         });
 
+        //console.log(favCards);
+
         this.queryRef = this.favoritesRef.orderBy("key");
         this.loadPromise = async () => {
             try {
                 await this.queryRef.get();
                 const data = this.favorites;
+                for (var x in data) {
+                    if (typeof (data[x]) !== "string") {
+                        data.splice(x, 1);
+                    }
+                }
                 return data;
             } catch (err) {
                 this.props.enqueueSnackbar('Could not get favorites', { variant: 'error' });
