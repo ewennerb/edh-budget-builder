@@ -2,7 +2,11 @@ import React from 'react';
 import TextField from '@material-ui/core/TextField';
 import firebase from "firebase/app";
 import { withSnackbar, WithSnackbarProps } from "notistack";
+
 import { RouteComponentProps } from "react-router";
+
+import { validateDeckName } from '../common';
+
 //import { Link, LinkProps } from 'react-router-dom';
 
 /*const AdapterLink = React.forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => (
@@ -46,19 +50,9 @@ class CreateDeck extends React.Component<{ user: firebase.User } & CreateProps> 
   }
 
   public isValidTitle2(title: string="testString") {
-    if (title.length > 100) {
-      this.props.enqueueSnackbar('Deck name is too long', { variant: 'error' });
-      return false;
-    }
-    let hasNonSpaceChar: boolean = false;
-    for (var char of title) {
-      if (char !== ' ') {
-        hasNonSpaceChar = true;
-        break;
-      }
-    }
-    if (!hasNonSpaceChar) {
-      this.props.enqueueSnackbar('Deck name needs at least 1 nonspace character', { variant: 'error' })
+    const errorMsg = validateDeckName(title);
+    if (errorMsg != null) {
+      this.props.enqueueSnackbar(errorMsg, { variant: 'error' });
       return false;
     }
     return true;

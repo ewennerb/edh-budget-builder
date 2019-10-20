@@ -90,6 +90,45 @@ it('changes the deck name', async () => {
   expect(await getFirestoreDocData(userDocRef)).toStrictEqual(update(testDeckData, { deckName: { $set: newDeckName } }));
 })
 
+it('rejects an empty deck name', async () => {
+  firebase.firestore().collection('deck').doc(testDeckId).set(testDeckData);
+  const { container } = doRender(testDeckId);
+  const deckName_textinput = await waitForElement(() => getByLabelText(container, /Deck Name/), { container });
+  const save_button = getByText(container, "Save Changes");
+
+  fireEvent.change(deckName_textinput, { target: { value: '' } });
+  fireEvent.click(save_button);
+
+  const userDocRef = firebase.firestore().collection('deck').doc(testDeckId);
+  expect(await getFirestoreDocData(userDocRef)).toStrictEqual(testDeckData);
+})
+
+it('rejects a deck name that is only spaces', async () => {
+  firebase.firestore().collection('deck').doc(testDeckId).set(testDeckData);
+  const { container } = doRender(testDeckId);
+  const deckName_textinput = await waitForElement(() => getByLabelText(container, /Deck Name/), { container });
+  const save_button = getByText(container, "Save Changes");
+
+  fireEvent.change(deckName_textinput, { target: { value: '   ' } });
+  fireEvent.click(save_button);
+
+  const userDocRef = firebase.firestore().collection('deck').doc(testDeckId);
+  expect(await getFirestoreDocData(userDocRef)).toStrictEqual(testDeckData);
+})
+
+it('rejects a deck name that is too long', async () => {
+  firebase.firestore().collection('deck').doc(testDeckId).set(testDeckData);
+  const { container } = doRender(testDeckId);
+  const deckName_textinput = await waitForElement(() => getByLabelText(container, /Deck Name/), { container });
+  const save_button = getByText(container, "Save Changes");
+
+  fireEvent.change(deckName_textinput, { target: { value: 'a'.repeat(101) } });
+  fireEvent.click(save_button);
+
+  const userDocRef = firebase.firestore().collection('deck').doc(testDeckId);
+  expect(await getFirestoreDocData(userDocRef)).toStrictEqual(testDeckData);
+})
+
 it('changes the deck description', async () => {
   firebase.firestore().collection('deck').doc(testDeckId).set(testDeckData);
   const { container } = doRender(testDeckId);

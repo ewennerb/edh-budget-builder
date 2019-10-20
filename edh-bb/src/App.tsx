@@ -6,6 +6,7 @@ import CreateDeck from './pages/CreateDeck';
 import CardSearch from './pages/CardSearch';
 import ChangeUsername from './pages/ChangeUsername';
 import Logout from './pages/Logout';
+import Favorites from './pages/Favorites';
 import firebase from "firebase/app";
 import { AuthContext } from "./common";
 import { AppBar, Toolbar, Typography, Tabs, Tab, Button } from '@material-ui/core';
@@ -43,12 +44,14 @@ const App: React.FC<{ user: firebase.User | null }> = (({ user: initialUser }) =
         <AuthContext.Provider value={user}>
           <Header user={user} />
           <Switch>
+            <Route path="/public-deck/:id" component={PublicDeckDetail}/>
             <Route exact path="/deck-list" render={() => <DeckList user={user} />} />
             <Route exact path="/create-deck" render={props =><CreateDeck user={user} {...props} />} />
             <Route path="/deck-detail/:id" component={DeckDetail} />
             <Route exact path="/search" render={() => <CardSearch user={user} />} />
             <Route exact path="/logout" component={Logout} />
             <Route exact path="/change-username" render={() => <ChangeUsername user={user} />} />
+            <Route exact path="/favorites" render={() => <Favorites user={user} />} />
             <Redirect from="/login" to="/deck-list" />
           </Switch>
         </AuthContext.Provider>
@@ -117,6 +120,7 @@ class Header extends React.Component<{ user: firebase.User }> {
             <LinkTab label="create deck" value="/create-deck" />
             <LinkTab label="search cards" value="/search" />
             <LinkTab label="change username" value="/change-username" />
+            <LinkTab label="favorite cards" value="/favorites" />
           </Tabs>
         )} />
       </AppBar>

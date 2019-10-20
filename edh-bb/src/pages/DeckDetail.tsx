@@ -15,7 +15,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import update from 'immutability-helper';
-import { DeckData } from "../common";
+import { DeckData, validateDeckName } from "../common";
 import FileSaver from "file-saver";
 
 type DeckDetailProps = RouteComponentProps<{ id: string }> & WithSnackbarProps;
@@ -26,7 +26,7 @@ interface LoadedData {
 class DeckDetail extends React.Component<DeckDetailProps> {
   deckDocRef: firebase.firestore.DocumentReference;
   loadPromise: () => Promise<LoadedData>;
-  constructor(props: Readonly<DeckDetailProps>) {
+  constructor(props: DeckDetailProps) {
     super(props);
     const deckId = props.match.params.id
     this.deckDocRef = firebase.firestore().collection('deck').doc(deckId)
@@ -41,6 +41,22 @@ class DeckDetail extends React.Component<DeckDetailProps> {
         console.error("Error getting deck: ", err);
         throw err
       }
+    }
+  }
+
+  checkEDHStatus = (deckData: DeckData) => {
+    try {
+      const cardCount = deckData.deck.length;
+      if (cardCount === 100) {
+        return (<h3>Deck is legal for EDH format</h3>)
+      } else {
+        return (<h3>Deck is illegal for EDH format. You currently have {cardCount} cards,
+         but you must have 100 cards.</h3>)
+      }
+    } catch (err){
+      this.props.enqueueSnackbar('Could not get deck length', {variant: 'error'});
+      console.error("Error getting deck length: ", err);
+      throw err;
     }
   }
 
@@ -76,19 +92,31 @@ class DeckDetail extends React.Component<DeckDetailProps> {
    
   }
 
+  deleteCardFromDeck = (deckData: DeckData, cardName: string) => {
+    this.deckDocRef.update({
+      deck: firebase.firestore.FieldValue.arrayRemove(cardName)
+      });
+    this.props.enqueueSnackbar(cardName + ' deleted from ' + deckData.deckName); 
+    //TODO update list without refreshing page
+    console.log(cardName + ' deleted from ' + deckData.deckName);
+  }
+
   downloadDeck = (deckData: DeckData) => {
     const blob = new Blob([JSON.stringify(deckData)], {type: 'application/json'})
     FileSaver.saveAs(blob)
   }
 
   handleSubmit = (newDeck: DeckData) => async () => {
-    // TODO: validation
-    try {
-      await this.deckDocRef.set(newDeck)
-      this.props.enqueueSnackbar('Saved changes');
-    } catch (err) {
-      this.props.enqueueSnackbar('Could not save changes', { variant: 'error' });
-      console.log("Error saving deck details: ", err);
+    if (validateDeckName(newDeck.deckName) === null) {
+      try {
+        await this.deckDocRef.set(newDeck)
+        this.props.enqueueSnackbar('Saved changes');
+      } catch (err) {
+        this.props.enqueueSnackbar('Could not save changes', { variant: 'error' });
+        console.log("Error saving deck details: ", err);
+      }
+    } else {
+      this.props.enqueueSnackbar('Invalid deck title', { variant: 'error' })
     }
   }
 
@@ -144,50 +172,69 @@ class DeckDetail extends React.Component<DeckDetailProps> {
               <h1>Loading...</h1>
             </IfPending>
             <IfFulfilled state={state}>
-              {data =>
-                <>
-                  <h1>Deck Detail</h1>
-                  <Tooltip title="Public URL">
-                    <IconButton aria-label="public URL" onClick={() => this.showPublicUrl(data.deckId)}>
-                      <ShareIcon />
-                    </IconButton>
-                  </Tooltip>
-                  <Tooltip title="Make a copy">
-                    <IconButton aria-label="make a copy" onClick={() => this.copyDeck(data.deckData)}>
-                      <FileCopyIcon />
-                    </IconButton>
-                  </Tooltip>
-                  {this.deleteButton()}
-                  <Tooltip title="Download deck">
-                    <IconButton aria-label="download" onClick={() => this.downloadDeck(data.deckData)}>
-                      <GetAppIcon />
-                    </IconButton>
-                  </Tooltip>
-                  <div>
-                    <TextField
-                      required
-                      id="deckName"
-                      label="Deck Name"
-                      value={data.deckData.deckName}
-                      onChange={ev => state.setData(update(data, { deckData: { deckName: { $set: ev.target.value } } }))}
-                    />
-                    <br />
-                    <TextField
-                      id="deckDescription"
-                      label="Deck Description"
-                      multiline
-                      rowsMax="4"
-                      value={data.deckData.deckDescription}
-                      onChange={ev => state.setData(update(data, { deckData: { deckDescription: { $set: ev.target.value } } }))}
-                    />
-                    <br />
-                    <Button variant="contained" onClick={this.handleSubmit(data.deckData)}>Save Changes</Button>
+
+              {data => {
+                const deckName_error = validateDeckName(data.deckData.deckName);
+                return (
+                  <>
+                    <h1>Deck Detail</h1>
+                    <Tooltip title="Public URL">
+                      <IconButton aria-label="public URL" onClick={() => this.showPublicUrl(data.deckId)}>
+                        <ShareIcon />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Make a copy">
+                      <IconButton aria-label="make a copy" onClick={() => this.copyDeck(data.deckData)}>
+                        <FileCopyIcon />
+                      </IconButton>
+                    </Tooltip>
+                    {this.deleteButton()}
+                    <Tooltip title="Download deck">
+                      <IconButton aria-label="download" onClick={() => this.downloadDeck(data.deckData)}>
+                        <GetAppIcon />
+                      </IconButton>
+                    </Tooltip>
+                    <div>
+                      <TextField
+                        required
+                        label="Deck Name"
+                        id="deckName"
+                        error={deckName_error != null}
+                        helperText={deckName_error}
+                        value={data.deckData.deckName}
+                        onChange={ev => state.setData(update(data, { deckData: { deckName: { $set: ev.target.value } } }))}
+                      />
+                      <br />
+                      <TextField
+                        id="deckDescription"
+                        label="Deck Description"
+                        multiline
+                        rowsMax="4"
+                        value={data.deckData.deckDescription}
+                        onChange={ev => state.setData(update(data, { deckData: { deckDescription: { $set: ev.target.value } } }))}
+                      />
+                      <br />
+                      <Button variant="contained" onClick={this.handleSubmit(data.deckData)}>Save Changes</Button>
+                    
+                    {this.checkEDHStatus(data.deckData)}
+                    
+
                     <ul>
-                      {data.deckData.deck.map(cardName => <li key={cardName}>{cardName}</li>)}
+                      {data.deckData.deck.map((cardName) => (
+                        <ul key={cardName}>
+                          <Tooltip title="Delete card">
+                            <IconButton aria-label="delete-card" onClick={() => this.deleteCardFromDeck(data.deckData, cardName)}>
+                              <DeleteIcon />
+                            </IconButton>
+                          </Tooltip>
+                          {cardName}
+                        </ul>
+                      ))}
                     </ul>
                   </div>
-                </>
-              }
+                  </>
+                );
+              }}
             </IfFulfilled>
           </>
         }
