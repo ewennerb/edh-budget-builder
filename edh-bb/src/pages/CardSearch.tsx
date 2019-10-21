@@ -204,32 +204,39 @@ class CardSearch extends React.Component<{ user: firebase.User } & WithSnackbarP
                             <ListItem key={value} button>
                             <ListItemText id={labelId} primary={
                             <div>
-                              <span className="mtgcard">($ `${value.name}`)</span>&emsp;&emsp;
-                              <span> &emsp;{value.prices.usd}</span>
-                            </div>}/>
-                              <ListItemSecondaryAction>
-                                <Button onClick={this.addToFavorites.bind(this, value)}>
-                                  Add to Favorites
-                                </Button>
-                                <Button onClick={this.addToDeck.bind(this, value.name)}>
-                                  Add to Deck
-                                </Button>
-                              </ListItemSecondaryAction>
-                            </ListItem>
-                              );
-                        })}
-                      </List>
-                    </div>
-                  <br />
-                  <br />
-                  <br />
-                  <br />
-                  <br />
-              </>
-              )}
-          </div>
-        );
-      }
-    }
+                                <script src="https://tappedout.net/tappedout.js"></script>
+                                <List dense>
+                                    {listVals.map((value: any) => {const labelId = `list-item-${value.name}`;
+                                        return (
+                                            <ListItem key={value} button>
+                                                <ListItemText id={labelId} primary={
+                                                    <div>
+                                                        <span className="mtgcard">($ `${value.name}`)</span>&emsp;&emsp;
+                                                        <span> &emsp;{value.prices.usd}</span>
+                                                    </div>}/>
+                                                <ListItemSecondaryAction>
+                                                    <Button onClick={this.addToFavorites.bind(this, value.name)} >
+                                                        Add to Favorites
+                                                    </Button>
+                                                    <Button onClick={this.addToDeck.bind(this, value.name)}>
+                                                        Add to Deck
+                                                    </Button>
+                                                </ListItemSecondaryAction>
+                                            </ListItem>
+                                        );
+                                    })}
+                                </List>
+                            </div>
+                        <br />
+                        <br />
+                        <br />
+                        <br />
+                        <br />
+                    </>
+                    )}
+                </div>
+            );
+        }
+        }
 
 export default withSnackbar(CardSearch);
