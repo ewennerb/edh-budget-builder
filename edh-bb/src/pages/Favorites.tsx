@@ -24,7 +24,13 @@ class Favorites extends React.Component<{ user: firebase.User } & WithSnackbarPr
         firebase.firestore().collection("users").doc(this.props.user.uid).get().then(doc => {
             if (doc.exists) {
                 favCards = doc.get("favorites");
+                for (var item in favCards) {
+                    if (typeof (favCards[item]) !== "string") {
+                        favCards.splice(item, 1);
+                    }
+                }
                 this.favorites = favCards;
+                //console.log(favCards);
             }
         });
 
