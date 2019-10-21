@@ -11,7 +11,6 @@ const AdapterLink = React.forwardRef<HTMLAnchorElement, LinkProps>((props, ref) 
 ));
 
 class Favorites extends React.Component<{ user: firebase.User } & WithSnackbarProps> {
-
     favoritesRef: firebase.firestore.CollectionReference;
     favorites: any;
     queryRef: firebase.firestore.Query;
@@ -30,11 +29,8 @@ class Favorites extends React.Component<{ user: firebase.User } & WithSnackbarPr
                     }
                 }
                 this.favorites = favCards;
-                //console.log(favCards);
             }
         });
-
-        //console.log(favCards);
 
         this.queryRef = this.favoritesRef.orderBy("key");
         this.loadPromise = async () => {

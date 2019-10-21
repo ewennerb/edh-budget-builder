@@ -3,7 +3,6 @@ import firebase from "firebase/app";
 import { Route, BrowserRouter } from "react-router-dom";
 import Login from './Login';
 
-
 const Logout: React.FC = () => {
 
   const redirectToLogin = () => {

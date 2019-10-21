@@ -26,9 +26,9 @@ const doRender = (user: firebase.User) => {
 }
 
 const getFirestoreDocData = async (docRef: firebase.firestore.DocumentReference) => {
-    const pNewDoc = docRef.get();
-    mockfirestore.flush();
-    return (await pNewDoc).data();
+  const pNewDoc = docRef.get();
+  mockfirestore.flush();
+  return (await pNewDoc).data();
 }
 
 it("confirms length of test favorite cards list", () => {
@@ -87,4 +87,3 @@ it("should have a favorites field with correct number or cards and correct card 
     });
     expect(favorites).toStrictEqual(testFavoriteCards);
 })
-
