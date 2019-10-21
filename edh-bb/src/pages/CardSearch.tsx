@@ -150,7 +150,7 @@ class CardSearch extends React.Component<{ user: firebase.User } & WithSnackbarP
             } else {
                 const arrUnion = deckref.update({deck: firebase.firestore.FieldValue.arrayUnion(cardName)});
                 console.log(arrUnion);
-                var msg = "Added " + cardName + "to deck";
+                var msg = "Added " + cardName + " to deck";
                 this.props.enqueueSnackbar(msg, {variant: 'success'});
             }
         }
