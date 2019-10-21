@@ -92,9 +92,9 @@ class DeckDetail extends React.Component<DeckDetailProps> {
    
   }
 
-  deleteCardFromDeck = (deckData: DeckData, cardName: string) => {
+  deleteCardFromDeck = async (deckData: DeckData, cardName: string) => {
     try {
-      this.deckDocRef.update({
+      await this.deckDocRef.update({
         deck: firebase.firestore.FieldValue.arrayRemove(cardName)
         });
       this.props.enqueueSnackbar(cardName + ' deleted from ' + deckData.deckName); 
