@@ -1,4 +1,3 @@
-
 import React, { ReactComponentElement } from 'react';
 import CreateDeck, { isValidTitle }  from './CreateDeck';
 import firebase from 'firebase/app';
@@ -7,7 +6,6 @@ import firebasemock from 'firebase-mock';
 import { SnackbarProvider } from 'notistack';
 import { getThemeProps } from '@material-ui/styles';
 import { createMemoryHistory } from 'history'
-
 
 jest.mock('firebase/app');
 const mockfirestore = new firebasemock.MockFirestore();
@@ -44,14 +42,11 @@ it("changes text input", async() => {
 })
 
 it("addDeckToDatabase", async() => { 
-  
   const testUser: firebase.User = { uid: "testUidAbc123" } as firebase.User;
-
   const { getByRole, getByTestId, getByLabelText,container} =  await render(<SnackbarProvider><CreateDeck user={testUser} history={history} /></SnackbarProvider>);
-
   const deckName =await container.querySelector("#deckName");
- 
   const submit = await getByTestId("submit")
+  
   if(deckName==null){
     console.log("null")
     expect("false").toBeTruthy
@@ -61,28 +56,19 @@ it("addDeckToDatabase", async() => {
 
   await fireEvent.submit(submit, { target: { "deckName": "testName","deckDescription": "testDesc" } });
 
-
   var deck = await firebase.firestore().collection('deck').get();
-
-    deck.forEach(deckItem => {
-      
-      expect(deckItem.data().ownerID).toStrictEqual("testUidAbc123");
-      
-    })
-    
+  deck.forEach(deckItem => {
+    expect(deckItem.data().ownerID).toStrictEqual("testUidAbc123");
+  })
 })
 
 it("redirects to homepage", async()=>{
   const testUser: firebase.User = { uid: "testUidAbc123" } as firebase.User;
-
   const {  getByTestId, container} =  await render(<SnackbarProvider><CreateDeck user={testUser} history={history}/></SnackbarProvider>);
-  
   const submit = await getByTestId("submit")
-
   var event = new Event('change');
 
   await fireEvent.submit(submit, { target: { "deckName": "testName","deckDescription": "testDesc" } });
-
   expect(history.location.pathname).toBe("/deck-list");
 });
 
