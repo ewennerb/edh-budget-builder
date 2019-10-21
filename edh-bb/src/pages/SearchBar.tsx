@@ -53,7 +53,7 @@ class SearchBar extends React.Component<SearchProps, SearchState> {
                         </label>
                         <div className="form-row-content">
                             <div className="form-row-content-band">
-                                <input name="name" id="name" className="form-input" placeholder="Any words in the name, e.g. “Fire”" type="text" defaultValue={searchTerms.name} onChange={event => this.onFieldChange(event.currentTarget.name, event.currentTarget.value)}  />
+                                <input name="name" id="name" data-testid="name-input-test" className="form-input" placeholder="Any words in the name, e.g. “Fire”" type="text" defaultValue={searchTerms.name} onChange={event => this.onFieldChange(event.currentTarget.name, event.currentTarget.value)}  />
                             </div>
                         </div>
 
@@ -67,7 +67,7 @@ class SearchBar extends React.Component<SearchProps, SearchState> {
                         </label>
                         <div className="form-row-content">
                             <div className="form-row-content-band">
-                                <input name="type" id="type" className="form-input" placeholder="Enter any card types, e.g. “legendary”" type="text" value={searchTerms.type} onChange={event => this.onFieldChange(event.currentTarget.name, event.currentTarget.value)} />
+                                <input name="type" id="type" data-testid="type-input" className="form-input" placeholder="Enter any card types, e.g. “legendary”" type="text" value={searchTerms.type} onChange={event => this.onFieldChange(event.currentTarget.name, event.currentTarget.value)} />
                             </div>
 
                             <div className="form-row-content-band">
@@ -86,7 +86,7 @@ class SearchBar extends React.Component<SearchProps, SearchState> {
 
                     <div className="form-row">
 
-                        <label className="form-row-label short">
+                        <label className="form-row-label short" data-testid="color-input">
                             <svg aria-hidden="true" focusable="false" className="" xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30"></svg>
                             Color Identity
                         </label>
@@ -134,7 +134,7 @@ class SearchBar extends React.Component<SearchProps, SearchState> {
 
                     <div className="form-row">
 
-                        <label className="form-row-label short">
+                        <label data-testid="rarity-input" className="form-row-label short">
                             <svg aria-hidden="true" focusable="false" className="" width="32" height="31" viewBox="0 0 32 31" xmlns="http://www.w3.org/2000/svg"></svg>
                             Rarity
                         </label>
@@ -156,7 +156,7 @@ class SearchBar extends React.Component<SearchProps, SearchState> {
                                         Rare
                                     </label>
                                     <label className="advanced-search-checkbox small-columns">
-                                        <input name="rarities" id="mythicRare" value="m" type="checkbox" onChange={event => this.onMultiCheckboxChange(event.currentTarget.name, event.currentTarget.value)} />
+                                        <input name="rarities" id="mythic-rare" value="m" type="checkbox" onChange={event => this.onMultiCheckboxChange(event.currentTarget.name, event.currentTarget.value)} />
                                         Mythic Rare
                                     </label>
                                 </div>
@@ -184,7 +184,7 @@ class SearchBar extends React.Component<SearchProps, SearchState> {
                                     <option value=">=">greater than or equal to</option>
                                 </select>
                                 <label className="visuallyhidden" htmlFor="price_1_value">Currency 1 value</label>
-                                <input name="price_1_value" id="price_1_value" className="form-input auto" placeholder="Any value, e.g. “15.00”" pattern="d*" type="number" />
+                                <input data-testid="price-input" name="price_1_value" id="price_1_value" className="form-input auto" placeholder="Any value, e.g. “15.00”" pattern="d*" type="number" />
                             </div>
 
                             <p className="form-row-tip js-advanced-search-row-tip">
@@ -225,7 +225,7 @@ class SearchBar extends React.Component<SearchProps, SearchState> {
                         <div className="form-row-label" />
                         <div className="form-row-content">
                             <div className="form-row-content-band">
-                                <button type="submit" className="button-primary-large" onClick={event => this.submitButtonClicked()}>
+                                <button type="submit" data-testid="submit-button-test" className="button-primary-large" onClick={event => this.submitButtonClicked()}>
                                     Search with these options
                                 </button>
                             </div>
@@ -275,7 +275,7 @@ class SearchBar extends React.Component<SearchProps, SearchState> {
         this.setState({searchTerms: newSearchTerms});
     }
 
-    private buildQueryAndSearch() {
+    buildQueryAndSearch() {
         const { searchTerms } = this.state;
         let searchQueryArray = [];
 
@@ -357,8 +357,3 @@ class SearchBar extends React.Component<SearchProps, SearchState> {
 }
 
 export default SearchBar;
-export const ComponentUnderTest = () => (
-    <View>
-        < testID="search-butt" on
-    </View>
-)

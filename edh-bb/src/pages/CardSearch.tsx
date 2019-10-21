@@ -34,6 +34,15 @@ const multiCards = [
     "Shadowborn Apostle"
 ];
 
+
+async function do_scryfall(params: any, results: []) {
+    //@ts-ignore
+    await Scry.Cards.search(params.q, params.order, params.unique, params.page).on("data", card => {
+        // @ts-ignore
+        results.push(card);
+    }).waitForAll();
+}
+
 interface CardSearchState {searchQuery: Object, searchResults: any, lenResults: number, deckField: DropFields}
 
 class CardSearch extends React.Component<{ user: firebase.User } & WithSnackbarProps, CardSearchState> {
@@ -62,15 +71,16 @@ class CardSearch extends React.Component<{ user: firebase.User } & WithSnackbarP
         }
     }
 
-    async getSearchParams(params: any) {
+    public async getSearchParams(params: any) {
         console.log(params);
         if (params !== {}) {
             // @ts-ignore
             var results = [];
             // @ts-ignore
-            await Scry.Cards.search(params.q, params.order, params.unique, params.page).on("data", card => {
-                results.push(card);
-            }).waitForAll();
+            // await Scry.Cards.search(params.q, params.order, params.unique, params.page).on("data", card => {
+            //     results.push(card);
+            // }).waitForAll();
+            await do_scryfall(params, results);
             this.setState({
                 searchQuery: params,
                 //@ts-ignore
@@ -96,7 +106,7 @@ class CardSearch extends React.Component<{ user: firebase.User } & WithSnackbarP
         console.log(this.state.deckField.currentDeck);
         console.log(this.state.deckField.userDecks);
         this.render();
-    }
+    };
 
     async mountDropDown() {
         const decks = await this.loadPromise();
@@ -141,7 +151,7 @@ class CardSearch extends React.Component<{ user: firebase.User } & WithSnackbarP
                     console.error("Error getting deck: ", err);
                     throw err
                 }
-            }
+            };
 
             var x = await cardlist()
 
@@ -183,8 +193,8 @@ class CardSearch extends React.Component<{ user: firebase.User } & WithSnackbarP
                             <IfFulfilled state={state}>
                                 {decks =>
                                     <>
-                                        <InputLabel htmlFor="current-deck">Current Deck</InputLabel>
-                                        <Select inputProps={{id: 'current-deck',}}
+                                        <InputLabel htmlFor="deck-select" data-testid="deck-select-test">Current Deck</InputLabel>
+                                        <Select id="#deck-select" inputProps={{id: 'current-deck',}}
                                                 value={this.state.deckField.currentDeck}
                                                 onChange={this.handleChange.bind(this)}>
                                             {this.state.deckField.userDecks.map((deck: any) => <MenuItem
@@ -207,7 +217,7 @@ class CardSearch extends React.Component<{ user: firebase.User } & WithSnackbarP
                                             <ListItem key={value} button>
                                                 <ListItemText id={labelId} primary={
                                                     <div>
-                                                        <span className="mtgcard">($ `${value.name}`)</span>&emsp;&emsp;
+                                                        <span className="mtgcard" id={labelId}>($ `${value.name}`)</span>&emsp;&emsp;
                                                         <span> &emsp;{value.prices.usd}</span>
                                                     </div>}/>
                                                 <ListItemSecondaryAction>
