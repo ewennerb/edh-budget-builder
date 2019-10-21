@@ -87,4 +87,3 @@ it("should have a favorites field with correct number or cards and correct card 
     });
     expect(favorites).toStrictEqual(testFavoriteCards);
 })
-
