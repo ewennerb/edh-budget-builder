@@ -211,7 +211,7 @@ class CardSearch extends React.Component<{ user: firebase.User } & WithSnackbarP
                                                         <span> &emsp;{value.prices.usd}</span>
                                                     </div>}/>
                                                 <ListItemSecondaryAction>
-                                                    <Button onClick={this.addToFavorites.bind(this, value)} >
+                                                    <Button onClick={this.addToFavorites.bind(this, value.name)} >
                                                         Add to Favorites
                                                     </Button>
                                                     <Button onClick={this.addToDeck.bind(this, value.name)}>
