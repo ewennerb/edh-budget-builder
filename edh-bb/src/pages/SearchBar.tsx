@@ -314,8 +314,14 @@ class SearchBar extends React.Component<SearchProps, SearchState> {
 
         const q = searchQueryArray.join(' ').trim();
         console.log(q);
+        var order = SearchOrder.Name;
+        console.log(searchTerms.order);
+        if (searchTerms.order !== SearchOrder.Name) {
+            // @ts-ignore
+            order = searchTerms.order;
+        }
         // @ts-ignore
-        const newSearchTerms = { ...this.state.searchTerms, q, page: 1, order: SearchOrder.Name };
+        const newSearchTerms = { ...this.state.searchTerms, q, page: 1, order: order };
         //
         // this.props.fetchFilteredCards(newSearchTerms);
         // this.props.history.push('/cards/' + q);

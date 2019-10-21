@@ -13,6 +13,7 @@ import {
 } from '@material-ui/core'
 import SearchBar from './SearchBar'
 import Async, { IfFulfilled } from 'react-async';
+import { SearchOrder } from "../models/searchTerms"
 
 const Scry = require("scryfall-sdk");
 
@@ -36,14 +37,23 @@ const multiCards = [
 
 
 async function do_scryfall(params: any, results: []) {
+    const opts = {
+        unique: params.unique,
+        order: params.order,
+        include_extras: false,
+        page: params.page
+    };
+
     //@ts-ignore
-    await Scry.Cards.search(params.q, params.order, params.unique, params.page).on("data", card => {
-        // @ts-ignore
-        results.push(card);
+    await Scry.Cards.search(params.q, opts).on("data", card => {
+            //@ts-ignore
+            results.push(card);
+
     }).waitForAll();
+    console.log(results);
 }
 
-interface CardSearchState {searchQuery: Object, searchResults: any, lenResults: number, deckField: DropFields}
+interface CardSearchState {searchQuery: Object, searchResults: any, lenResults: number, deckField: DropFields, searchOrder: SearchOrder}
 
 class CardSearch extends React.Component<{ user: firebase.User } & WithSnackbarProps, CardSearchState> {
     decksRef: firebase.firestore.CollectionReference;
@@ -60,7 +70,8 @@ class CardSearch extends React.Component<{ user: firebase.User } & WithSnackbarP
             deckField: {
                 currentDeck: {},
                 userDecks: []
-            }
+            },
+            searchOrder: SearchOrder.Name
         };
         this.decksRef = firebase.firestore().collection("deck");
         this.queryRef = this.decksRef.where('ownerID', '==', this.props.user.uid);
@@ -72,6 +83,31 @@ class CardSearch extends React.Component<{ user: firebase.User } & WithSnackbarP
     }
 
     public async getSearchParams(params: any) {
+
+        this.setState({
+                searchResults: {
+                    results: []
+                },
+            }
+        );
+        this.render();
+
+        console.log(params);
+        if (this.state.searchOrder && params.order === undefined) {
+            params.order = this.state.searchOrder;
+        }
+        const temp = {
+            q: params.q,
+            order: params.order,
+            page: params.page,
+            commanderIdentity: params.commanderIdentity,
+            name: params.name,
+            rarities: params.rarities,
+            type: params.type,
+            allowPartialTypeMatch: params.allowPartialTypeMatch,
+            formats: params.formats,
+        };
+
         console.log(params);
         if (params !== {}) {
             // @ts-ignore
@@ -80,13 +116,15 @@ class CardSearch extends React.Component<{ user: firebase.User } & WithSnackbarP
             // await Scry.Cards.search(params.q, params.order, params.unique, params.page).on("data", card => {
             //     results.push(card);
             // }).waitForAll();
-            await do_scryfall(params, results);
+            await do_scryfall(temp, results);
             this.setState({
-                searchQuery: params,
+                searchQuery: temp,
                 //@ts-ignore
                 searchResults: {results: results},
                 //@ts-ignore
                 lenResults: results.length + 1,
+                //@ts-ignore
+                searchOrder: temp.order
             });
 
             console.log(this.state);
