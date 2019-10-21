@@ -85,42 +85,41 @@ class CardSearch extends React.Component<{ user: firebase.User } & WithSnackbarP
     }
 
     handleChange(event: any){
-        console.log(event.target.value);
-        this.setState({
-            deckField: {
-                currentDeck: event.target.value as Object,
-                userDecks: this.state.deckField.userDecks
-            }
-        });
+      console.log(event.target.value);
+      this.setState({
+          deckField: {
+              currentDeck: event.target.value as Object,
+              userDecks: this.state.deckField.userDecks
+          }
+      });
 
-        console.log(this.state.deckField.currentDeck);
-        console.log(this.state.deckField.userDecks);
-        this.render();
+      console.log(this.state.deckField.currentDeck);
+      console.log(this.state.deckField.userDecks);
+      this.render();
     }
 
     async mountDropDown() {
-        const decks = await this.loadPromise();
-        console.log("I am setting the state to default now");
-        this.setState({
-            deckField:
-                {
-                    currentDeck: {},
-                    userDecks: decks
-                }
-        });
-        return 1;
+      const decks = await this.loadPromise();
+      console.log("I am setting the state to default now");
+      this.setState({
+          deckField:
+              {
+                  currentDeck: {},
+                  userDecks: decks
+              }
+      });
+      return 1;
     }
 
     addToFavorites(cardName: any) {
-        //Add check that card is not already in user's favorites
-        const userRef = firebase.firestore().collection("users").doc(this.props.user.uid);
-        const arrUnion = userRef.update({
-            favorites: firebase.firestore.FieldValue.arrayUnion(cardName)
-        });
-        console.log(arrUnion);
-        this.props.enqueueSnackbar('Added ' + cardName + ' to your favorites!', { variant: 'success' })
+      //Add check that card is not already in user's favorites
+      const userRef = firebase.firestore().collection("users").doc(this.props.user.uid);
+      const arrUnion = userRef.update({
+          favorites: firebase.firestore.FieldValue.arrayUnion(cardName)
+      });
+      console.log(arrUnion);
+      this.props.enqueueSnackbar('Added ' + cardName + ' to your favorites!', { variant: 'success' })
     }
-
 
     async addToDeck(cardName: any){
         const currID = this.state.deckField.currentDeck.id;
@@ -128,111 +127,109 @@ class CardSearch extends React.Component<{ user: firebase.User } & WithSnackbarP
             this.props.enqueueSnackbar('No deck currently selected', {variant: 'error'});
             console.error("Error getting deck: ");
         } else {
-
-            const deckref = firebase.firestore().collection("deck").doc(currID);
-            const cardlist = async () => {
-                try {
-                    const doc = await deckref.get();
-                    const deckData = doc.data();
-                    if (!deckData) throw new Error("deck document has no data")
-                    return deckData.deck;
-                } catch (err) {
-                    this.props.enqueueSnackbar('Could not get deck', {variant: 'error'});
-                    console.error("Error getting deck: ", err);
-                    throw err
-                }
+          const deckref = firebase.firestore().collection("deck").doc(currID);
+          const cardlist = async () => {
+            try {
+                const doc = await deckref.get();
+                const deckData = doc.data();
+                if (!deckData) throw new Error("deck document has no data")
+                return deckData.deck;
+            } catch (err) {
+                this.props.enqueueSnackbar('Could not get deck', {variant: 'error'});
+                console.error("Error getting deck: ", err);
+                throw err
             }
+          }
 
-            var x = await cardlist()
+          var x = await cardlist()
 
-            if (!multiCards.includes(cardName) && x.includes(cardName)) {
-                this.props.enqueueSnackbar('Only one copy of this card can exist in a deck', {variant: 'error'});
-            } else {
-                const arrUnion = deckref.update({deck: firebase.firestore.FieldValue.arrayUnion(cardName)});
-                console.log(arrUnion);
-                var msg = "Added " + cardName + "to deck";
-                this.props.enqueueSnackbar(msg, {variant: 'success'});
-            }
+          if (!multiCards.includes(cardName) && x.includes(cardName)) {
+              this.props.enqueueSnackbar('Only one copy of this card can exist in a deck', {variant: 'error'});
+          } else {
+              const arrUnion = deckref.update({deck: firebase.firestore.FieldValue.arrayUnion(cardName)});
+              console.log(arrUnion);
+              var msg = "Added " + cardName + "to deck";
+              this.props.enqueueSnackbar(msg, {variant: 'success'});
+          }
         }
-        return 0;
+      return 0;
     }
 
-
     render() {
-        if (t === 0) {
-            var ss = document.createElement("link");
-            ss.setAttribute("href", "https://www.foilking.dev/ts-scryfall/static/css/main.a2ec1a5b.css");
-            ss.setAttribute("rel", "stylesheet")
-            ss.setAttribute("type", "text/css")
-            document.head.appendChild(ss);
-            this.mountDropDown();
-            t = 1;
-        }
+      if (t === 0) {
+          var ss = document.createElement("link");
+          ss.setAttribute("href", "https://www.foilking.dev/ts-scryfall/static/css/main.a2ec1a5b.css");
+          ss.setAttribute("rel", "stylesheet")
+          ss.setAttribute("type", "text/css")
+          document.head.appendChild(ss);
+          this.mountDropDown();
+          t = 1;
+      }
 
-        var sc = document.createElement("script");
-        sc.setAttribute("src", 'https://tappedout.net/tappedout.js');
-        sc.setAttribute("type", "text/javascript");
-        document.head.appendChild(sc);
-        var listVals = this.state.searchResults.results
+      var sc = document.createElement("script");
+      sc.setAttribute("src", 'https://tappedout.net/tappedout.js');
+      sc.setAttribute("type", "text/javascript");
+      document.head.appendChild(sc);
+      var listVals = this.state.searchResults.results
 
-        // @ts-ignore
-        return (
-                <div>
-                    <Async promiseFn={this.loadPromise}>
-                        {state =>
-                            <IfFulfilled state={state}>
-                                {decks =>
-                                    <>
-                                        <InputLabel htmlFor="current-deck">Current Deck</InputLabel>
-                                        <Select inputProps={{id: 'current-deck',}}
-                                                value={this.state.deckField.currentDeck}
-                                                onChange={this.handleChange.bind(this)}>
-                                            {this.state.deckField.userDecks.map((deck: any) => <MenuItem
-                                                value={deck}>{deck.data().deckName}</MenuItem>)}
-                                        </Select>
-                                        <SearchBar searchQuery={this.getSearchParams.bind(this)}>Card Search</SearchBar>
-                                    </>
-                                }
-                            </IfFulfilled>
-                        }
-                    </Async>
-                    {(this.state.lenResults !== 0) && (
-                        <>
-                            <br />
+      // @ts-ignore
+      return (
+        <div>
+          <Async promiseFn={this.loadPromise}>
+            {state =>
+              <IfFulfilled state={state}>
+                {decks =>
+                  <>
+                      <InputLabel htmlFor="current-deck">Current Deck</InputLabel>
+                      <Select inputProps={{id: 'current-deck',}}
+                              value={this.state.deckField.currentDeck}
+                              onChange={this.handleChange.bind(this)}>
+                          {this.state.deckField.userDecks.map((deck: any) => <MenuItem
+                              value={deck}>{deck.data().deckName}</MenuItem>)}
+                      </Select>
+                      <SearchBar searchQuery={this.getSearchParams.bind(this)}>Card Search</SearchBar>
+                  </>
+                }
+              </IfFulfilled>
+            }
+              </Async>
+              {(this.state.lenResults !== 0) && (
+                  <>
+                    <br />
+                    <div>
+                      <script src="https://tappedout.net/tappedout.js"></script>
+                      <List dense>
+                        {listVals.map((value: any) => {const labelId = `list-item-${value.name}`;
+                          return (
+                            <ListItem key={value} button>
+                            <ListItemText id={labelId} primary={
                             <div>
-                                <script src="https://tappedout.net/tappedout.js"></script>
-                                <List dense>
-                                    {listVals.map((value: any) => {const labelId = `list-item-${value.name}`;
-                                        return (
-                                            <ListItem key={value} button>
-                                                <ListItemText id={labelId} primary={
-                                                    <div>
-                                                        <span className="mtgcard">($ `${value.name}`)</span>&emsp;&emsp;
-                                                        <span> &emsp;{value.prices.usd}</span>
-                                                    </div>}/>
-                                                <ListItemSecondaryAction>
-                                                    <Button onClick={this.addToFavorites.bind(this, value)} >
-                                                        Add to Favorites
-                                                    </Button>
-                                                    <Button onClick={this.addToDeck.bind(this, value.name)}>
-                                                        Add to Deck
-                                                    </Button>
-                                                </ListItemSecondaryAction>
-                                            </ListItem>
-                                        );
-                                    })}
-                                </List>
-                            </div>
-                        <br />
-                        <br />
-                        <br />
-                        <br />
-                        <br />
-                    </>
-                    )}
-                </div>
-            );
-        }
-        }
+                              <span className="mtgcard">($ `${value.name}`)</span>&emsp;&emsp;
+                              <span> &emsp;{value.prices.usd}</span>
+                            </div>}/>
+                              <ListItemSecondaryAction>
+                                <Button onClick={this.addToFavorites.bind(this, value)}>
+                                  Add to Favorites
+                                </Button>
+                                <Button onClick={this.addToDeck.bind(this, value.name)}>
+                                  Add to Deck
+                                </Button>
+                              </ListItemSecondaryAction>
+                            </ListItem>
+                              );
+                        })}
+                      </List>
+                    </div>
+                  <br />
+                  <br />
+                  <br />
+                  <br />
+                  <br />
+              </>
+              )}
+          </div>
+        );
+      }
+    }
 
 export default withSnackbar(CardSearch);

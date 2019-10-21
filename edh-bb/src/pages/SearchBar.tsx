@@ -2,27 +2,27 @@ import React from 'react'
 import { Color, SearchTerms, SearchOrder } from '../models/searchTerms'
 
 interface SearchProps {
-    searchTerms: SearchTerms
-    searchQuery: any;
+  searchTerms: SearchTerms
+  searchQuery: any;
 }
 
 interface SearchState {
-    searchTerms: SearchTerms
+  searchTerms: SearchTerms
 }
 
 class SearchBar extends React.Component<SearchProps, SearchState> {
     public static defaultProps = {
-        searchTerms: {
-            q: "",
-            order: SearchOrder.Name,
-            page: 1,
-            name: "",
-            type: "",
-            allowPartialTypeMatch: true,
-            formats: [],
-            commanderIdentity: [],
-            rarities: []
-        }
+      searchTerms: {
+          q: "",
+          order: SearchOrder.Name,
+          page: 1,
+          name: "",
+          type: "",
+          allowPartialTypeMatch: true,
+          formats: [],
+          commanderIdentity: [],
+          rarities: []
+      }
     };
 
     constructor(props: SearchProps) {

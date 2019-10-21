@@ -12,7 +12,6 @@ const mockfirestore = new firebasemock.MockFirestore();
 mockfirestore.autoFlush(0)
 firebase.firestore = (() => mockfirestore) as any;
 
-
 // it("renders", () => {
   
 //   const testUser: firebase.User = { uid: "testUidAbc123" } as firebase.User;
@@ -21,18 +20,20 @@ firebase.firestore = (() => mockfirestore) as any;
   
 //   expect(rendered).toMatchSnapshot();
 // })
+
 const history = createMemoryHistory()
  
 it("changes text input", async() => {
   const testUser: firebase.User = { uid: "testUidAbc123" } as firebase.User;
   const { getByRole, getByTestId, getByLabelText,container} =  await render(<SnackbarProvider><CreateDeck user={testUser} history={history}/></SnackbarProvider>);
- 
   const deckName =await container.querySelector("#deckName") as HTMLInputElement;
   const deckDesc =await container.querySelector("#deckDescription") as HTMLInputElement;
   const submit = await getByTestId("submit")
+
   if(deckName==null){
     expect("false").toBeTruthy
   }
+
   var event = new Event('change');
 
   await fireEvent.keyDown(deckName, { target: { "value": "testName" } });
@@ -53,7 +54,6 @@ it("addDeckToDatabase", async() => {
   }
 
   var event = new Event('change');
-
   await fireEvent.submit(submit, { target: { "deckName": "testName","deckDescription": "testDesc" } });
 
   var deck = await firebase.firestore().collection('deck').get();

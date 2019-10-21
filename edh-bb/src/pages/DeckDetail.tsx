@@ -79,7 +79,6 @@ class DeckDetail extends React.Component<DeckDetailProps> {
   }
 
   deleteDeck = async () => {
-
     try {
       await this.deckDocRef.delete()
       this.props.enqueueSnackbar('Deck deleted')
@@ -88,8 +87,6 @@ class DeckDetail extends React.Component<DeckDetailProps> {
       this.props.enqueueSnackbar('Could delete deck', { variant: 'error' });
       console.error("Error deleting deck: ", err);
     }
-   
-   
   }
 
   deleteCardFromDeck = (deckData: DeckData, cardName: string) => {
@@ -101,7 +98,6 @@ class DeckDetail extends React.Component<DeckDetailProps> {
       //TODO update list without refreshing page
       console.log(cardName + ' deleted from ' + deckData.deckName);
       window.location.reload(true);
-      //this.state.reload();
     } catch (err) {
       this.props.enqueueSnackbar('Card no longer exists in deck', { variant: 'error' });
       console.error(cardName + " no longer exists in deck: ", err);
