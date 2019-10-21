@@ -357,3 +357,8 @@ class SearchBar extends React.Component<SearchProps, SearchState> {
 }
 
 export default SearchBar;
+export const ComponentUnderTest = () => (
+    <View>
+        < testID="search-butt" on
+    </View>
+)

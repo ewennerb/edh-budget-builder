@@ -1,12 +1,13 @@
 import React from 'react';
 import firebase from 'firebase/app';
 import firebasemock from 'firebase-mock';
-import { render, waitForElement, getByLabelText, getByText} from '@testing-library/react'
+import {render, waitForElement, getByLabelText, getByText, fireEvent} from '@testing-library/react'
 import SearchBar from './SearchBar';
 import getSearchParams from './CardSearch'
 import { SnackbarProvider } from 'notistack';
 
 jest.mock('firebase/app');
+jest.mock('./SearchBar', () => ({})
 const mockfirestore = new firebasemock.MockFirestore();
 firebase.firestore = (() => mockfirestore) as any;
 
@@ -43,6 +44,17 @@ it('renders without crashing', async () => {
     expect(sort_field).toBeDefined();
     expect(searchButt).toBeDefined();
 });
+
+
+it("builds the query correctly", async () => {
+    const { container } = doRender(testUser);
+    const name_field = await waitForElement(() => getByLabelText(container, "Card Name"), { container });
+    const searchButt = getByText(container, "Search with these options");
+    await fireEvent.change(name_field, {target: {"value": "Morophon"}});
+    await fireEvent.click(searchButt);
+    expect
+})
+
 
 //
 // describe("SearchBar component", async () => {
