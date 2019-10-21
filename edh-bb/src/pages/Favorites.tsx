@@ -11,7 +11,6 @@ const AdapterLink = React.forwardRef<HTMLAnchorElement, LinkProps>((props, ref) 
 ));
 
 class Favorites extends React.Component<{ user: firebase.User } & WithSnackbarProps> {
-
     favoritesRef: firebase.firestore.CollectionReference;
     favorites: any;
     queryRef: firebase.firestore.Query;
@@ -24,6 +23,11 @@ class Favorites extends React.Component<{ user: firebase.User } & WithSnackbarPr
         firebase.firestore().collection("users").doc(this.props.user.uid).get().then(doc => {
             if (doc.exists) {
                 favCards = doc.get("favorites");
+                for (var item in favCards) {
+                    if (typeof (favCards[item]) !== "string") {
+                        favCards.splice(item, 1);
+                    }
+                }
                 this.favorites = favCards;
             }
         });
@@ -33,6 +37,11 @@ class Favorites extends React.Component<{ user: firebase.User } & WithSnackbarPr
             try {
                 await this.queryRef.get();
                 const data = this.favorites;
+                for (var x in data) {
+                    if (typeof (data[x]) !== "string") {
+                        data.splice(x, 1);
+                    }
+                }
                 return data;
             } catch (err) {
                 this.props.enqueueSnackbar('Could not get favorites', { variant: 'error' });

@@ -198,7 +198,7 @@ class CardSearch extends React.Component<{ user: firebase.User } & WithSnackbarP
             } else {
                 const arrUnion = deckref.update({deck: firebase.firestore.FieldValue.arrayUnion(cardName)});
                 console.log(arrUnion);
-                var msg = "Added " + cardName + "to deck";
+                var msg = "Added " + cardName + " to deck";
                 this.props.enqueueSnackbar(msg, {variant: 'success'});
             }
         }
@@ -259,7 +259,7 @@ class CardSearch extends React.Component<{ user: firebase.User } & WithSnackbarP
                                                         <span> &emsp;{value.prices.usd}</span>
                                                     </div>}/>
                                                 <ListItemSecondaryAction>
-                                                    <Button onClick={this.addToFavorites.bind(this, value)} >
+                                                    <Button onClick={this.addToFavorites.bind(this, value.name)} >
                                                         Add to Favorites
                                                     </Button>
                                                     <Button onClick={this.addToDeck.bind(this, value.name)}>

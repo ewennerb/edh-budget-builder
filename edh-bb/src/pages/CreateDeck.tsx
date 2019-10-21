@@ -2,9 +2,7 @@ import React from 'react';
 import TextField from '@material-ui/core/TextField';
 import firebase from "firebase/app";
 import { withSnackbar, WithSnackbarProps } from "notistack";
-
 import { RouteComponentProps } from "react-router";
-
 import { validateDeckName } from '../common';
 
 //import { Link, LinkProps } from 'react-router-dom';
@@ -66,21 +64,16 @@ class CreateDeck extends React.Component<{ user: firebase.User } & CreateProps> 
     }
 
     firebase.firestore().collection('deck').add({
-
       deckName: event.target.deckName.value,
       deckDescription: event.target.deckDescription.value,
       deck: [],
       ownerID: this.props.user.uid
-
+    }).then(function (deckRef) {
+      console.log("Deck written with ID: " + deckRef.id);
     })
-      .then(function (deckRef) {
-        console.log("Deck written with ID: " + deckRef.id);
-      })
 
     console.log('values input into database: name=' + event.target.deckName.value + ', description=' + event.target.deckDescription.value);
-    
     this.props.history.push("/deck-list")
-
   }
 
   render() {

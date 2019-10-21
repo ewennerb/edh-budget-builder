@@ -79,6 +79,4 @@ class DeckList extends React.Component<{ user: firebase.User } & WithSnackbarPro
   }
 }
 
-
-
 export default withSnackbar(DeckList);

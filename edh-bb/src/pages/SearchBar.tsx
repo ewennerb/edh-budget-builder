@@ -229,6 +229,9 @@ class SearchBar extends React.Component<SearchProps, SearchState> {
                                     Search with these options
                                 </button>
                             </div>
+                            <p className="form-row-tip">
+                                Scroll Down For Results
+                            </p>
                         </div>
                     </div>
                 </div>

@@ -47,7 +47,6 @@ const testBigDeckEnergy: DeckData = {
 }
 
 const doRender = (deckId: string) => {
-
   const renderResult = render(
     <SnackbarProvider>
       <MemoryRouter initialEntries={["/deck-detail/" + deckId]}>
@@ -199,57 +198,47 @@ it('downloads the deck', async () => {
 })
 
 it("creates a copy", async() => {
+  firebase.firestore().collection('deck').doc(testDeckId);
+  const { container } = doRender(testDeckId);
+  const copyButton = await waitForElement(() => getByLabelText(container, "make a copy"), { container });
 
-    firebase.firestore().collection('deck').doc(testDeckId);
-    const { container } = doRender(testDeckId);
-    const copyButton = await waitForElement(() => getByLabelText(container, "make a copy"), { container });
+  await fireEvent.click(copyButton);
+  mockfirestore.autoFlush(0);
+  var deck = await firebase.firestore().collection("deck").get();
 
-    await fireEvent.click(copyButton);
-    mockfirestore.autoFlush(0);
-    var deck = await firebase.firestore().collection("deck").get();
- 
-
-    deck.forEach(deckItem => {
-      if(deckItem.id!=testDeckId){
-        expect(deckItem.data()).toStrictEqual(update(testDeckData, { deckName: { $set: "name- copy"} }));
-      }
-      
-    })
-
+  deck.forEach(deckItem => {
+    if(deckItem.id!=testDeckId){
+      expect(deckItem.data()).toStrictEqual(update(testDeckData, { deckName: { $set: "name- copy"} }));
+    }
+  })
 })
 
 it("prompts users to confirm delete, canceling will not delete deck", async() => {
-
   firebase.firestore().collection('deck').doc(testDeckId).set(testDeckData);
   const { getByText, container } = doRender(testDeckId);
+  
   const deleteButton = await waitForElement(() => getByLabelText(container, "delete"), { container });
-
-
   await fireEvent.click(deleteButton);
 
   const cancelButton =await waitForElement(() => getByText("No"), { container });
-
   fireEvent.click(cancelButton);
   
   expect( firebase.firestore().collection('deck').doc(testDeckId).data).toEqual(testDeckData);
 })
 
 it("prompts users to confirm delete, clicking yes will delete deck", async() => {
+  firebase.firestore().collection('deck').doc(testDeckId).set(testDeckData);
+  const { getByText, container } = doRender(testDeckId);
+  
+  const deleteButton = await waitForElement(() => getByLabelText(container, "delete"), { container });
+  await fireEvent.click(deleteButton);
 
-firebase.firestore().collection('deck').doc(testDeckId).set(testDeckData);
-const { getByText, container } = doRender(testDeckId);
-const deleteButton = await waitForElement(() => getByLabelText(container, "delete"), { container });
+  const confirmButton =await waitForElement(() => getByText("Yes"), { container });
+  fireEvent.click(confirmButton);
 
+  mockfirestore.flush();
 
-await fireEvent.click(deleteButton);
-
-const confirmButton =await waitForElement(() => getByText("Yes"), { container });
-
-fireEvent.click(confirmButton);
-
-mockfirestore.flush();
-
-expect( firebase.firestore().collection('deck').doc(testDeckId).data).toEqual(null);
+  expect( firebase.firestore().collection('deck').doc(testDeckId).data).toEqual(null);
 })
 
 /* it('deletes a card from the deck', async () => {
