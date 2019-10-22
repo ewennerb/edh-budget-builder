@@ -47,8 +47,8 @@ class DeckDetail extends React.Component<DeckDetailProps> {
   checkEDHStatus = (deckData: DeckData) => {
     try {
       const cardCount = deckData.deck.length;
-      if (cardCount === 100) {
-        return (<h3 data-testid="legal">Deck is legal for EDH format.</h3>)
+      if (cardCount >= 100) {
+        return (<h3 data-testid="legal">Deck is legal for EDH format. You currently have {cardCount} cards.</h3>)
       } else {
         return (<h3 data-testid="illegal">Deck is illegal for EDH format. You currently have {cardCount} cards,
          but you must have 100 cards.</h3>)
