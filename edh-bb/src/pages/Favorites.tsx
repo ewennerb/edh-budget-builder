@@ -78,22 +78,13 @@ class Favorites extends React.Component<{ user: firebase.User } & WithSnackbarPr
                                 if (typeof (favorites) === "undefined") {
                                     return (
                                         <div>
-                                            <h1>Favorite Cards</h1>
-                                            <h3>You have no favorite cards.</h3>
-                                            <Button variant='contained' component={AdapterLink} to='/search'>
-                                                Search For Cards
-                                        </Button>
+
                                         </div>
                                     )
                                 }
                                 if (favorites.length === 0) {
                                     return (
                                         <div>
-                                            <h1>Favorite Cards</h1>
-                                            <h3>You have no favorite cards.</h3>
-                                            <Button variant='contained' component={AdapterLink} to='/search'>
-                                                Search For Cards
-                                            </Button>
                                         </div>
                                     )
                                 } else {
