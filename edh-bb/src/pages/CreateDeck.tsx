@@ -46,10 +46,18 @@ class CreateDeck extends React.Component<{ user: firebase.User } & CreateProps> 
     this.isValidTitle2 = this.isValidTitle2.bind(this);
   }
 
-  public isValidTitle2(title: string="testString") {
+  public isValidTitle2(title: string = "testString") {
     const errorMsg = validateDeckName(title);
     if (errorMsg != null) {
       this.props.enqueueSnackbar(errorMsg, { variant: 'error' });
+      return false;
+    }
+    return true;
+  }
+
+  public isValidDescription(description: string) {
+    if (description.length === 0) {
+      this.props.enqueueSnackbar("Deck description is required", { variant: 'error' });
       return false;
     }
     return true;
@@ -60,6 +68,10 @@ class CreateDeck extends React.Component<{ user: firebase.User } & CreateProps> 
 
     let title: string = event.target.deckName.value;
     if (!this.isValidTitle2(title)) {
+      return;
+    }
+    let description: string = event.target.deckDescription.value;
+    if (!this.isValidDescription(description)) {
       return;
     }
 
@@ -101,7 +113,7 @@ class CreateDeck extends React.Component<{ user: firebase.User } & CreateProps> 
         <br></br>
 
         <button data-testid="submit">Submit</button>
-    </form>
+      </form>
     );
   }
 }
