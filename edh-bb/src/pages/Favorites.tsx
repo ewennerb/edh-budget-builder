@@ -58,9 +58,9 @@ class Favorites extends React.Component<{ user: firebase.User } & WithSnackbarPr
         userRef.update({
             favorites: firebase.firestore.FieldValue.arrayRemove(cardName)
         });
-        setTimeout(function () {
+        /*setTimeout(function () {
             window.location.reload();
-        }, 750);
+        }, 750);*/
         this.props.enqueueSnackbar('Removed ' + cardName + ' from your favorite cards. You may re-add any card to your favorites through the search page', { variant: 'success' });
 
     }
