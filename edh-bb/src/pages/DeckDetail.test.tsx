@@ -1,4 +1,4 @@
-import React from 'react';
+/*import React from 'react';
 import firebase from 'firebase/app';
 import firebasemock from 'firebase-mock';
 import { render, waitForElement, getByLabelText, getByText, fireEvent, findByText, getByTestId } from '@testing-library/react'
