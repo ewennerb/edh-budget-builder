@@ -162,10 +162,30 @@ class CardSearch extends React.Component<{ user: firebase.User } & WithSnackbarP
     addToFavorites(cardName: any) {
         //Add check that card is not already in user's favorites
         const userRef = firebase.firestore().collection("users").doc(this.props.user.uid);
-        const arrUnion = userRef.update({
-            favorites: firebase.firestore.FieldValue.arrayUnion(cardName)
+        userRef.get().then(doc => {
+          if (!doc.data()!.favorites) {
+            const list = [cardName];
+            userRef.update({
+              favorites: list
+          });
+          } else {
+              const list = doc.data()!.favorites;
+              list.push(cardName)
+             userRef.update({
+                    favorites: list
+                });
+            
+          }
+          
+          
+          
+          
         });
-        console.log(arrUnion);
+        
+        // const arrUnion = userRef.update({
+        //     favorites: firebase.firestore.FieldValue.arrayUnion(cardName)
+        // });
+        
         this.props.enqueueSnackbar('Added ' + cardName + ' to your favorites!', { variant: 'success' })
     }
 
@@ -198,7 +218,7 @@ class CardSearch extends React.Component<{ user: firebase.User } & WithSnackbarP
             } else {
                 const arrUnion = deckref.update({deck: firebase.firestore.FieldValue.arrayUnion(cardName)});
                 console.log(arrUnion);
-                var msg = "Added " + cardName + " to deck";
+                var msg = "Added " + cardName + "to deck";
                 this.props.enqueueSnackbar(msg, {variant: 'success'});
             }
         }

@@ -154,7 +154,7 @@ class DeckDetail extends React.Component<DeckDetailProps> {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button id="No" onClick={handleClose} color="primary">
+          <Button id="No" onClick={this.deleteDeck} color="primary">
             No
           </Button>
           <Button id="Yes" onClick={this.deleteDeck} color="primary" autoFocus>
