@@ -90,7 +90,6 @@ class CardSearch extends React.Component<{ user: firebase.User } & WithSnackbarP
                 },
             }
         );
-        this.render();
 
         console.log(params);
         if (this.state.searchOrder && params.order === undefined) {
@@ -128,7 +127,6 @@ class CardSearch extends React.Component<{ user: firebase.User } & WithSnackbarP
             });
 
             console.log(this.state);
-            this.render();
         }
     }
 
@@ -143,7 +141,6 @@ class CardSearch extends React.Component<{ user: firebase.User } & WithSnackbarP
 
         console.log(this.state.deckField.currentDeck);
         console.log(this.state.deckField.userDecks);
-        this.render();
     };
 
     async mountDropDown() {
