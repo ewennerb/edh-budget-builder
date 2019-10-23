@@ -1,14 +1,12 @@
 import React from "react";
 import firebase from "firebase/app";
 import Button from '@material-ui/core/Button';
-import { Link, LinkProps } from 'react-router-dom';
+//import { Link, LinkProps } from 'react-router-dom';
 import Async, { IfPending, IfFulfilled } from "react-async";
 import { withSnackbar, WithSnackbarProps } from "notistack";
 //import { wait } from "@testing-library/dom";
 
-const AdapterLink = React.forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => (
-    <Link innerRef={ref} {...props} />
-));
+
 
 class Favorites extends React.Component<{ user: firebase.User } & WithSnackbarProps> {
     favoritesRef: firebase.firestore.CollectionReference;
