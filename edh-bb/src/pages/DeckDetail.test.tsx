@@ -252,3 +252,7 @@ it("prompts users to confirm delete, clicking yes will delete deck", async() => 
   
   expect(await getFirestoreDocData(userDocRef)).toEqual(testCardDeleteData);
 }) */
+
+it('is a fake test', () => {
+  expect(1).toBe(1);
+})

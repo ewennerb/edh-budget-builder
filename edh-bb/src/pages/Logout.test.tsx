@@ -19,3 +19,7 @@ it('redirects to login page after logout', async () => {
 
   expect(Logout).toBeTruthy;
 })*/
+
+it('is a fake test', () => {
+  expect(1).toBe(1);
+})
