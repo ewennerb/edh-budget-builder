@@ -9,13 +9,13 @@ import firebase from "firebase/app";
 import "firebase/auth";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyA6H66HBAX22VmGjTROsoldm-QEUYLww0c",
-  authDomain: "edh-budget-builder.firebaseapp.com",
-  databaseURL: "https://edh-budget-builder.firebaseio.com",
-  projectId: "edh-budget-builder",
-  storageBucket: "",
-  messagingSenderId: "262938138815",
-  appId: "1:262938138815:web:d78522e2f346c342f30e0a"
+  apiKey: "AIzaSyAHe4wFmCfmFZqCF236pF5kvCRgdOPP3Ko",
+  authDomain: "edh-budget-builder-buggy.firebaseapp.com",
+  databaseURL: "https://edh-budget-builder-buggy.firebaseio.com",
+  projectId: "edh-budget-builder-buggy",
+  storageBucket: "edh-budget-builder-buggy.appspot.com",
+  messagingSenderId: "790881381558",
+  appId: "1:790881381558:web:d72b7fb8eabc8e69b6ca17"
 };
 firebase.initializeApp(firebaseConfig);
 const unsub = firebase.auth().onAuthStateChanged((user) => {
