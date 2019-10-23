@@ -63,9 +63,9 @@ class DeckDetail extends React.Component<DeckDetailProps> {
   copyDeck = async (deckData: DeckData) => {
     try {
       const newDeckRef = await firebase.firestore().collection('deck').add(
-        update(deckData, { deckName: { $apply: oldName => oldName + '- copy' } }))
+        update(deckData, { deckName: { $apply: oldName => '' }, deckDescription: {$apply: oldDesc => ''} }))
       console.log("Deck written with ID: " + newDeckRef.id);
-      this.props.enqueueSnackbar('Created a copy')
+      this.props.enqueueSnackbar('Created a copy with name \'' + deckData.deckName + ' - copy\'')
       this.props.history.push('/deck-list')
     } catch (err) {
       this.props.enqueueSnackbar('Could not create a copy', { variant: 'error' });
