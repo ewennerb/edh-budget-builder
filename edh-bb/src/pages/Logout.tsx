@@ -15,7 +15,7 @@ const Logout: React.FC = () => {
     )
   }
 
-  firebase.auth().signOut();
+  //firebase.auth().signOut();
 
   return (
     <div>{redirectToLogin()}</div>
