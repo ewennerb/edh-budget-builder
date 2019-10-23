@@ -29,7 +29,7 @@ class ChangeUsername extends React.Component<{ user: firebase.User } & WithSnack
       return "Username must not be empty";
     if (newUsername.length > 10)
       return "Username must be 100 characters or fewer";
-    if (!/^[a-zA-Z0-9-_]+$/.test(newUsername))
+    if (!/^[a-zA-Z0-9-]+$/.test(newUsername))
       return "Username must only contain letters, numbers, hyphens, and underscores";
     return null;
   }
