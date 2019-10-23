@@ -47,8 +47,8 @@ class DeckList extends React.Component<{ user: firebase.User } & WithSnackbarPro
                     <div>
                       <h1>Deck List</h1>
                       <h3>You have no decks.</h3>
-                      <Button variant='contained' component={AdapterLink} to='/create-deck'>
-                        Create a Deck
+                      <Button variant='contained' component={AdapterLink} to='/deck-list'>
+                        Create Deck
                       </Button>
                     </div>
                   )
