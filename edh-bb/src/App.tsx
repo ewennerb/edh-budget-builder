@@ -120,7 +120,7 @@ class Header extends React.Component<{ user: firebase.User }> {
             <LinkTab label="create deck" value="/create-deck" />
             <LinkTab label="search cards" value="/search" />
             <LinkTab label="change username" value="/change-username" />
-            <LinkTab label="favorite cards" value="/favorites" />
+            <LinkTab label="favorite cards" value="/favorites/" />
           </Tabs>
         )} />
       </AppBar>
