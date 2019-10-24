@@ -74,8 +74,7 @@ class DeckDetail extends React.Component<DeckDetailProps> {
   }
 
   showPublicUrl = (deckId: string) => {
-    const publicUrl = new URL('/public-deck/' + deckId, window.location.href).href
-    this.props.enqueueSnackbar(publicUrl)
+    this.props.enqueueSnackbar('/public-deck/' + deckId)
   }
 
   deleteDeck = async () => {
