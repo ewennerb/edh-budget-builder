@@ -27,16 +27,16 @@ class ChangeUsername extends React.Component<{ user: firebase.User } & WithSnack
   static validateUsername = (newUsername: string) => {
     if (newUsername.length === 0)
       return "Username must not be empty";
-    if (newUsername.length > 100)
+    if (newUsername.length > 10)
       return "Username must be 100 characters or fewer";
-    if (!/^[a-zA-Z0-9-_]+$/.test(newUsername))
+    if (!/^[a-zA-Z0-9-]+$/.test(newUsername))
       return "Username must only contain letters, numbers, hyphens, and underscores";
     return null;
   }
 
   handleSubmit = (newUsername: string) => () => {
     if (ChangeUsername.validateUsername(newUsername) === null) {
-      this.userDocRef.set({ username: newUsername }, { merge: true }).then(() => {
+      this.userDocRef.set({ username: newUsername }).then(() => {
         this.props.enqueueSnackbar('Changed username');
       }).catch(err => {
         this.props.enqueueSnackbar('Could not change username', { variant: 'error' });

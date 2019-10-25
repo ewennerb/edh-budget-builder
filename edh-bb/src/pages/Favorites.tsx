@@ -1,14 +1,12 @@
 import React from "react";
 import firebase from "firebase/app";
 import Button from '@material-ui/core/Button';
-import { Link, LinkProps } from 'react-router-dom';
+//import { Link, LinkProps } from 'react-router-dom';
 import Async, { IfPending, IfFulfilled } from "react-async";
 import { withSnackbar, WithSnackbarProps } from "notistack";
 //import { wait } from "@testing-library/dom";
 
-const AdapterLink = React.forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => (
-    <Link innerRef={ref} {...props} />
-));
+
 
 class Favorites extends React.Component<{ user: firebase.User } & WithSnackbarProps> {
     favoritesRef: firebase.firestore.CollectionReference;
@@ -58,9 +56,9 @@ class Favorites extends React.Component<{ user: firebase.User } & WithSnackbarPr
         userRef.update({
             favorites: firebase.firestore.FieldValue.arrayRemove(cardName)
         });
-        setTimeout(function () {
+        /*setTimeout(function () {
             window.location.reload();
-        }, 750);
+        }, 750);*/
         this.props.enqueueSnackbar('Removed ' + cardName + ' from your favorite cards. You may re-add any card to your favorites through the search page', { variant: 'success' });
 
     }
@@ -78,22 +76,13 @@ class Favorites extends React.Component<{ user: firebase.User } & WithSnackbarPr
                                 if (typeof (favorites) === "undefined") {
                                     return (
                                         <div>
-                                            <h1>Favorite Cards</h1>
-                                            <h3>You have no favorite cards.</h3>
-                                            <Button variant='contained' component={AdapterLink} to='/search'>
-                                                Search For Cards
-                                        </Button>
+
                                         </div>
                                     )
                                 }
                                 if (favorites.length === 0) {
                                     return (
                                         <div>
-                                            <h1>Favorite Cards</h1>
-                                            <h3>You have no favorite cards.</h3>
-                                            <Button variant='contained' component={AdapterLink} to='/search'>
-                                                Search For Cards
-                                            </Button>
                                         </div>
                                     )
                                 } else {
