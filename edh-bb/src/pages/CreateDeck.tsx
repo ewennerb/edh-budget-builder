@@ -80,7 +80,7 @@ class CreateDeck extends React.Component<{ user: firebase.User } & CreateProps> 
     })
 
     console.log('values input into database: name=' + event.target.deckName.value + ', description=' + event.target.deckDescription.value);
-    this.props.history.push("/deck-list")
+    //this.props.history.push("/deck-list")
   }
 
   render() {
