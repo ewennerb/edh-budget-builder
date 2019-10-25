@@ -57,7 +57,7 @@ class PublicDeckDetail extends React.Component<PublicDeckDetailProps> {
                 <>
                   <h1>{data.deckName}</h1>
                   {this.checkEDHStatus(data)}
-                  <p style={{ whiteSpace: 'pre-wrap' }}>
+                  <p>
                     {data.deckDescription}
                   </p>
                   <ul>
