@@ -292,6 +292,7 @@ class SearchBar extends React.Component<SearchProps, SearchState> {
         // Pushes Card Type Onto the Query Array
         // @ts-ignore
         if (searchTerms.type) {
+            searchTerms.type = searchTerms.type.replace("-", "");
             // @ts-ignore
             searchQueryArray.push(this.splitWords(searchTerms.type.split(' '), 't:', searchTerms.allowPartialTypeMatch));
         }
@@ -318,11 +319,11 @@ class SearchBar extends React.Component<SearchProps, SearchState> {
         const q = searchQueryArray.join(' ').trim();
         console.log(q);
         var order = SearchOrder.Name;
-        console.log(searchTerms.order);
-        if (searchTerms.order !== SearchOrder.Name) {
-            // @ts-ignore
-            order = searchTerms.order;
-        }
+        // console.log(searchTerms.order);
+        // if (searchTerms.order !== SearchOrder.Name) {
+        //     // @ts-ignore
+        //     order = searchTerms.order;
+        // }
         // @ts-ignore
         const newSearchTerms = { ...this.state.searchTerms, q, page: 1, order: order };
         //

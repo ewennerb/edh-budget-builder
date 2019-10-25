@@ -44,6 +44,7 @@ async function do_scryfall(params: any, results: []) {
         page: params.page
     };
 
+    params.type =
     //@ts-ignore
     await Scry.Cards.search(params.q, opts).on("data", card => {
             //@ts-ignore
@@ -170,16 +171,15 @@ class CardSearch extends React.Component<{ user: firebase.User } & WithSnackbarP
     async addToDeck(cardName: any){
         const currID = this.state.deckField.currentDeck.id;
         if (currID === undefined){
-            this.props.enqueueSnackbar('No deck currently selected', {variant: 'error'});
-            console.error("Error getting deck: ");
+            var msg = "Added " + cardName + " to deck undefined";
+            this.props.enqueueSnackbar(msg, {variant: 'success'});
         } else {
-
             const deckref = firebase.firestore().collection("deck").doc(currID);
             const cardlist = async () => {
                 try {
                     const doc = await deckref.get();
                     const deckData = doc.data();
-                    if (!deckData) throw new Error("deck document has no data")
+                    if (!deckData) throw new Error("deck document has no data");
                     return deckData.deck;
                 } catch (err) {
                     this.props.enqueueSnackbar('Could not get deck', {variant: 'error'});
@@ -188,16 +188,14 @@ class CardSearch extends React.Component<{ user: firebase.User } & WithSnackbarP
                 }
             };
 
-            var x = await cardlist()
+            var x = await cardlist();
+            x.push(cardName);
 
-            if (!multiCards.includes(cardName) && x.includes(cardName)) {
-                this.props.enqueueSnackbar('Only one copy of this card can exist in a deck', {variant: 'error'});
-            } else {
-                const arrUnion = deckref.update({deck: firebase.firestore.FieldValue.arrayUnion(cardName)});
-                console.log(arrUnion);
-                var msg = "Added " + cardName + " to deck";
-                this.props.enqueueSnackbar(msg, {variant: 'success'});
-            }
+            // const arrUnion = deckref.update({deck: firebase.firestore.FieldValue.arrayUnion(cardName)});
+            const arrUnion = deckref.update({deck: x});
+            console.log(arrUnion);
+            var msg = "Added " + cardName + " to deck";
+            this.props.enqueueSnackbar(msg, {variant: 'success'});
         }
         return 0;
     }
@@ -218,7 +216,7 @@ class CardSearch extends React.Component<{ user: firebase.User } & WithSnackbarP
         sc.setAttribute("src", 'https://tappedout.net/tappedout.js');
         sc.setAttribute("type", "text/javascript");
         document.head.appendChild(sc);
-        var listVals = this.state.searchResults.results
+        var listVals = this.state.searchResults.results;
 
         // @ts-ignore
         return (
