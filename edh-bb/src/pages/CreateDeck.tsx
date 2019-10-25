@@ -55,13 +55,13 @@ class CreateDeck extends React.Component<{ user: firebase.User } & CreateProps> 
     return true;
   }
 
-  public isValidDescription(description: string) {
+  /*public isValidDescription(description: string) {
     if (description.length === 0) {
       this.props.enqueueSnackbar("Deck description is required", { variant: 'error' });
       return false;
     }
     return true;
-  }
+  }*/
 
   handleSubmit(event: any, user = this.userDocRef.get()) {
     event.preventDefault();
@@ -70,11 +70,6 @@ class CreateDeck extends React.Component<{ user: firebase.User } & CreateProps> 
     if (!this.isValidTitle2(title)) {
       return;
     }
-    let description: string = event.target.deckDescription.value;
-    if (!this.isValidDescription(description)) {
-      return;
-    }
-
     firebase.firestore().collection('deck').add({
       deckName: event.target.deckName.value,
       deckDescription: event.target.deckDescription.value,
