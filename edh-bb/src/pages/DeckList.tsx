@@ -42,13 +42,13 @@ class DeckList extends React.Component<{ user: firebase.User } & WithSnackbarPro
             </IfPending>
             <IfFulfilled state={state}>
               {decks => {
-                if (decks.length === 0) {
+                if (decks.length <= 1) {
                   return (
                     <div>
                       <h1>Deck List</h1>
                       <h3>You have no decks.</h3>
-                      <Button variant='contained' component={AdapterLink} to='/create-deck'>
-                        Create a Deck
+                      <Button variant='contained' component={AdapterLink} to='/deck-list'>
+                        Create Deck
                       </Button>
                     </div>
                   )

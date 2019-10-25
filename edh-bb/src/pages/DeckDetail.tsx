@@ -47,8 +47,8 @@ class DeckDetail extends React.Component<DeckDetailProps> {
   checkEDHStatus = (deckData: DeckData) => {
     try {
       const cardCount = deckData.deck.length;
-      if (cardCount === 100) {
-        return (<h3 data-testid="legal">Deck is legal for EDH format.</h3>)
+      if (cardCount >= 100) {
+        return (<h3 data-testid="legal">Deck is legal for EDH format. You currently have {cardCount} cards.</h3>)
       } else {
         return (<h3 data-testid="illegal">Deck is illegal for EDH format. You currently have {cardCount} cards,
          but you must have 100 cards.</h3>)
@@ -63,9 +63,9 @@ class DeckDetail extends React.Component<DeckDetailProps> {
   copyDeck = async (deckData: DeckData) => {
     try {
       const newDeckRef = await firebase.firestore().collection('deck').add(
-        update(deckData, { deckName: { $apply: oldName => oldName + '- copy' } }))
+        update(deckData, { deckName: { $apply: oldName => '' }, deckDescription: {$apply: oldDesc => ''} }))
       console.log("Deck written with ID: " + newDeckRef.id);
-      this.props.enqueueSnackbar('Created a copy')
+      this.props.enqueueSnackbar('Created a copy with name \'' + deckData.deckName + ' - copy\'')
       this.props.history.push('/deck-list')
     } catch (err) {
       this.props.enqueueSnackbar('Could not create a copy', { variant: 'error' });
@@ -88,9 +88,9 @@ class DeckDetail extends React.Component<DeckDetailProps> {
     }
   }
 
-  deleteCardFromDeck = async (deckData: DeckData, cardName: string) => {
+  deleteCardFromDeck = (deckData: DeckData, cardName: string) => {
     try {
-      await this.deckDocRef.update({
+      this.deckDocRef.update({
         deck: firebase.firestore.FieldValue.arrayRemove(cardName)
         });
       this.props.enqueueSnackbar(cardName + ' deleted from ' + deckData.deckName); 
@@ -153,7 +153,7 @@ class DeckDetail extends React.Component<DeckDetailProps> {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button id="No" onClick={handleClose} color="primary">
+          <Button id="No" onClick={this.deleteDeck} color="primary">
             No
           </Button>
           <Button id="Yes" onClick={this.deleteDeck} color="primary" autoFocus>

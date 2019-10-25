@@ -47,14 +47,14 @@ async function do_scryfall(params: any, results: []) {
     params.type =
     //@ts-ignore
     await Scry.Cards.search(params.q, opts).on("data", card => {
-            //@ts-ignore
-            results.push(card);
+        //@ts-ignore
+        results.push(card);
 
     }).waitForAll();
     console.log(results);
 }
 
-interface CardSearchState {searchQuery: Object, searchResults: any, lenResults: number, deckField: DropFields, searchOrder: SearchOrder}
+interface CardSearchState { searchQuery: Object, searchResults: any, lenResults: number, deckField: DropFields, searchOrder: SearchOrder }
 
 class CardSearch extends React.Component<{ user: firebase.User } & WithSnackbarProps, CardSearchState> {
     decksRef: firebase.firestore.CollectionReference;
@@ -66,7 +66,7 @@ class CardSearch extends React.Component<{ user: firebase.User } & WithSnackbarP
         super(props);
         this.state = {
             searchQuery: {},
-            searchResults: {results: []},
+            searchResults: { results: [] },
             lenResults: 0,
             deckField: {
                 currentDeck: {},
@@ -86,10 +86,10 @@ class CardSearch extends React.Component<{ user: firebase.User } & WithSnackbarP
     public async getSearchParams(params: any) {
 
         this.setState({
-                searchResults: {
-                    results: []
-                },
-            }
+            searchResults: {
+                results: []
+            },
+        }
         );
 
         console.log(params);
@@ -120,7 +120,7 @@ class CardSearch extends React.Component<{ user: firebase.User } & WithSnackbarP
             this.setState({
                 searchQuery: temp,
                 //@ts-ignore
-                searchResults: {results: results},
+                searchResults: { results: results },
                 //@ts-ignore
                 lenResults: results.length + 1,
                 //@ts-ignore
@@ -131,7 +131,7 @@ class CardSearch extends React.Component<{ user: firebase.User } & WithSnackbarP
         }
     }
 
-    handleChange(event: any){
+    handleChange(event: any) {
         console.log(event.target.value);
         this.setState({
             deckField: {
@@ -149,10 +149,10 @@ class CardSearch extends React.Component<{ user: firebase.User } & WithSnackbarP
         console.log("I am setting the state to default now");
         this.setState({
             deckField:
-                {
-                    currentDeck: {},
-                    userDecks: decks
-                }
+            {
+                currentDeck: {},
+                userDecks: decks
+            }
         });
         return 1;
     }
@@ -160,15 +160,34 @@ class CardSearch extends React.Component<{ user: firebase.User } & WithSnackbarP
     addToFavorites(cardName: any) {
         //Add check that card is not already in user's favorites
         const userRef = firebase.firestore().collection("users").doc(this.props.user.uid);
-        const arrUnion = userRef.update({
-            favorites: firebase.firestore.FieldValue.arrayUnion(cardName)
+
+        userRef.get().then(doc => {
+          if (!doc.data()!.favorites) {
+            const list = [cardName];
+            userRef.update({
+              favorites: list
+          });
+          } else {
+              const list = doc.data()!.favorites;
+              list.push(cardName)
+             userRef.update({
+                    favorites: list
+                });
+            
+          }
+
         });
-        console.log(arrUnion);
+        
+        // const arrUnion = userRef.update({
+        //     favorites: firebase.firestore.FieldValue.arrayUnion(cardName)
+        // });
+        
         this.props.enqueueSnackbar('Added ' + cardName + ' to your favorites!', { variant: 'success' })
+        this.addToDeck(cardName);
     }
 
 
-    async addToDeck(cardName: any){
+    async addToDeck(cardName: any) {
         const currID = this.state.deckField.currentDeck.id;
         if (currID === undefined){
             var msg = "Added " + cardName + " to deck undefined";
@@ -182,7 +201,7 @@ class CardSearch extends React.Component<{ user: firebase.User } & WithSnackbarP
                     if (!deckData) throw new Error("deck document has no data");
                     return deckData.deck;
                 } catch (err) {
-                    this.props.enqueueSnackbar('Could not get deck', {variant: 'error'});
+                    this.props.enqueueSnackbar('Could not get deck', { variant: 'error' });
                     console.error("Error getting deck: ", err);
                     throw err
                 }
@@ -190,6 +209,7 @@ class CardSearch extends React.Component<{ user: firebase.User } & WithSnackbarP
 
             var x = await cardlist();
             x.push(cardName);
+
 
             // const arrUnion = deckref.update({deck: firebase.firestore.FieldValue.arrayUnion(cardName)});
             const arrUnion = deckref.update({deck: x});
@@ -220,62 +240,63 @@ class CardSearch extends React.Component<{ user: firebase.User } & WithSnackbarP
 
         // @ts-ignore
         return (
-                <div>
-                    <Async promiseFn={this.loadPromise}>
-                        {state =>
-                            <IfFulfilled state={state}>
-                                {decks =>
-                                    <>
-                                        <InputLabel htmlFor="deck-select" data-testid="deck-select-test">Current Deck</InputLabel>
-                                        <Select id="#deck-select" inputProps={{id: 'current-deck',}}
-                                                value={this.state.deckField.currentDeck}
-                                                onChange={this.handleChange.bind(this)}>
-                                            {this.state.deckField.userDecks.map((deck: any) => <MenuItem
-                                                value={deck}>{deck.data().deckName}</MenuItem>)}
-                                        </Select>
-                                        <SearchBar searchQuery={this.getSearchParams.bind(this)}>Card Search</SearchBar>
-                                    </>
-                                }
-                            </IfFulfilled>
-                        }
-                    </Async>
-                    {(this.state.lenResults !== 0) && (
-                        <>
-                            <br />
-                            <div>
-                                <script src="https://tappedout.net/tappedout.js"></script>
-                                <List dense>
-                                    {listVals.map((value: any) => {const labelId = `list-item-${value.name}`;
-                                        return (
-                                            <ListItem key={value} button>
-                                                <ListItemText id={labelId} primary={
-                                                    <div>
-                                                        <span className="mtgcard" id={labelId}>($ `${value.name}`)</span>&emsp;&emsp;
+            <div>
+                <Async promiseFn={this.loadPromise}>
+                    {state =>
+                        <IfFulfilled state={state}>
+                            {decks =>
+                                <>
+                                    <InputLabel htmlFor="deck-select" data-testid="deck-select-test">Current Deck</InputLabel>
+                                    <Select id="#deck-select" inputProps={{ id: 'current-deck', }}
+                                        value={this.state.deckField.currentDeck}
+                                        onChange={this.handleChange.bind(this)}>
+                                        {this.state.deckField.userDecks.map((deck: any) => <MenuItem
+                                            value={deck}>{deck.data().deckName}</MenuItem>)}
+                                    </Select>
+                                    <SearchBar searchQuery={this.getSearchParams.bind(this)}>Card Search</SearchBar>
+                                </>
+                            }
+                        </IfFulfilled>
+                    }
+                </Async>
+                {(this.state.lenResults !== 0) && (
+                    <>
+                        <br />
+                        <div>
+                            <script src="https://tappedout.net/tappedout.js"></script>
+                            <List dense>
+                                {listVals.map((value: any) => {
+                                    const labelId = `list-item-${value.name}`;
+                                    return (
+                                        <ListItem key={value} button>
+                                            <ListItemText id={labelId} primary={
+                                                <div>
+                                                    <span className="mtgcard" id={labelId}>($ `${value.name}`)</span>&emsp;&emsp;
                                                         <span> &emsp;{value.prices.usd}</span>
-                                                    </div>}/>
-                                                <ListItemSecondaryAction>
-                                                    <Button onClick={this.addToFavorites.bind(this, value.name)} >
-                                                        Add to Favorites
+                                                </div>} />
+                                            <ListItemSecondaryAction>
+                                                <Button onClick={this.addToFavorites.bind(this, value.name)} >
+                                                    Add to Favorites
                                                     </Button>
-                                                    <Button onClick={this.addToDeck.bind(this, value.name)}>
-                                                        Add to Deck
+                                                <Button onClick={this.addToDeck.bind(this, value.name)}>
+                                                    Add to Deck
                                                     </Button>
-                                                </ListItemSecondaryAction>
-                                            </ListItem>
-                                        );
-                                    })}
-                                </List>
-                            </div>
+                                            </ListItemSecondaryAction>
+                                        </ListItem>
+                                    );
+                                })}
+                            </List>
+                        </div>
                         <br />
                         <br />
                         <br />
                         <br />
                         <br />
                     </>
-                    )}
-                </div>
-            );
-        }
-        }
+                )}
+            </div>
+        );
+    }
+}
 
 export default withSnackbar(CardSearch);

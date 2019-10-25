@@ -46,7 +46,7 @@ class CreateDeck extends React.Component<{ user: firebase.User } & CreateProps> 
     this.isValidTitle2 = this.isValidTitle2.bind(this);
   }
 
-  public isValidTitle2(title: string="testString") {
+  public isValidTitle2(title: string = "testString") {
     const errorMsg = validateDeckName(title);
     if (errorMsg != null) {
       this.props.enqueueSnackbar(errorMsg, { variant: 'error' });
@@ -55,6 +55,14 @@ class CreateDeck extends React.Component<{ user: firebase.User } & CreateProps> 
     return true;
   }
 
+  /*public isValidDescription(description: string) {
+    if (description.length === 0) {
+      this.props.enqueueSnackbar("Deck description is required", { variant: 'error' });
+      return false;
+    }
+    return true;
+  }*/
+
   handleSubmit(event: any, user = this.userDocRef.get()) {
     event.preventDefault();
 
@@ -62,7 +70,6 @@ class CreateDeck extends React.Component<{ user: firebase.User } & CreateProps> 
     if (!this.isValidTitle2(title)) {
       return;
     }
-
     firebase.firestore().collection('deck').add({
       deckName: event.target.deckName.value,
       deckDescription: event.target.deckDescription.value,
@@ -73,7 +80,7 @@ class CreateDeck extends React.Component<{ user: firebase.User } & CreateProps> 
     })
 
     console.log('values input into database: name=' + event.target.deckName.value + ', description=' + event.target.deckDescription.value);
-    this.props.history.push("/deck-list")
+    //this.props.history.push("/deck-list")
   }
 
   render() {
@@ -101,7 +108,7 @@ class CreateDeck extends React.Component<{ user: firebase.User } & CreateProps> 
         <br></br>
 
         <button data-testid="submit">Submit</button>
-    </form>
+      </form>
     );
   }
 }
