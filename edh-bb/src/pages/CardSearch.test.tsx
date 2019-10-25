@@ -21,7 +21,6 @@ firebase.firestore().collection("decks").add(testDeck);
 const doRender = (user: firebase.User) => {
     const renderResult = render(<SnackbarProvider><CardSearch user={user} /></SnackbarProvider>);
     mockfirestore.autoFlush(0);
-    mockfirestore.flush();
     return renderResult;
 };
 
