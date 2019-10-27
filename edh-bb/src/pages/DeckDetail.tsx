@@ -10,11 +10,7 @@ import {
   Button,
   IconButton,
   Tooltip,
-  ListItem,
-  ListItemText,
-  ListItemSecondaryAction,
-  List,
-  TableCell, TableRow, Table, TableBody, TableHead
+  TableCell, TableRow, Table, TableBody
 } from "@material-ui/core";
 import ShareIcon from '@material-ui/icons/Share';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
@@ -28,7 +24,6 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import update from 'immutability-helper';
 import { DeckData, validateDeckName } from "../common";
 import FileSaver from "file-saver";
-import {FilledTextFieldProps} from "@material-ui/core/TextField";
 
 function count(arr: any, item: any) {
   var count = 0;
@@ -219,6 +214,7 @@ class DeckDetail extends React.Component<DeckDetailProps> {
     basicLands.map((land: any) => {
       //@ts-ignore
       landIdx[land] = -1;
+      return 0;
     });
 
 
@@ -365,6 +361,7 @@ class DeckDetail extends React.Component<DeckDetailProps> {
                                           {row.pop()}
                                         </TableRow>);
                                       }
+                                      return 0;
                                         //@ts-ignore
                                     } else if(landIdx[cardName] === undefined) {
                                         row.push(
@@ -386,8 +383,9 @@ class DeckDetail extends React.Component<DeckDetailProps> {
                                               {row.pop()}
                                           </TableRow>)
                                         }
-                                      }
-                                    })
+                                      }return 0;
+                                    }
+                                    )
                                   }
                                 </TableBody>
                               </Table>
