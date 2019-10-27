@@ -23,17 +23,17 @@ class DropFields {
 }
 
 var t = 0;
-const multiCards = [
-    "Island",
-    "Mountain",
-    "Swamp",
-    "Forest",
-    "Plains",
-    "Relentless Rats",
-    "Rat Colony",
-    "Persistent Petitioners",
-    "Shadowborn Apostle"
-];
+// const multiCards = [
+//     "Island",
+//     "Mountain",
+//     "Swamp",
+//     "Forest",
+//     "Plains",
+//     "Relentless Rats",
+//     "Rat Colony",
+//     "Persistent Petitioners",
+//     "Shadowborn Apostle"
+// ];
 
 
 async function do_scryfall(params: any, results: []) {
@@ -194,8 +194,8 @@ class CardSearch extends React.Component<{ user: firebase.User } & WithSnackbarP
             // const arrUnion = deckref.update({deck: firebase.firestore.FieldValue.arrayUnion(cardName)});
             const arrUnion = deckref.update({deck: x});
             console.log(arrUnion);
-            var msg = "Added " + cardName + " to deck";
-            this.props.enqueueSnackbar(msg, {variant: 'success'});
+            var m = "Added " + cardName + " to deck";
+            this.props.enqueueSnackbar(m, {variant: 'success'});
         }
         return 0;
     }
