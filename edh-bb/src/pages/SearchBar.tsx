@@ -177,14 +177,14 @@ class SearchBar extends React.Component<SearchProps, SearchState> {
                         <div className="advanced-search-row-content js-advanced-search-duplicant">
 
                             <div className="form-row-content-band js-advanced-search-duplicant-template">
-                                <select className="form-input auto" name="price_1_mode" id="price_1_mode">
+                                <select className="form-input auto" name="pricemod" id="pricemod" value={searchTerms.pricemod} onChange={event => this.onFieldChange(event.currentTarget.name, event.currentTarget.value)}>
                                     <option value="<">less than</option>
                                     <option value=">">greater than</option>
                                     <option value="<=">less than or equal to</option>
                                     <option value=">=">greater than or equal to</option>
                                 </select>
                                 <label className="visuallyhidden" htmlFor="price_1_value">Currency 1 value</label>
-                                <input data-testid="price-input" name="price_1_value" id="price_1_value" className="form-input auto" placeholder="Any value, e.g. “15.00”" pattern="d*" type="number" />
+                                <input data-testid="price" name="price" id="price" className="form-input auto" placeholder="Any value, e.g. “15.00”" pattern="d*" type="number" value={searchTerms.price} onChange={event => this.onFieldChange(event.currentTarget.name, event.currentTarget.value)}/>
                             </div>
 
                             <p className="form-row-tip js-advanced-search-row-tip">
@@ -205,7 +205,7 @@ class SearchBar extends React.Component<SearchProps, SearchState> {
 
                             <div className="form-row-content-band">
                                 <label className="visuallyhidden" htmlFor="order">Order</label>
-                                <select className="form-input auto" name="order" id="order" onChange={event => this.onFieldChange(event.currentTarget.name, event.currentTarget.value)}>
+                                <select className="form-input auto" name="order" id="order" value={searchTerms.order} onChange={event => this.onFieldChange(event.currentTarget.name, event.currentTarget.value)}>
                                     <option value="">Name</option>
                                     <option value="set">Set/Number</option>
                                     <option value="rarity">Rarity</option>
@@ -315,6 +315,17 @@ class SearchBar extends React.Component<SearchProps, SearchState> {
             searchQueryArray.push(this.splitWords(searchTerms.rarities, 'r:', true));
         }
 
+        console.log(searchTerms.price);
+        console.log(searchTerms.pricemod);
+        if (searchTerms.price){
+            if (searchTerms.pricemod){
+                searchQueryArray.push("usd" + searchTerms.pricemod + searchTerms.price);
+            }else{
+                searchQueryArray.push("usd>" + searchTerms.price);
+            }
+        }
+
+
         const q = searchQueryArray.join(' ').trim();
         console.log(q);
         var order = SearchOrder.Name;
@@ -324,7 +335,7 @@ class SearchBar extends React.Component<SearchProps, SearchState> {
             order = searchTerms.order;
         }
         // @ts-ignore
-        const newSearchTerms = { ...this.state.searchTerms, q, page: 1, order: order };
+        const newSearchTerms = { ...this.state.searchTerms, q, page: 1, order: order, };
         //
         // this.props.fetchFilteredCards(newSearchTerms);
         // this.props.history.push('/cards/' + q);
