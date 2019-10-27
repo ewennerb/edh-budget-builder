@@ -196,7 +196,8 @@ class CardSearch extends React.Component<{ user: firebase.User } & WithSnackbarP
             if (!multiCards.includes(cardName) && x.includes(cardName)) {
                 this.props.enqueueSnackbar('Only one copy of this card can exist in a deck', {variant: 'error'});
             } else {
-                const arrUnion = deckref.update({deck: firebase.firestore.FieldValue.arrayUnion(cardName)});
+                x.push(cardName);
+                const arrUnion = deckref.update({deck: x});
                 console.log(arrUnion);
                 var msg = "Added " + cardName + " to deck";
                 this.props.enqueueSnackbar(msg, {variant: 'success'});
@@ -234,6 +235,7 @@ class CardSearch extends React.Component<{ user: firebase.User } & WithSnackbarP
             ss.setAttribute("href", "https://www.foilking.dev/ts-scryfall/static/css/main.a2ec1a5b.css");
             ss.setAttribute("rel", "stylesheet");
             ss.setAttribute("type", "text/css");
+            ss.setAttribute("accessKey", "search-css");
             document.head.appendChild(ss);
             this.mountDropDown();
             t = 1;
