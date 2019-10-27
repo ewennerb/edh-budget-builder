@@ -36,7 +36,7 @@ class ChangeUsername extends React.Component<{ user: firebase.User } & WithSnack
 
   handleSubmit = (newUsername: string) => () => {
     if (ChangeUsername.validateUsername(newUsername) === null) {
-      this.userDocRef.set({ username: newUsername }, { merge: true }).then(() => {
+      this.userDocRef.set({ username: newUsername }).then(() => {
         this.props.enqueueSnackbar('Changed username');
       }).catch(err => {
         this.props.enqueueSnackbar('Could not change username', { variant: 'error' });
