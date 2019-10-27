@@ -23,17 +23,17 @@ class DropFields {
 }
 
 var t = 0;
-const multiCards = [
-    "Island",
-    "Mountain",
-    "Swamp",
-    "Forest",
-    "Plains",
-    "Relentless Rats",
-    "Rat Colony",
-    "Persistent Petitioners",
-    "Shadowborn Apostle"
-];
+// const multiCards = [
+//     "Island",
+//     "Mountain",
+//     "Swamp",
+//     "Forest",
+//     "Plains",
+//     "Relentless Rats",
+//     "Rat Colony",
+//     "Persistent Petitioners",
+//     "Shadowborn Apostle"
+// ];
 
 
 async function do_scryfall(params: any, results: []) {
@@ -66,7 +66,7 @@ class CardSearch extends React.Component<{ user: firebase.User } & WithSnackbarP
         super(props);
         this.state = {
             searchQuery: {},
-            searchResults: { results: [] },
+            searchResults: {results: []},
             lenResults: 0,
             deckField: {
                 currentDeck: {},
@@ -173,15 +173,15 @@ class CardSearch extends React.Component<{ user: firebase.User } & WithSnackbarP
              userRef.update({
                     favorites: list
                 });
-            
+
           }
 
         });
-        
+
         // const arrUnion = userRef.update({
         //     favorites: firebase.firestore.FieldValue.arrayUnion(cardName)
         // });
-        
+
         this.props.enqueueSnackbar('Added ' + cardName + ' to your favorites!', { variant: 'success' })
         this.addToDeck(cardName);
     }
@@ -210,12 +210,11 @@ class CardSearch extends React.Component<{ user: firebase.User } & WithSnackbarP
             var x = await cardlist();
             x.push(cardName);
 
-
             // const arrUnion = deckref.update({deck: firebase.firestore.FieldValue.arrayUnion(cardName)});
             const arrUnion = deckref.update({deck: x});
             console.log(arrUnion);
-            var msg = "Added " + cardName + " to deck";
-            this.props.enqueueSnackbar(msg, {variant: 'success'});
+            var m = "Added " + cardName + " to deck";
+            this.props.enqueueSnackbar(m, {variant: 'success'});
         }
         return 0;
     }
