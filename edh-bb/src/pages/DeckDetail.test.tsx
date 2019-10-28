@@ -67,7 +67,7 @@ const getFirestoreDocData = async (docRef: firebase.firestore.DocumentReference)
 it('renders without crashing', async () => {
   firebase.firestore().collection('deck').doc(testDeckId).set(testDeckData);
   const { container } = doRender(testDeckId);
-  const heading = await waitForElement(() => getByText(container, "Deck Detail"), { container });
+  const heading = await waitForElement(() => getByTestId(container, "deck-detail-flex"), { container });
 
   expect(heading).toBeDefined();
 })
@@ -83,10 +83,10 @@ it('shows the deck name', async () => {
 it('shows the cards', async () => {
   firebase.firestore().collection('deck').doc(testDeckId).set(testDeckData);
   const { container } = doRender(testDeckId);
-  await waitForElement(() => getByText(container, "Deck Detail"), { container });
+  await waitForElement(() => getByTestId(container, "deck-detail-flex"), { container });
 
-  expect(getByText(container, "card 1")).toBeDefined()
-  expect(getByText(container, "card 2")).toBeDefined()
+  expect(getByTestId(container, "($ `$card 1`)")).toBeDefined();
+  expect(getByTestId(container, "($ `$card 2`)")).toBeDefined();
 })
 
 it('rejects an invalid deck in EDH format', async () => {

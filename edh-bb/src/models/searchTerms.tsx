@@ -41,4 +41,6 @@ export interface SearchTerms {
     formats: string[];
     commanderIdentity: string[];
     rarities: string[];
+    price: string;
+    pricemod: string;
 }
