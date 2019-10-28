@@ -44,6 +44,7 @@ async function do_scryfall(params: any, results: []) {
         page: params.page
     };
 
+    params.type =
     //@ts-ignore
     await Scry.Cards.search(params.q, opts).on("data", card => {
         //@ts-ignore
@@ -192,7 +193,6 @@ class CardSearch extends React.Component<{ user: firebase.User } & WithSnackbarP
             var msg = "Added " + cardName + " to deck undefined";
             this.props.enqueueSnackbar(msg, {variant: 'success'});
         } else {
-
             const deckref = firebase.firestore().collection("deck").doc(currID);
             const cardlist = async () => {
                 try {
