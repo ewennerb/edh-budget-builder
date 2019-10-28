@@ -234,7 +234,7 @@ class DeckDetail extends React.Component<DeckDetailProps> {
                   return (
                       <>
                         <script src="https://tappedout.net/tappedout.js"></script>
-                        <Box alignContent='center' p={1}>
+                        <Box alignContent='center' p={1}  data-testid="deck-detail-flex">
                           <Box
                             justifyContent="left"
                             display="flex"
@@ -347,7 +347,7 @@ class DeckDetail extends React.Component<DeckDetailProps> {
                                                 <IconButton aria-label="delete-card" data-testid={index}
                                                           onClick={() => this.deleteCardFromDeck(data.deckData, cardName)}><DeleteIcon/></IconButton>
                                               </Tooltip>
-                                              <span className="mtgcard" id={cardName}>($ `${cardName}`) x {templen}</span>
+                                              <span className="mtgcard" id={cardName} data-testid={"($ `$" + cardName + "`)"}>($ `${cardName}`) x {templen}</span>
                                             </TableCell>
                                         );
                                       }
@@ -370,7 +370,7 @@ class DeckDetail extends React.Component<DeckDetailProps> {
                                               <IconButton aria-label="delete-card" data-testid={index} onClick={() => this.deleteCardFromDeck(data.deckData, cardName)}><DeleteIcon />
                                               </IconButton>
                                             </Tooltip>
-                                            <span className="mtgcard" id={cardName}>($ `${cardName}`)</span>
+                                            <span className="mtgcard" id={cardName} data-testid={"($ `$" + cardName + "`)"}>($ `${cardName}`)</span>
                                           </TableCell>
                                         );
                                         ctr++;
