@@ -126,7 +126,7 @@ class DeckDetail extends React.Component<DeckDetailProps> {
     } else {
 
       try {
-        await this.deckDocRef.update({
+        this.deckDocRef.update({
           deck: firebase.firestore.FieldValue.arrayRemove(cardName)
         });
         this.props.enqueueSnackbar(cardName + ' deleted from ' + deckData.deckName);
