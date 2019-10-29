@@ -192,7 +192,7 @@ class CardSearch extends React.Component<{ user: firebase.User } & WithSnackbarP
     async addToDeck(cardName: any) {
         const currID = this.state.deckField.currentDeck.id;
         if (currID === undefined){
-            var msg = "Added " + cardName + " to deck undefined";
+            const msg = "Added " + cardName + " to deck undefined";
             this.props.enqueueSnackbar(msg, {variant: 'success'});
         } else {
             const deckref = firebase.firestore().collection("deck").doc(currID);
@@ -217,7 +217,7 @@ class CardSearch extends React.Component<{ user: firebase.User } & WithSnackbarP
                 x.push(cardName);
                 const arrUnion = deckref.update({deck: x});
                 console.log(arrUnion);
-                var msg = "Added " + cardName + " to deck";
+                const msg = "Added " + cardName + " to deck";
                 this.props.enqueueSnackbar(msg, {variant: 'success'});
             }
         }
