@@ -4,12 +4,14 @@ import { withSnackbar, WithSnackbarProps } from "notistack";
 import {
     Button,
     InputLabel,
-    ListItem,
-    List,
-    ListItemSecondaryAction,
-    ListItemText,
     MenuItem,
     Select,
+    Table,
+    TableBody,
+    TableHead,
+    TableRow,
+    TableCell,
+    Toolbar, FormControl
 } from '@material-ui/core'
 import SearchBar from './SearchBar'
 import Async, { IfFulfilled } from 'react-async';
@@ -21,6 +23,7 @@ class DropFields {
     currentDeck: any;
     userDecks: any;
 }
+
 
 var t = 0;
 // const multiCards = [
@@ -47,9 +50,8 @@ async function do_scryfall(params: any, results: []) {
     params.type =
     //@ts-ignore
     await Scry.Cards.search(params.q, opts).on("data", card => {
-        //@ts-ignore
-        results.push(card);
-
+            //@ts-ignore
+            results.push(card);
     }).waitForAll();
     console.log(results);
 }
@@ -190,7 +192,7 @@ class CardSearch extends React.Component<{ user: firebase.User } & WithSnackbarP
     async addToDeck(cardName: any) {
         const currID = this.state.deckField.currentDeck.id;
         if (currID === undefined){
-            var msg = "Added " + cardName + " to deck undefined";
+            const msg = "Added " + cardName + " to deck undefined";
             this.props.enqueueSnackbar(msg, {variant: 'success'});
         } else {
             const deckref = firebase.firestore().collection("deck").doc(currID);
@@ -208,24 +210,50 @@ class CardSearch extends React.Component<{ user: firebase.User } & WithSnackbarP
             };
 
             var x = await cardlist();
-            x.push(cardName);
 
-            // const arrUnion = deckref.update({deck: firebase.firestore.FieldValue.arrayUnion(cardName)});
-            const arrUnion = deckref.update({deck: x});
-            console.log(arrUnion);
-            var m = "Added " + cardName + " to deck";
-            this.props.enqueueSnackbar(m, {variant: 'success'});
+            if (false) {
+                this.props.enqueueSnackbar('Only one copy of this card can exist in a deck', {variant: 'error'});
+            } else {
+                x.push(cardName);
+                const arrUnion = deckref.update({deck: x});
+                console.log(arrUnion);
+                const msg = "Added " + cardName + " to deck";
+                this.props.enqueueSnackbar(msg, {variant: 'success'});
+            }
         }
         return 0;
     }
 
+    fixFlipCards(value: any){
+        if (value.layout === "transform" || value.layout === "flip" || value.layout === "meld") {
+            const temp = value.name.split("//");
+            const tempType = value.type_line.split(" // ");
+            if (tempType.length === 2 && tempType[0] !== tempType[1]) {
+                value.type_line = tempType[0] + " / " + tempType[1];
+            } else if (tempType.length === 2 && tempType[0] === tempType[1]) {
+                value.type_line = tempType[0];
+            }
+            return (
+                <div>
+                    <span className="mtgcard" id={temp[0]}>($ `${temp[0]}`)</span>
+                    /
+                    <span className="mtgcard" id={temp[1]}>($ `${temp[1]}`)</span>
+                </div>
+            );
+        } else {
+            return (
+                <span className="mtgcard" id={value.name}>($ `${value.name}`)</span>
+            );
+        }
+    }
 
     render() {
         if (t === 0) {
             var ss = document.createElement("link");
             ss.setAttribute("href", "https://www.foilking.dev/ts-scryfall/static/css/main.a2ec1a5b.css");
-            ss.setAttribute("rel", "stylesheet")
-            ss.setAttribute("type", "text/css")
+            ss.setAttribute("rel", "stylesheet");
+            ss.setAttribute("type", "text/css");
+            ss.setAttribute("accessKey", "search-css");
             document.head.appendChild(ss);
             this.mountDropDown();
             t = 1;
@@ -236,56 +264,113 @@ class CardSearch extends React.Component<{ user: firebase.User } & WithSnackbarP
         sc.setAttribute("type", "text/javascript");
         document.head.appendChild(sc);
         var listVals = this.state.searchResults.results;
-
         // @ts-ignore
         return (
-            <div>
-                <Async promiseFn={this.loadPromise}>
-                    {state =>
-                        <IfFulfilled state={state}>
-                            {decks =>
-                                <>
-                                    <InputLabel htmlFor="deck-select" data-testid="deck-select-test">Current Deck</InputLabel>
-                                    <Select id="#deck-select" inputProps={{ id: 'current-deck', }}
-                                        value={this.state.deckField.currentDeck}
-                                        onChange={this.handleChange.bind(this)}>
-                                        {this.state.deckField.userDecks.map((deck: any) => <MenuItem
-                                            value={deck}>{deck.data().deckName}</MenuItem>)}
-                                    </Select>
-                                    <SearchBar searchQuery={this.getSearchParams.bind(this)}>Card Search</SearchBar>
-                                </>
-                            }
-                        </IfFulfilled>
-                    }
-                </Async>
-                {(this.state.lenResults !== 0) && (
-                    <>
-                        <br />
-                        <div>
-                            <script src="https://tappedout.net/tappedout.js"></script>
-                            <List dense>
-                                {listVals.map((value: any) => {
-                                    const labelId = `list-item-${value.name}`;
-                                    return (
-                                        <ListItem key={value} button>
-                                            <ListItemText id={labelId} primary={
-                                                <div>
-                                                    <span className="mtgcard" id={labelId}>($ `${value.name}`)</span>&emsp;&emsp;
-                                                        <span> &emsp;{value.prices.usd}</span>
-                                                </div>} />
-                                            <ListItemSecondaryAction>
-                                                <Button onClick={this.addToFavorites.bind(this, value.name)} >
-                                                    Add to Favorites
-                                                    </Button>
-                                                <Button onClick={this.addToDeck.bind(this, value.name)}>
-                                                    Add to Deck
-                                                    </Button>
-                                            </ListItemSecondaryAction>
-                                        </ListItem>
-                                    );
-                                })}
-                            </List>
-                        </div>
+                <div>
+
+                    <SearchBar searchQuery={this.getSearchParams.bind(this)}>Card Search</SearchBar>
+                    {(this.state.lenResults !== 0) && (
+                        <>
+                            <br />
+                            <div>
+                                <script src="https://tappedout.net/tappedout.js"></script>
+                                <Toolbar>
+                                    <Async promiseFn={this.loadPromise}>
+                                        {state =>
+                                            <IfFulfilled state={state}>
+                                                {decks =>
+                                                    <>
+                                                        <FormControl>
+                                                                <InputLabel htmlFor="deck-select" data-testid="deck-select-test">
+                                                                    Current Deck
+                                                                </InputLabel>
+                                                                <Select className="deck-select" id="deck-select"
+                                                                        inputProps={{id: 'current-deck',}}
+                                                                        value={this.state.deckField.currentDeck}
+                                                                        onChange={this.handleChange.bind(this)}
+                                                                        autoWidth
+                                                                >
+                                                                    {this.state.deckField.userDecks.map((deck: any) => <MenuItem
+                                                                        value={deck}>{deck.data().deckName}</MenuItem>)}
+                                                                </Select>
+                                                        </FormControl>
+
+                                                    </>
+                                                }
+                                            </IfFulfilled>
+                                        }
+                                    </Async>
+
+                                </Toolbar>
+                                <Table aria-label="card table">
+                                    <TableHead>
+                                        <TableRow>
+                                            <TableCell>Card Name</TableCell>
+                                            <TableCell>$ Price</TableCell>
+                                            <TableCell>Type</TableCell>
+                                            <TableCell>Colors</TableCell>
+                                            <TableCell></TableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {listVals.map((value: any) => {const labelId = `list-item-${value.name}`;
+                                            var labelPrice = "";
+                                            if (value.prices.usd === null || value.prices.usd === undefined || value.prices.usd === 0.00){
+                                                labelPrice = "N/A";
+                                                value.prices.usd = 0.00
+                                            } else {
+                                                labelPrice = "$" + value.prices.usd;
+                                            }
+                                            if (value.color_identity === []){
+                                                value.color_identity.push('C');
+                                            }
+                                            return (
+                                                <TableRow key={labelId}>
+                                                    <TableCell component="th" scope="row">
+                                                        {this.fixFlipCards(value)}
+                                                    </TableCell>
+
+                                                    <TableCell>{labelPrice}</TableCell>
+                                                    <TableCell>{value.type_line}</TableCell>
+                                                    <TableCell>
+                                                        {value.color_identity.map((color: any) => {
+                                                            if (color === 'R') {
+                                                                return (<abbr className="card-symbol card-symbol-R"
+                                                                              title="(R) Red">{`R`}</abbr>);
+                                                            } else if (color === 'G') {
+                                                                return (<abbr className="card-symbol card-symbol-G"
+                                                                              title="(G) Green">{`G`}</abbr>);
+                                                            } else if (color === 'B') {
+                                                                return (<abbr className="card-symbol card-symbol-B"
+                                                                              title="(B) Black">{`B`}</abbr>);
+                                                            } else if (color === 'U') {
+                                                                return (<abbr className="card-symbol card-symbol-U"
+                                                                              title="(U) Blue">{`U`}</abbr>);
+                                                            } else if (color === 'W') {
+                                                                return (<abbr className="card-symbol card-symbol-W"
+                                                                              title="(W) White">{`W`}</abbr>);
+                                                            } else if (color === 'C' || color === null || color === undefined) {
+                                                                return (<abbr className="card-symbol card-symbol-C"
+                                                                              title="(C) Colorless">{`C`}</abbr>);
+                                                            }
+                                                            return 0;
+                                                        })
+                                                        }
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <Button onClick={this.addToFavorites.bind(this, value.name)} >
+                                                            Add to Favorites
+                                                        </Button>
+                                                        <Button onClick={this.addToDeck.bind(this, value.name)}>
+                                                            Add to Deck
+                                                        </Button>
+                                                    </TableCell>
+                                                </TableRow>
+                                            );
+                                    })}
+                                </TableBody>
+                                </Table>
+                            </div>
                         <br />
                         <br />
                         <br />
