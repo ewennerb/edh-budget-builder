@@ -361,7 +361,8 @@ class DeckDetail extends React.Component<DeckDetailProps> {
                                           {row.pop()}
                                         </TableRow>);
                                       }
-                                      return 0;
+                                      // eslint-disable-next-line
+                                      return;
                                         //@ts-ignore
                                     } else if(landIdx[cardName] === undefined) {
                                         row.push(
@@ -383,7 +384,9 @@ class DeckDetail extends React.Component<DeckDetailProps> {
                                               {row.pop()}
                                           </TableRow>)
                                         }
-                                      }return 0;
+                                      }
+                                        // eslint-disable-next-line
+                                        return;
                                     }
                                     )
                                   }
