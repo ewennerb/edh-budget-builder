@@ -50,7 +50,8 @@ interface LoadedData {
   deckId: string;
   deckData: DeckData;
 }
-class DeckDetail extends React.Component<DeckDetailProps> {
+interface DetailState {deck: string[]}
+class DeckDetail extends React.Component<DeckDetailProps, DetailState> {
   deckDocRef: firebase.firestore.DocumentReference;
   loadPromise: () => Promise<LoadedData>;
   constructor(props: DeckDetailProps) {
@@ -62,13 +63,14 @@ class DeckDetail extends React.Component<DeckDetailProps> {
         const doc = await this.deckDocRef.get();
         const deckData = doc.data();
         if (!deckData) throw new Error("deck document has no data")
+        this.state = {deck: deckData.deck};
         return { deckId: doc.id, deckData: deckData as DeckData }
       } catch (err) {
         this.props.enqueueSnackbar('Could not get deck', { variant: 'error' });
         console.error("Error getting deck: ", err);
         throw err
       }
-    }
+    };
   }
 
   checkEDHStatus = (deckData: DeckData) => {
@@ -119,21 +121,26 @@ class DeckDetail extends React.Component<DeckDetailProps> {
   deleteCardFromDeck = async (deckData: DeckData, cardName: string) => {
     if (count(deckData.deck, cardName) > 1) {
       var i = deckData.deck.lastIndexOf(cardName);
+      this.setState({deck: this.state.deck.splice(i, 1)});
       await this.deckDocRef.update({deck: deckData.deck.splice(i, 1)});
+
       this.props.enqueueSnackbar(cardName + ' deleted from ' + deckData.deckName);
       //TODO update list without refreshing page
       console.log(cardName + ' deleted from ' + deckData.deckName);
-      window.location.reload(true);
+      // window.location.reload(true);
     } else {
 
       try {
         await this.deckDocRef.update({
           deck: firebase.firestore.FieldValue.arrayRemove(cardName)
         });
+        var i = deckData.deck.lastIndexOf(cardName);
+        this.setState({deck: this.state.deck.splice(i, 1)});
+
         this.props.enqueueSnackbar(cardName + ' deleted from ' + deckData.deckName);
         //TODO update list without refreshing page
         console.log(cardName + ' deleted from ' + deckData.deckName);
-        window.location.reload(true);
+        // window.location.reload(true);
       } catch (err) {
         this.props.enqueueSnackbar('Card no longer exists in deck', {variant: 'error'});
         console.error(cardName + " no longer exists in deck: ", err);
@@ -225,6 +232,7 @@ class DeckDetail extends React.Component<DeckDetailProps> {
           {state =>
             <>
               <IfPending state={state}>
+                <script src="https://tappedout.net/tappedout.js"></script>
                 <h1>Loading...</h1>
               </IfPending>
               <IfFulfilled state={state}>
@@ -327,6 +335,7 @@ class DeckDetail extends React.Component<DeckDetailProps> {
                                 marginRight={7}
                                 fontSize={14}
                             >
+                              <script src="https://tappedout.net/tappedout.js"></script>
                               <Table size='small' padding='none'>
 
                                 <TableBody>
@@ -347,7 +356,7 @@ class DeckDetail extends React.Component<DeckDetailProps> {
                                                 <IconButton aria-label="delete-card" data-testid={index}
                                                           onClick={() => this.deleteCardFromDeck(data.deckData, cardName)}><DeleteIcon/></IconButton>
                                               </Tooltip>
-                                              <span className="mtgcard" id={cardName} data-testid={"($ `$" + cardName + "`)"}>($ `${cardName}`) x {templen}</span>
+                                              <span className="mtgcard" id={cardName + index} data-testid={"($ `$" + cardName + "`)"}>($ `${cardName}`)</span> x {templen}
                                             </TableCell>
                                         );
                                       }
@@ -361,7 +370,8 @@ class DeckDetail extends React.Component<DeckDetailProps> {
                                           {row.pop()}
                                         </TableRow>);
                                       }
-                                      return 0;
+                                      // eslint-disable-next-line
+                                      return;
                                         //@ts-ignore
                                     } else if(landIdx[cardName] === undefined) {
                                         row.push(
@@ -370,7 +380,7 @@ class DeckDetail extends React.Component<DeckDetailProps> {
                                               <IconButton aria-label="delete-card" data-testid={index} onClick={() => this.deleteCardFromDeck(data.deckData, cardName)}><DeleteIcon />
                                               </IconButton>
                                             </Tooltip>
-                                            <span className="mtgcard" id={cardName} data-testid={"($ `$" + cardName + "`)"}>($ `${cardName}`)</span>
+                                            <span className="mtgcard" id={cardName + index} data-testid={"($ `$" + cardName + "`)"}>($ `${cardName}`)</span>
                                           </TableCell>
                                         );
                                         ctr++;
@@ -383,7 +393,9 @@ class DeckDetail extends React.Component<DeckDetailProps> {
                                               {row.pop()}
                                           </TableRow>)
                                         }
-                                      }return 0;
+                                      }
+                                        // eslint-disable-next-line
+                                        return;
                                     }
                                     )
                                   }
@@ -393,6 +405,7 @@ class DeckDetail extends React.Component<DeckDetailProps> {
 
                           </div>
                         </Box>
+
                       </>
                   );
                 }}
