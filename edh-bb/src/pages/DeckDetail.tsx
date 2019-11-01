@@ -327,6 +327,7 @@ class DeckDetail extends React.Component<DeckDetailProps> {
                                 marginRight={7}
                                 fontSize={14}
                             >
+                              <script src="https://tappedout.net/tappedout.js"></script>
                               <Table size='small' padding='none'>
 
                                 <TableBody>
@@ -347,7 +348,7 @@ class DeckDetail extends React.Component<DeckDetailProps> {
                                                 <IconButton aria-label="delete-card" data-testid={index}
                                                           onClick={() => this.deleteCardFromDeck(data.deckData, cardName)}><DeleteIcon/></IconButton>
                                               </Tooltip>
-                                              <span className="mtgcard" id={cardName} data-testid={"($ `$" + cardName + "`)"}>($ `${cardName}`) x {templen}</span>
+                                              <span className="mtgcard" id={cardName} data-testid={"($ `$" + cardName + "`)"}>($ `${cardName}`)</span> x {templen}
                                             </TableCell>
                                         );
                                       }
