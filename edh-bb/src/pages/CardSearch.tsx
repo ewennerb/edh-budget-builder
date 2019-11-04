@@ -335,7 +335,8 @@ class CardSearch extends React.Component<{ user: firebase.User } & WithSnackbarP
                                                                 return (<abbr className="card-symbol card-symbol-C"
                                                                               title="(C) Colorless">{`C`}</abbr>);
                                                             }
-                                                            return 0;
+                                                            // eslint-disable-next-line
+                                                            return;
                                                         })
                                                         }
                                                     </TableCell>

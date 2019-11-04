@@ -347,7 +347,7 @@ class DeckDetail extends React.Component<DeckDetailProps> {
                                                 <IconButton aria-label="delete-card" data-testid={index}
                                                           onClick={() => this.deleteCardFromDeck(data.deckData, cardName)}><DeleteIcon/></IconButton>
                                               </Tooltip>
-                                              <span className="mtgcard" id={cardName} data-testid={"($ `$" + cardName + "`)"}>($ `${cardName}`) x {templen}</span>
+                                              <span className="mtgcard" id={cardName} data-testid={"($ `$" + cardName + "`)"}>($ `${cardName}`)</span> x {templen}
                                             </TableCell>
                                         );
                                       }
@@ -361,7 +361,8 @@ class DeckDetail extends React.Component<DeckDetailProps> {
                                           {row.pop()}
                                         </TableRow>);
                                       }
-                                      return 0;
+                                      // eslint-disable-next-line
+                                      return;
                                         //@ts-ignore
                                     } else if(landIdx[cardName] === undefined) {
                                         row.push(
@@ -383,7 +384,9 @@ class DeckDetail extends React.Component<DeckDetailProps> {
                                               {row.pop()}
                                           </TableRow>)
                                         }
-                                      }return 0;
+                                      }
+                                      // eslint-disable-next-line
+                                      return;
                                     }
                                     )
                                   }
