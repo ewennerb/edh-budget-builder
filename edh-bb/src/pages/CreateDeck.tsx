@@ -2,13 +2,14 @@ import React from 'react';
 import TextField from '@material-ui/core/TextField';
 import firebase from "firebase/app";
 import { withSnackbar, WithSnackbarProps } from "notistack";
+import { RouteComponentProps } from "react-router";
 import { validateDeckName } from '../common';
+
 //import { Link, LinkProps } from 'react-router-dom';
 
 /*const AdapterLink = React.forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => (
   <Link innerRef={ref} {...props} />
 ));*/
-
 
 interface deckInfo {
   deckName: string;
@@ -33,9 +34,11 @@ export function isValidTitle(title: string) {
   return true;
 }
 
-class CreateDeck extends React.Component<{ user: firebase.User } & WithSnackbarProps> {
+type CreateProps = RouteComponentProps & WithSnackbarProps;
+
+class CreateDeck extends React.Component<{ user: firebase.User } & CreateProps> {
   userDocRef: firebase.firestore.DocumentReference;
-  constructor(props: Readonly<{ user: firebase.User } & WithSnackbarProps>) {
+  constructor(props: Readonly<{ user: firebase.User } & CreateProps>) {
     super(props);
     this.userDocRef = firebase.firestore().collection("users").doc(this.props.user.uid);
     this.state = { value: '' };
@@ -61,28 +64,24 @@ class CreateDeck extends React.Component<{ user: firebase.User } & WithSnackbarP
     }
 
     firebase.firestore().collection('deck').add({
-
       deckName: event.target.deckName.value,
       deckDescription: event.target.deckDescription.value,
       deck: [],
       ownerID: this.props.user.uid
-
+    }).then(function (deckRef) {
+      console.log("Deck written with ID: " + deckRef.id);
     })
-      .then(function (deckRef) {
-        console.log("Deck written with ID: " + deckRef.id);
-      })
 
     console.log('values input into database: name=' + event.target.deckName.value + ', description=' + event.target.deckDescription.value);
-    //TODO redirect back to DeckList here
+    this.props.history.push("/deck-list")
   }
-
 
   render() {
     return (
       <form
         onSubmit={this.handleSubmit}
         className="innerForm">
-        <h1>[CreateDeck]</h1>
+        <h1>Create Deck</h1>
         <TextField
           required
           id="deckName"

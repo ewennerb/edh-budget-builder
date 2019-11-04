@@ -1,13 +1,14 @@
 import React from 'react';
 import firebase from 'firebase/app';
 import firebasemock from 'firebase-mock';
-import { render, waitForElement, getByLabelText, getByText, fireEvent } from '@testing-library/react'
+import { render, waitForElement, getByLabelText, getByText, fireEvent, findByText, getByTestId } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack';
 import DeckDetail from './DeckDetail';
 import { Route, MemoryRouter } from 'react-router';
 import { DeckData } from '../common';
 import update from 'immutability-helper';
 import FileSaver from 'file-saver';
+import ReactDOM from 'react-dom';
 
 jest.mock('file-saver')
 
@@ -22,6 +23,29 @@ const testDeckData: DeckData = {
   deckName: "name",
   ownerID: "abc",
 }
+
+const testCardDeleteData: DeckData = {
+  deck: ["card 2"],
+  deckDescription: "desc",
+  deckName: "name",
+  ownerID: "abc",
+}
+const testBigDeckEnergy: DeckData = {
+  deck: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10",
+    "11", "12", "13", "14", "15", "16", "17", "18", "19", "20",
+    "21", "22", "23", "24", "25", "26", "27", "28", "29", "30",
+    "31", "32", "33", "34", "35", "36", "37", "38", "39", "40",
+    "41", "42", "43", "44", "45", "46", "47", "48", "49", "50",
+    "51", "52", "53", "54", "55", "56", "57", "58", "59", "60",
+    "61", "62", "63", "64", "65", "66", "67", "68", "69", "70",
+    "71", "72", "73", "74", "75", "76", "77", "78", "79", "80",
+    "81", "82", "83", "84", "85", "86", "87", "88", "89", "90", 
+    "91", "92", "93", "94", "95", "96", "97", "98", "99", "100"],
+  deckDescription: "big desc",
+  deckName: "big name",
+  ownerID: "abc",
+}
+
 const doRender = (deckId: string) => {
   const renderResult = render(
     <SnackbarProvider>
@@ -43,7 +67,7 @@ const getFirestoreDocData = async (docRef: firebase.firestore.DocumentReference)
 it('renders without crashing', async () => {
   firebase.firestore().collection('deck').doc(testDeckId).set(testDeckData);
   const { container } = doRender(testDeckId);
-  const heading = await waitForElement(() => getByText(container, "Deck Detail"), { container });
+  const heading = await waitForElement(() => getByTestId(container, "deck-detail-flex"), { container });
 
   expect(heading).toBeDefined();
 })
@@ -59,10 +83,26 @@ it('shows the deck name', async () => {
 it('shows the cards', async () => {
   firebase.firestore().collection('deck').doc(testDeckId).set(testDeckData);
   const { container } = doRender(testDeckId);
-  await waitForElement(() => getByText(container, "Deck Detail"), { container });
+  await waitForElement(() => getByTestId(container, "deck-detail-flex"), { container });
 
-  expect(getByText(container, "card 1")).toBeDefined()
-  expect(getByText(container, "card 2")).toBeDefined()
+  expect(getByTestId(container, "($ `$card 1`)")).toBeDefined();
+  expect(getByTestId(container, "($ `$card 2`)")).toBeDefined();
+})
+
+it('rejects an invalid deck in EDH format', async () => {
+  firebase.firestore().collection('deck').doc(testDeckId).set(testDeckData);
+  const { container } = doRender(testDeckId);
+  await waitForElement(() => getByLabelText(container, /Deck Name/), { container });
+
+  expect(getByTestId(container, "illegal")).toBeDefined();
+})
+
+it('accepts a valid deck in EDH format', async () => {
+  firebase.firestore().collection('deck').doc(testDeckId).set(testBigDeckEnergy);
+  const { container } = doRender(testDeckId);
+  await waitForElement(() => getByLabelText(container, /Deck Name/), { container });
+
+  expect(getByTestId(container, "legal")).toBeDefined();
 })
 
 it('shows the deck description', async () => {
@@ -156,3 +196,59 @@ it('downloads the deck', async () => {
   });
   expect(await pBlobContents).toBe(JSON.stringify(testDeckData));
 })
+
+it("creates a copy", async() => {
+  firebase.firestore().collection('deck').doc(testDeckId);
+  const { container } = doRender(testDeckId);
+  const copyButton = await waitForElement(() => getByLabelText(container, "make a copy"), { container });
+
+  await fireEvent.click(copyButton);
+  mockfirestore.autoFlush(0);
+  var deck = await firebase.firestore().collection("deck").get();
+
+  deck.forEach(deckItem => {
+    if(deckItem.id!=testDeckId){
+      expect(deckItem.data()).toStrictEqual(update(testDeckData, { deckName: { $set: "name- copy"} }));
+    }
+  })
+})
+
+it("prompts users to confirm delete, canceling will not delete deck", async() => {
+  firebase.firestore().collection('deck').doc(testDeckId).set(testDeckData);
+  const { getByText, container } = doRender(testDeckId);
+  
+  const deleteButton = await waitForElement(() => getByLabelText(container, "delete"), { container });
+  await fireEvent.click(deleteButton);
+
+  const cancelButton =await waitForElement(() => getByText("No"), { container });
+  fireEvent.click(cancelButton);
+  
+  expect( firebase.firestore().collection('deck').doc(testDeckId).data).toEqual(testDeckData);
+})
+
+it("prompts users to confirm delete, clicking yes will delete deck", async() => {
+  firebase.firestore().collection('deck').doc(testDeckId).set(testDeckData);
+  const { getByText, container } = doRender(testDeckId);
+  
+  const deleteButton = await waitForElement(() => getByLabelText(container, "delete"), { container });
+  await fireEvent.click(deleteButton);
+
+  const confirmButton =await waitForElement(() => getByText("Yes"), { container });
+  fireEvent.click(confirmButton);
+
+  mockfirestore.flush();
+
+  expect( firebase.firestore().collection('deck').doc(testDeckId).data).toEqual(null);
+})
+
+/* it('deletes a card from the deck', async () => {
+  firebase.firestore().collection('deck').doc(testDeckId).set(testDeckData);
+  const { container } = doRender(testDeckId);
+  const deleteCard1Button = await waitForElement(() => getByTestId(container, '0'), { container });
+
+  fireEvent.click(deleteCard1Button);
+  
+  const userDocRef = firebase.firestore().collection('deck').doc(testDeckId);
+  
+  expect(await getFirestoreDocData(userDocRef)).toEqual(testCardDeleteData);
+}) */
